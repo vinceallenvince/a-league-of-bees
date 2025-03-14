@@ -6,7 +6,7 @@ dotenv.config();
 
 export default defineConfig({
   schema: './server/features/tournament/schema.ts',
-  out: './server/features/tournament/migrations',
+  out: './server/features/tournament/migrations/sql',
   driver: 'pg',
   dbCredentials: {
     connectionString: process.env.DATABASE_URL || '',
