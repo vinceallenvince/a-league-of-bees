@@ -1,33 +1,38 @@
 
 import { drizzle } from 'drizzle-orm/node-postgres';
-import pg from 'pg';
-const { Pool } = pg;
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import * as dotenv from 'dotenv';
+import { Pool } from 'pg';
 
 dotenv.config();
 
-async function generateMigration() {
+async function generateAndPushMigration() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is required");
+  }
+
+  console.log('Connecting to database...');
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL
+  });
+
+  const db = drizzle(pool);
+
   try {
-    console.log('Generating migration...');
-    
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    });
-    
-    const db = drizzle(pool);
-    
+    console.log('Pushing migration to database...');
     await migrate(db, {
       migrationsFolder: './server/features/tournament/migrations'
     });
-    
-    console.log('Migration generated successfully!');
-    await pool.end();
-    process.exit(0);
+    console.log('Migration completed successfully!');
   } catch (error) {
-    console.error('Error generating migration:', error);
-    process.exit(1);
+    console.error('Migration failed:', error);
+    throw error;
+  } finally {
+    await pool.end();
   }
 }
 
-generateMigration();
+generateAndPushMigration().catch((err) => {
+  console.error('Migration process failed:', err);
+  process.exit(1);
+});
