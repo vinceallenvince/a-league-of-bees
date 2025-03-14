@@ -18,7 +18,7 @@ async function generateMigration() {
     const db = drizzle(pool);
     
     await migrate(db, {
-      migrationsFolder: './server/features/tournament/migrations/sql'
+      migrationsFolder: './server/features/tournament/migrations'
     });
     
     console.log('Migration generated successfully!');
