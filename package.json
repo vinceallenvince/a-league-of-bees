@@ -4,6 +4,9 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "db:generate": "drizzle-kit generate:pg --config=server/features/tournament/migrations/config.ts",
+    "db:migrate": "tsx server/features/tournament/migrations/migrate.ts",
+    "db:studio": "drizzle-kit studio --config=server/features/tournament/migrations/config.ts",
     "dev": "tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
