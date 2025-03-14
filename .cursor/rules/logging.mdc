@@ -1,0 +1,8 @@
+---
+description: Logging specs
+globs:    server/**/*
+alwaysApply: false
+---
+## Product Specs
+
+- Before generating code, check the user request is aligned with the logging specifications defined in [logging-specs.md](mdc:specs/logging-specs.md)

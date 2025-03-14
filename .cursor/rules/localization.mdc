@@ -1,0 +1,8 @@
+---
+description: Localization Rules
+globs: *
+alwaysApply: true
+---
+## Localization
+
+- Before responding to requests, check the request is aligned with the localization guidelines defined in [localization-specs.md](mdc:specs/localization-specs.md)

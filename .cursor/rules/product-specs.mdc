@@ -1,0 +1,8 @@
+---
+description: Product Rules
+globs: *
+alwaysApply: true
+---
+## Product Specs
+
+- Before generating code, check the user request is aligned with the product specifications defined in [product-specs.md](mdc:specs/product-specs.md)

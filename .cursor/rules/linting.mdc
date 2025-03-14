@@ -1,0 +1,12 @@
+---
+description: Enforce linting rules
+globs: 
+alwaysApply: true
+---
+
+# Linting rules
+
+Please apply the following linting rules when generating new code.
+
+- Check the [tsconfig.json](mdc:tsconfig.json) "types" array includes all necessary declarations
+- New code should follow linting rules defined in [eslint.config.js](mdc:eslint.config.js)

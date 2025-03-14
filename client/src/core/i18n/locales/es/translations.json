@@ -1,0 +1,168 @@
+{
+  "navigation": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "anotherPage": "Otra Página",
+    "additionalPage": "Página Adicional",
+    "admin": "Administrador",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión",
+    "signIn": "Iniciar Sesión"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "enterEmail": "Ingresa tu correo electrónico",
+    "sendOTP": "Enviar contraseña de un solo uso",
+    "verifyOTP": "Verificar contraseña de un solo uso",
+    "welcomeBack": "Bienvenido de Nuevo",
+    "secureAuth": "Autenticación Segura",
+    "secureAuthDesc": "Nuestra aplicación utiliza contraseñas de un solo uso basadas en correo electrónico para una autenticación segura. No es necesario recordar contraseñas complejas, solo ingresa tu correo electrónico y te enviaremos un código para iniciar sesión.",
+    "emailAddress": "Dirección de Correo Electrónico",
+    "requestOTP": "Solicitar contraseña de un solo uso",
+    "requestingOTP": "Solicitando contraseña de un solo uso...",
+    "enterOTP": "Ingresa contraseña de un solo uso",
+    "digit": "Dígito {{number}} de 6",
+    "verifyingOTP": "Verificando contraseña de un solo uso...",
+    "tryDifferentEmail": "Probar con Otro Correo",
+    "loginSuccessful": "Inicio de sesión exitoso",
+    "welcomeBackMessage": "¡Bienvenido de nuevo!",
+    "otpSent": "Contraseña de un solo uso enviada",
+    "checkEmail": "Revisa tu correo electrónico para el código de verificación",
+    "failedToSendOTP": "Error al enviar contraseña de un solo uso",
+    "loginFailed": "Error de inicio de sesión",
+    "otpExpired": "La contraseña de un solo uso ha expirado. Por favor solicita una nueva.",
+    "unexpectedError": "Ocurrió un error inesperado",
+    "loggedOut": "Sesión cerrada",
+    "seeYouSoon": "¡Hasta pronto!",
+    "emailVerificationForm": "Formulario de verificación de correo electrónico",
+    "otpVerificationForm": "Formulario de verificación de contraseña de un solo uso",
+    "otpInput": "Entrada de contraseña de un solo uso",
+    
+    "emailLabel": "Correo Electrónico",
+    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "emailFormLabel": "Formulario de correo",
+    "otpFormLabel": "Formulario de verificación de contraseña de un solo uso",
+    "continueButton": "Continuar",
+    "enterOtp": "Ingresa el código de verificación",
+    "otpDigit": "Dígito",
+    "otpSentTo": "Código de verificación enviado a",
+    "changeEmail": "Cambiar correo",
+    "verifyOtp": "Verificar Código",
+    "didntReceiveCode": "¿No recibiste el código?",
+    "resendCode": "Reenviar Código",
+    
+    "magicLinkSent": "Enlace Mágico Enviado",
+    "checkEmailForLink": "Revisa tu correo electrónico para el enlace de inicio de sesión",
+    "didntReceiveLink": "¿No recibiste el enlace?",
+    "resendLink": "Reenviar Enlace",
+    "verifyingMagicLink": "Verificando Enlace Mágico",
+    "verifyingYourIdentity": "Verificando tu identidad...",
+    "invalidMagicLink": "Enlace mágico inválido o expirado",
+    "magicLinkVerificationFailed": "Falló la verificación del enlace mágico",
+    "backToLogin": "Volver al Inicio de Sesión",
+    "redirectingToHome": "Redirigiendo a la página de inicio...",
+    "sessionError": "Error de sesión. Por favor intenta iniciar sesión nuevamente.",
+    "goToHome": "Ir a Inicio",
+    "failedToSendAuth": "Error al enviar autenticación"
+  },
+  "homePage": {
+    "welcome": {
+      "title": "Bienvenido a la Aplicación",
+      "nonAuthMessage": "Experimenta una autenticación segura con contraseñas de un solo uso basadas en correo electrónico. Es increíble.",
+      "authMessage": "Accede a tu panel seguro y administra tu perfil."
+    },
+    "getStarted": {
+      "title": "Comenzar",
+      "description": "Inicia sesión con tu correo electrónico para acceder a todas las funciones.",
+      "button": "Iniciar Sesión"
+    },
+    "keyFeatures": {
+      "title": "Características Principales",
+      "feature1": "Autenticación segura basada en correo electrónico",
+      "feature2": "Gestión de perfil",
+      "feature3": "Control de acceso basado en roles"
+    },
+    "profile": {
+      "title": "Tu Perfil",
+      "description": "Administra tu información personal y preferencias.",
+      "link": "Administrar Perfil →"
+    }
+  },
+  "aboutPage": {
+    "title": "Acerca de Nosotros",
+    "paragraph1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    "paragraph2": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  "contactPage": {
+    "title": "Contáctanos",
+    "paragraph1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat scelerisque elit sit amet consequat. Aliquam erat volutpat.",
+    "paragraph2": "Nullam hendrerit, elit a semper pharetra, ipsum nibh tristique tortor, in tempus urna elit in mauris."
+  },
+  "anotherPage": {
+    "title": "Otra Página",
+    "description": "Esta es otra página que demuestra las capacidades de enrutamiento.",
+    "featuredContent": {
+      "title": "Contenido Destacado",
+      "description": "Este es un componente de tarjeta de muestra que exhibe la organización del contenido."
+    }
+  },
+  "additionalPage": {
+    "title": "Página Adicional",
+    "description": "Esta es una página adicional que muestra más contenido.",
+    "moreContent": {
+      "title": "Más Contenido",
+      "description": "Esta tarjeta demuestra posibilidades adicionales de organización de contenido."
+    }
+  },
+  "notFound": {
+    "title": "404 Página No Encontrada",
+    "message": "¿Olvidaste agregar la página al enrutador?"
+  },
+  "admin": {
+    "accessDenied": "Acceso Denegado",
+    "noPermission": "No tienes permiso para acceder a esta página.",
+    "requestAccess": "Solicitar Acceso de Administrador",
+    "requestSent": "Solicitud de Administrador Enviada",
+    "requestSubmitted": "Tu solicitud de acceso de administrador ha sido enviada.",
+    "requestError": "Error",
+    "requestFailed": "Error al solicitar acceso de administrador.",
+    "loading": "Cargando usuarios",
+    "userManagement": "Gestión de Usuarios",
+    "email": "Correo Electrónico",
+    "name": "Nombre",
+    "admin": "Administrador",
+    "lastLogin": "Último Inicio de Sesión",
+    "actions": "Acciones",
+    "yes": "Sí",
+    "no": "No",
+    "never": "Nunca",
+    "approveAdmin": "Aprobar Administrador",
+    "approveAdminFor": "Aprobar acceso de administrador para {{email}}",
+    "deleteUser": "Eliminar usuario {{email}}",
+    "userDeleted": "Usuario eliminado",
+    "userDeletedDesc": "El usuario ha sido eliminado exitosamente.",
+    "adminApproved": "Administrador aprobado",
+    "adminApprovedDesc": "Al usuario se le han otorgado privilegios de administrador."
+  },
+  "common": {
+    "loading": "Cargando..."
+  },
+  "profile": {
+    "title": "Gestión de Perfil",
+    "profileUpdated": "Perfil actualizado",
+    "profileUpdatedDesc": "Tu perfil ha sido actualizado exitosamente.",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "username": "Nombre de Usuario",
+    "bio": "Biografía",
+    "avatarUrl": "URL de Avatar",
+    "lastLoginInfo": "Información del último inicio de sesión",
+    "lastLoginText": "Último inicio de sesión: {{date}}",
+    "never": "Nunca",
+    "saveChanges": "Guardar Cambios",
+    "savingChanges": "Guardando cambios...",
+    "nameInformation": "Información de nombre",
+    "profileManagementForm": "Formulario de gestión de perfil"
+  }
+} 

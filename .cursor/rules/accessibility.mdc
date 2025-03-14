@@ -1,0 +1,9 @@
+---
+description: Accessibility Rules
+globs: *.tsx
+alwaysApply: true
+---
+## Accessibility Specs
+
+- All front end code must conform to WCAG 2.1 Level AA standards and Section 508 requirements to ensure accessibility for all users
+- Before generating code, check the user request adheres to the accessibility specs defined in [accessibility-specs.md](mdc:specs/accessibility-specs.md)

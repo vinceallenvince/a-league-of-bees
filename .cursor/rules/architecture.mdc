@@ -1,0 +1,9 @@
+---
+description: Align to app architecture
+globs: *
+alwaysApply: true
+---
+
+# App architecture guidelines
+
+-- Before generating code, review the app architecture defined in [architecture.md](mdc:docs/architecture.md)

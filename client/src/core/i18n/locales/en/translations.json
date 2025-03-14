@@ -1,0 +1,156 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "admin": "Admin",
+    "profile": "Profile",
+    "logout": "Logout",
+    "signIn": "Sign In",
+    "helloWorld": "Hello World"
+  },
+  "auth": {
+    "login": "Login",
+    "enterEmail": "Enter your email",
+    "sendOTP": "Send one-time password",
+    "verifyOTP": "Verify one-time password",
+    "welcomeBack": "Welcome Back",
+    "secureAuth": "Secure Authentication",
+    "secureAuthDesc": "Our application uses email-based one-time passwords for secure authentication. No need to remember complex passwords - just enter your email and we'll send you a code to log in.",
+    "emailAddress": "Email Address",
+    "requestOTP": "Request one-time password",
+    "requestingOTP": "Requesting one-time password...",
+    "enterOTP": "Enter one-time password",
+    "digit": "Digit {{number}} of 6",
+    "verifyingOTP": "Verifying one-time password...",
+    "tryDifferentEmail": "Try Different Email",
+    "loginSuccessful": "Login successful",
+    "welcomeBackMessage": "Welcome back!",
+    "otpSent": "One-time password sent",
+    "checkEmail": "Check your email for the verification code.",
+    "failedToSendOTP": "Failed to send one-time password",
+    "loginFailed": "Login failed",
+    "otpExpired": "One-time password has expired. Please request a new one.",
+    "unexpectedError": "An unexpected error occurred",
+    "loggedOut": "Logged out",
+    "seeYouSoon": "See you soon!",
+    "emailVerificationForm": "Email verification form",
+    "otpVerificationForm": "One-time password verification form",
+    "otpInput": "One-time password input",
+    
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "emailFormLabel": "Email form",
+    "otpFormLabel": "One-time password verification form",
+    "continueButton": "Continue",
+    "enterOtp": "Enter verification code",
+    "otpDigit": "Digit",
+    "otpSentTo": "Verification code sent to",
+    "changeEmail": "Change email",
+    "verifyOtp": "Verify Code",
+    "didntReceiveCode": "Didn't receive the code?",
+    "resendCode": "Resend Code",
+    
+    "magicLinkSent": "Magic Link Sent",
+    "checkEmailForLink": "Check your email for the magic link to sign in",
+    "didntReceiveLink": "Didn't receive the link?",
+    "resendLink": "Resend Link",
+    "verifyingMagicLink": "Verifying Magic Link",
+    "verifyingYourIdentity": "Verifying your identity...",
+    "invalidMagicLink": "Invalid or expired magic link",
+    "magicLinkVerificationFailed": "Magic link verification failed",
+    "backToLogin": "Back to Login",
+    "redirectingToHome": "Redirecting to home page...",
+    "sessionError": "Session error. Please try logging in again.",
+    "goToHome": "Go to Home",
+    "failedToSendAuth": "Failed to send authentication"
+  },
+  "homePage": {
+    "welcome": {
+      "title": "Welcome to the App",
+      "nonAuthMessage": "Experience secure authentication with email-based authentication. It's amazing.",
+      "authMessage": "Access your secure dashboard and manage your profile."
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "description": "Sign in with your email to access all features.",
+      "button": "Sign In"
+    },
+    "keyFeatures": {
+      "title": "Key Features",
+      "feature1": "Secure email-based authentication",
+      "feature2": "Profile management",
+      "feature3": "Role-based access control"
+    },
+    "profile": {
+      "title": "Your Profile",
+      "description": "Manage your personal information and preferences.",
+      "link": "Manage Profile →"
+    }
+  },
+  "aboutPage": {
+    "title": "About Us",
+    "paragraph1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    "paragraph2": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  },
+  "contactPage": {
+    "title": "Contact Us",
+    "paragraph1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat scelerisque elit sit amet consequat. Aliquam erat volutpat.",
+    "paragraph2": "Nullam hendrerit, elit a semper pharetra, ipsum nibh tristique tortor, in tempus urna elit in mauris."
+  },
+  "notFound": {
+    "title": "404 Page Not Found",
+    "message": "Did you forget to add the page to the router?"
+  },
+  "admin": {
+    "accessDenied": "Access Denied",
+    "noPermission": "You don't have permission to access this page.",
+    "requestAccess": "Request Admin Access",
+    "requestSent": "Admin Request Sent",
+    "requestSubmitted": "Your request for admin access has been submitted.",
+    "requestError": "Error",
+    "requestFailed": "Failed to request admin access.",
+    "loading": "Loading users",
+    "userManagement": "User Management",
+    "email": "Email",
+    "name": "Name",
+    "admin": "Admin",
+    "lastLogin": "Last Login",
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "No",
+    "never": "Never",
+    "approveAdmin": "Approve Admin",
+    "approveAdminFor": "Approve admin access for {{email}}",
+    "deleteUser": "Delete user {{email}}",
+    "userDeleted": "User deleted",
+    "userDeletedDesc": "The user has been successfully deleted.",
+    "adminApproved": "Admin approved",
+    "adminApprovedDesc": "The user has been granted admin privileges."
+  },
+  "common": {
+    "loading": "Loading...",
+    "noDataAvailable": "No data available"
+  },
+  "profile": {
+    "title": "Profile Management",
+    "profileUpdated": "Profile updated",
+    "profileUpdatedDesc": "Your profile has been successfully updated.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "username": "Username",
+    "bio": "Bio",
+    "avatarUrl": "Avatar URL",
+    "lastLoginInfo": "Last login information",
+    "lastLoginText": "Last login: {{date}}",
+    "never": "Never",
+    "saveChanges": "Save Changes",
+    "savingChanges": "Saving changes...",
+    "nameInformation": "Name information",
+    "profileManagementForm": "Profile management form"
+  },
+  "helloWorld": {
+    "title": "Hello World Feature",
+    "description": "This is a simple example feature to demonstrate our new feature-based architecture."
+  }
+} 
