@@ -13,7 +13,11 @@ CREATE TABLE IF NOT EXISTS "tournament_participants" (
 ALTER TABLE "tournament_participants" DROP CONSTRAINT IF EXISTS "tournament_participants_tournament_id_tournaments_id_fk";
 ALTER TABLE "tournament_participants" DROP CONSTRAINT IF EXISTS "tournament_participants_user_id_users_id_fk";
 
--- Then recreate them with CASCADE
+-- Drop existing constraints if they exist
+ALTER TABLE "tournament_participants" DROP CONSTRAINT IF EXISTS "tournament_participants_tournament_id_tournaments_id_fk";
+ALTER TABLE "tournament_participants" DROP CONSTRAINT IF EXISTS "tournament_participants_user_id_users_id_fk";
+
+-- Recreate constraints with CASCADE
 ALTER TABLE "tournament_participants" ADD CONSTRAINT "tournament_participants_tournament_id_tournaments_id_fk"
   FOREIGN KEY ("tournament_id") REFERENCES "tournaments"("id") ON DELETE CASCADE;
 ALTER TABLE "tournament_participants" ADD CONSTRAINT "tournament_participants_user_id_users_id_fk"
