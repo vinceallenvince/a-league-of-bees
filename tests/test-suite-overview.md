@@ -72,6 +72,29 @@ Tests for the authentication system and related API endpoints.
 - ✓ should provide user information for authenticated sessions
 - ✓ should reject requests for user information without authentication
 
+### Tournament Management
+
+Tests for tournament creation, participation, and related functionality.
+
+#### Tournament Models
+- ✓ should create a tournament with valid data
+- ✓ should enforce foreign key constraint on creator_id
+- ✓ should create admin approval with valid data
+
+#### Tournament Participants
+- ✓ should create a tournament participant with valid data
+- ✓ should enforce foreign key constraints
+- ✓ should update participant status
+
+#### Tournament Scores
+- ✓ should create a tournament score with valid data
+- ✓ should enforce foreign key constraints
+- ✓ should update tournament score
+
+#### Notifications
+- ✓ should create a notification with valid data
+- ✓ should enforce foreign key constraints
+
 ## Client Tests
 
 ### Authentication Hooks
@@ -128,44 +151,7 @@ Tests for UI components to ensure proper rendering and behavior.
 
 ## Test Coverage
 
-Latest test coverage overview:
-
-```
----------------------------------|---------|----------|---------|---------|-------------------
-File                             | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
----------------------------------|---------|----------|---------|---------|-------------------
-All files                        |   96.88 |     75.4 |   94.28 |   96.92 |                   
- client/src/core/components/auth |    94.2 |    73.33 |     100 |   95.38 |                   
-  otp-form.tsx                   |    94.2 |    73.33 |     100 |   95.38 | 88-91,116         
- client/src/core/pages           |     100 |      100 |     100 |     100 |                   
-  auth-page.tsx                  |     100 |      100 |     100 |     100 |                   
- client/src/core/ui              |   99.23 |       80 |     100 |   99.03 |                   
-  button.tsx                     |     100 |    66.66 |     100 |     100 | 44                
-  card.tsx                       |     100 |      100 |     100 |     100 |                   
-  form.tsx                       |   98.33 |    83.33 |     100 |   98.21 | 50                
-  input.tsx                      |     100 |      100 |     100 |     100 |                   
-  label.tsx                      |     100 |      100 |     100 |     100 |                   
- client/src/lib                  |     100 |      100 |     100 |     100 |                   
-  utils.ts                       |     100 |      100 |     100 |     100 |                   
- shared                          |   77.77 |      100 |       0 |   77.77 |                   
-  schema.ts                      |   77.77 |      100 |       0 |   77.77 | 23-24             
----------------------------------|---------|----------|---------|---------|-------------------
-```
-
-**Note**: The latest results include a more comprehensive view of the codebase coverage, including previously missing files like otp-form.tsx, button.tsx, input.tsx, and schema.ts.
-
-**Areas needing improvement:**
-1. **otp-form.tsx** has improved significantly but still has uncovered lines (88-91, 116) and branch coverage (73.33%)
-2. Function coverage in `schema.ts` is at 0% and needs to be addressed
-3. Branch coverage in `button.tsx` (66.66%) could be improved
-
-**Recent Improvements:**
-- Added comprehensive tests for **otp-form.tsx** covering email submission, magic link handling, and OTP verification, improving coverage from ~40% to 94.2% for statements
-- Added tests for **card.tsx** which achieved 100% coverage across all metrics
-- Fixed test for **form.tsx** error handling which improved function coverage to 100%
-- Added tests for **input.tsx** achieving 100% coverage
-- Overall metrics are strong: statement coverage (96.88%), branch coverage (75.4%), and function coverage (94.28%)
-- Overall line coverage now at 96.92%
+See output from test runs in https://github.com/vinceallenvince/a-league-of-bees/actions
 
 ## Test Utilities
 
@@ -173,6 +159,7 @@ The project includes various test utilities and mocks:
 
 - `test-utils.tsx`: Provides testing utilities for React components
 - `setup.ts`: Sets up the test environment
+- `test-db.ts`: Provides database setup and teardown for server tests
 - `__mocks__`: Contains mock implementations for external dependencies
 
 ## Running Tests
