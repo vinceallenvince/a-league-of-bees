@@ -1,0 +1,223 @@
+FAIL  tests/server/features/tournament/notifications.test.ts (41.983 s)
+  ● Console
+
+    console.log
+      Starting notifications test setup...
+
+      at tests/server/features/tournament/notifications.test.ts:8:13
+
+    console.log
+      Setting up test database...
+
+      at log (tests/server/core/test-db.ts:24:11)
+
+    console.log
+      Database migration completed successfully
+
+      at log (tests/server/core/test-db.ts:27:13)
+
+    console.log
+      Notifications test setup completed
+
+      at tests/server/features/tournament/notifications.test.ts:10:13
+
+    console.error
+      Error in test cleanup: error: update or delete on table "users" violates foreign key constraint "tournaments_creator_id_users_id_fk" on table "tournaments"
+          at /home/runner/workspace/node_modules/pg-pool/index.js:45:11
+          at processTicksAndRejections (node:internal/process/task_queues:95:5) {
+        length: 346,
+        severity: 'ERROR',
+        code: '23503',
+        detail: 'Key (id)=(f8c43662-14a2-434c-88a3-6abcc2ff1f20) is still referenced from table "tournaments".',
+        hint: undefined,
+        position: undefined,
+        internalPosition: undefined,
+        internalQuery: undefined,
+        where: undefined,
+        schema: 'public',
+        table: 'tournaments',
+        column: undefined,
+        dataType: undefined,
+        constraint: 'tournaments_creator_id_users_id_fk',
+        file: 'ri_triggers.c',
+        line: '2621',
+        routine: 'ri_ReportViolation'
+      }
+
+      20 |       await db.delete(users).execute();
+      21 |     } catch (error) {
+    > 22 |       console.error('Error in test cleanup:', error);
+         |               ^
+      23 |     }
+      24 |   }
+      25 |
+
+      at tests/server/features/tournament/notifications.test.ts:22:15
+          at Generator.throw (<anonymous>)
+      at rejected (tests/server/features/tournament/notifications.test.ts:6:65)
+
+    console.log
+      Starting notifications test teardown...
+
+      at tests/server/features/tournament/notifications.test.ts:31:13
+
+    console.log
+      Tearing down test database...
+
+      at log (tests/server/core/test-db.ts:35:11)
+
+    console.log
+      Database connection closed
+
+      at log (tests/server/core/test-db.ts:38:13)
+
+    console.log
+      Notifications test teardown completed
+
+      at tests/server/features/tournament/notifications.test.ts:33:13
+
+  ● Notification Models › should create a notification with valid data
+
+    error: insert or update on table "tournaments" violates foreign key constraint "tournaments_creator_id_users_id_fk"
+
+      at node_modules/pg-pool/index.js:45:11
+      at node_modules/src/node-postgres/session.ts:104:19
+
+ FAIL  tests/server/features/tournament/tournament-scores.test.ts (42.403 s)
+  ● Console
+
+    console.log
+      Starting tournament scores test setup...
+
+      at tests/server/features/tournament/tournament-scores.test.ts:8:13
+
+    console.log
+      Setting up test database...
+
+      at log (tests/server/core/test-db.ts:24:11)
+
+    console.log
+      Database migration completed successfully
+
+      at log (tests/server/core/test-db.ts:27:13)
+
+    console.log
+      Tournament scores test setup completed
+
+      at tests/server/features/tournament/tournament-scores.test.ts:10:13
+
+    console.log
+      Starting tournament scores test teardown...
+
+      at tests/server/features/tournament/tournament-scores.test.ts:32:13
+
+    console.log
+      Tearing down test database...
+
+      at log (tests/server/core/test-db.ts:35:11)
+
+    console.log
+      Database connection closed
+
+      at log (tests/server/core/test-db.ts:38:13)
+
+    console.log
+      Tournament scores test teardown completed
+
+      at tests/server/features/tournament/tournament-scores.test.ts:34:13
+
+  ● TournamentScore Models › should create a tournament score with valid data
+
+    error: insert or update on table "tournament_scores" violates foreign key constraint "tournament_scores_tournament_id_tournaments_id_fk"
+
+      at node_modules/pg-pool/index.js:45:11
+      at node_modules/src/node-postgres/session.ts:104:19
+
+ PASS  tests/server/features/tournament/integration.test.ts (49.529 s)
+  ● Console
+
+    console.log
+      Starting integration test setup...
+
+      at tests/server/features/tournament/integration.test.ts:15:13
+
+    console.log
+      Setting up test database...
+
+      at log (tests/server/core/test-db.ts:24:11)
+
+    console.log
+      Database migration completed successfully
+
+      at log (tests/server/core/test-db.ts:27:13)
+
+    console.log
+      Integration test setup completed
+
+      at tests/server/features/tournament/integration.test.ts:17:13
+
+    console.error
+      Error in test cleanup: error: update or delete on table "users" violates foreign key constraint "tournaments_creator_id_users_id_fk" on table "tournaments"
+          at /home/runner/workspace/node_modules/pg-pool/index.js:45:11
+          at processTicksAndRejections (node:internal/process/task_queues:95:5) {
+        length: 346,
+        severity: 'ERROR',
+        code: '23503',
+        detail: 'Key (id)=(4ef39d39-df73-4d4e-b841-29ed4cfc9c51) is still referenced from table "tournaments".',
+        hint: undefined,
+        position: undefined,
+        internalPosition: undefined,
+        internalQuery: undefined,
+        where: undefined,
+        schema: 'public',
+        table: 'tournaments',
+        column: undefined,
+        dataType: undefined,
+        constraint: 'tournaments_creator_id_users_id_fk',
+        file: 'ri_triggers.c',
+        line: '2621',
+        routine: 'ri_ReportViolation'
+      }
+
+      35 |       await db.delete(users).execute();
+      36 |     } catch (error) {
+    > 37 |       console.error('Error in test cleanup:', error);
+         |               ^
+      38 |     }
+      39 |   }
+      40 |
+
+      at tests/server/features/tournament/integration.test.ts:37:15
+          at Generator.throw (<anonymous>)
+      at rejected (tests/server/features/tournament/integration.test.ts:6:65)
+
+    console.error
+      Error in test cleanup: error: update or delete on table "tournaments" violates foreign key constraint "tournament_scores_tournament_id_tournaments_id_fk" on table "tournament_scores"
+          at /home/runner/workspace/node_modules/pg-pool/index.js:45:11
+          at processTicksAndRejections (node:internal/process/task_queues:95:5) {
+        length: 400,
+        severity: 'ERROR',
+        code: '23503',
+        detail: 'Key (id)=(3cd4c427-ab01-4628-a0dc-21410cc983a6) is still referenced from table "tournament_scores".',
+        hint: undefined,
+        position: undefined,
+        internalPosition: undefined,
+        internalQuery: undefined,
+        where: undefined,
+        schema: 'public',
+        table: 'tournament_scores',
+        column: undefined,
+        dataType: undefined,
+        constraint: 'tournament_scores_tournament_id_tournaments_id_fk',
+        file: 'ri_triggers.c',
+        line: '2621',
+        routine: 'ri_ReportViolation'
+      }
+
+      35 |       await db.delete(users).execute();
+      36 |     } catch (error) {
+    > 37 |       console.error('Error in test cleanup:', error);
+         |               ^
+      38 |     }
+      39 |   }
+      40 |
