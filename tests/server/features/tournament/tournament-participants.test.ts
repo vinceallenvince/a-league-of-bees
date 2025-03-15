@@ -10,7 +10,7 @@ describe('TournamentParticipant Models', () => {
   }, 30000);
 
   afterEach(async () => {
-    // Clean up test data after each test
+    // Clean up test data after each test in correct order
     await db.delete(tournamentParticipants);
     await db.delete(tournaments);
     await db.delete(adminApprovals);
