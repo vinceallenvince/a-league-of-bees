@@ -5,6 +5,9 @@
  * particularly focusing on admin role assignment logic.
  */
 
+// For ensuring TypeScript correctly recognizes jest types
+/// <reference types="@jest/globals" />
+
 import { User } from '@shared/schema';
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import crypto from 'crypto';

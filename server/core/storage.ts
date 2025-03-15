@@ -3,30 +3,31 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { randomBytes } from "crypto";
 import logger from "./logger";
+import crypto from "crypto";
 
 const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: Partial<User>): Promise<User>;
-  updateUser(id: number, user: Partial<User>): Promise<User>;
-  deleteUser(id: number): Promise<void>;
+  updateUser(id: string, user: Partial<User>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   setOtp(email: string, otp: string): Promise<void>;
   clearOtp(email: string): Promise<void>;
   setMagicLinkToken(email: string, token: string): Promise<void>;
   verifyMagicLinkToken(email: string, token: string): Promise<boolean>;
   clearMagicLinkToken(email: string): Promise<void>;
-  updateLastLogin(id: number): Promise<void>;
-  requestAdminRole(userId: number): Promise<void>;
-  approveAdminRole(userId: number, approverId: number): Promise<void>;
+  updateLastLogin(id: string): Promise<void>;
+  requestAdminRole(userId: string): Promise<void>;
+  approveAdminRole(userId: string, approverId: string): Promise<void>;
   sessionStore: session.Store;
   verifyOtp(email: string, otp: string): Promise<{success: boolean, message?: string, remainingAttempts?: number}>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
   private currentId: number;
   private magicLinkTokens: Map<string, { token: string, expiry: Date }>;
   sessionStore: session.Store;
@@ -41,7 +42,7 @@ export class MemStorage implements IStorage {
     logger.info("Memory storage initialized");
   }
 
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     logger.debug("Getting user by ID", { userId: id });
     return this.users.get(id);
   }
@@ -52,23 +53,37 @@ export class MemStorage implements IStorage {
   }
 
   async createUser(user: Partial<User>): Promise<User> {
+    logger.debug("Creating user", { email: user.email });
+
+    if (!user.email) {
+      throw new Error("Email is required");
+    }
+
+    // Check if a user with this email already exists
+    const existingUser = await this.getUserByEmail(user.email);
+    if (existingUser) {
+      return existingUser;
+    }
+
     const isFirstUser = this.users.size === 0;
     const newUser = {
-      id: this.currentId++,
+      id: crypto.randomUUID(), // Use UUID instead of incrementing number
       email: user.email!,
       firstName: user.firstName || null,
       lastName: user.lastName || null,
       username: user.username || null,
       bio: user.bio || null,
       avatar: user.avatar || null,
-      isAdmin: isFirstUser,
+      isAdmin: isFirstUser, // First user is automatically an admin
       lastLogin: null,
       otpSecret: null,
       otpExpiry: null,
       otpAttempts: 0,
       otpLastRequest: null,
     };
+
     this.users.set(newUser.id, newUser);
+    this.currentId++; // Still increment the counter for tracking purposes
     logger.info("User created", { 
       userId: newUser.id, 
       email: newUser.email, 
@@ -78,7 +93,7 @@ export class MemStorage implements IStorage {
     return newUser;
   }
 
-  async updateUser(id: number, userData: Partial<User>): Promise<User> {
+  async updateUser(id: string, userData: Partial<User>): Promise<User> {
     const user = await this.getUser(id);
     if (!user) throw new Error("User not found");
 
@@ -87,7 +102,7 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser(id: string): Promise<void> {
     this.users.delete(id);
   }
 
@@ -198,7 +213,7 @@ export class MemStorage implements IStorage {
     logger.debug("OTP cleared for user", { userId: user.id, email });
   }
 
-  async updateLastLogin(id: number): Promise<void> {
+  async updateLastLogin(id: string): Promise<void> {
     const user = await this.getUser(id);
     if (!user) {
       logger.warn("Attempted to update last login for non-existent user", { userId: id });
@@ -209,7 +224,7 @@ export class MemStorage implements IStorage {
     logger.debug("Updated last login timestamp", { userId: id, timestamp: user.lastLogin.toISOString() });
   }
 
-  async requestAdminRole(userId: number): Promise<void> {
+  async requestAdminRole(userId: string): Promise<void> {
     const user = await this.getUser(userId);
     if (!user) {
       logger.warn("Admin role requested for non-existent user", { userId });
@@ -220,7 +235,7 @@ export class MemStorage implements IStorage {
     // In a real app, this would create a record in the database
   }
 
-  async approveAdminRole(userId: number, approverId: number): Promise<void> {
+  async approveAdminRole(userId: string, approverId: string): Promise<void> {
     const user = await this.getUser(userId);
     const approver = await this.getUser(approverId);
     
