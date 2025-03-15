@@ -3,11 +3,15 @@ import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { tournaments, users, adminApprovals } from '../../../../shared/schema';
-import { db } from '../../../../server/core/db';
+import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
 describe('Tournament Models', () => {
   beforeAll(async () => {
-    await migrate(db, { migrationsFolder: './migrations' });
+    await setupTestDb();
+  });
+
+  afterAll(async () => {
+    await teardownTestDb();
   });
 
   it('should create a tournament with valid data', async () => {
