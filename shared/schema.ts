@@ -31,7 +31,7 @@ export const adminApprovals = pgTable("adminApprovals", {
 
 export const tournaments = pgTable("tournaments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  creatorId: uuid("creator_id").references(() => users.id).notNull(),
+  creatorId: serial("creator_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   durationDays: integer("duration_days").notNull(),
