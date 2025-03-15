@@ -18,7 +18,7 @@ CREATE TABLE "users" (
 	"lastLogin" timestamp,
 	"otpSecret" text,
 	"otpExpiry" timestamp,
-	"otpAttempts" serial DEFAULT 0 NOT NULL,
+	"otpAttempts" integer NOT NULL DEFAULT 0,
 	"otpLastRequest" timestamp,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
