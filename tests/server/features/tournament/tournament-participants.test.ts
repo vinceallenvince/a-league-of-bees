@@ -1,6 +1,6 @@
 
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { tournaments, users, tournamentParticipants, adminApprovals } from '../../../../shared/schema';
+import { tournaments, users, tournamentParticipants, tournamentScores, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
@@ -11,6 +11,7 @@ describe('TournamentParticipant Models', () => {
 
   afterEach(async () => {
     // Clean up test data after each test in correct order
+    await db.delete(tournamentScores);
     await db.delete(tournamentParticipants);
     await db.delete(tournaments);
     await db.delete(adminApprovals);
