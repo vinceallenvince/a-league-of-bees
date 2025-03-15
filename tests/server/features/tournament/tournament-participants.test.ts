@@ -1,17 +1,19 @@
-
+// @ts-ignore: Missing type declarations, to be installed later
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { tournaments, users, tournamentParticipants } from '../../../../shared/schema';
+// @ts-ignore: Missing type declarations, to be installed later
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
+// Timeouts have been increased to 30 seconds for database operations
 describe('TournamentParticipant Models', () => {
   beforeAll(async () => {
     await setupTestDb();
-  });
+  }, 30000);
 
   afterAll(async () => {
     await teardownTestDb();
-  });
+  }, 30000);
 
   it('should create a tournament participant with valid data', async () => {
     // Create a test user
