@@ -1,11 +1,9 @@
-// @ts-ignore: Missing type declarations, to be installed later
+
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { tournaments, users, tournamentParticipants } from '../../../../shared/schema';
-// @ts-ignore: Missing type declarations, to be installed later
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
-// Timeouts have been increased to 30 seconds for database operations
 describe('TournamentParticipant Models', () => {
   beforeAll(async () => {
     await setupTestDb();
@@ -18,7 +16,7 @@ describe('TournamentParticipant Models', () => {
   it('should create a tournament participant with valid data', async () => {
     // Create a test user
     const user = await db.insert(users).values({
-      email: 'participant@example.com',
+      email: 'participant1@example.com',
       otpAttempts: 0
     }).returning();
 
@@ -52,7 +50,7 @@ describe('TournamentParticipant Models', () => {
 
   it('should update participant status', async () => {
     const user = await db.insert(users).values({
-      email: 'status-test@example.com',
+      email: 'participant2@example.com',
       otpAttempts: 0
     }).returning();
 
