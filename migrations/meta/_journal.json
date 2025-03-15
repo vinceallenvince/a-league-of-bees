@@ -15,6 +15,13 @@
       "when": 1742038948762,
       "tag": "0001_tranquil_tempest",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742039042682,
+      "tag": "0002_huge_frightful_four",
+      "breakpoints": true
     }
   ]
 }
