@@ -149,12 +149,12 @@ describe('Tournament Integration Tests', () => {
       }).returning();
 
       await expect(db.insert(tournaments).values({
-        creatorId: user[0].id,
-        name: null,
-        durationDays: 7,
-        startDate: new Date(),
+        creator_id: user[0].id,
+        name: undefined,
+        duration_days: 7,
+        start_date: new Date(),
         timezone: 'UTC',
-      })).rejects.toThrow();
+      } as any)).rejects.toThrow();
     });
   });
 });
