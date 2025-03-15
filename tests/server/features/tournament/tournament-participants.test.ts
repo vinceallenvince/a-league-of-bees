@@ -1,6 +1,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { tournaments, users, tournamentParticipants } from '../../../../shared/schema';
+import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
 describe('TournamentParticipant Models', () => {
@@ -69,7 +70,7 @@ describe('TournamentParticipant Models', () => {
 
     const updatedParticipant = await db.update(tournamentParticipants)
       .set({ status: 'joined' })
-      .where({ id: participant[0].id })
+      .where(eq(tournamentParticipants.id, participant[0].id))
       .returning();
 
     expect(updatedParticipant[0].status).toBe('joined');
