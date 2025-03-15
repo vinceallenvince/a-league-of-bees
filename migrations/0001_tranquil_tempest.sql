@@ -1,4 +1,3 @@
-
 CREATE TYPE "tournament_status" AS ENUM('pending', 'in_progress', 'completed', 'cancelled');
 
 CREATE TABLE IF NOT EXISTS "users" (
@@ -17,6 +16,16 @@ CREATE TABLE IF NOT EXISTS "users" (
   "otpLastRequest" timestamp
 );
 
+CREATE TABLE IF NOT EXISTS "adminApprovals" (
+  "id" serial PRIMARY KEY,
+  "userId" uuid,
+  "approvedBy" uuid,
+  "status" text NOT NULL,
+  "createdAt" timestamp DEFAULT now(),
+  CONSTRAINT "adminApprovals_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT "adminApprovals_approvedBy_users_id_fk" FOREIGN KEY ("approvedBy") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS "tournaments" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "creator_id" uuid NOT NULL,
@@ -24,11 +33,11 @@ CREATE TABLE IF NOT EXISTS "tournaments" (
   "description" text,
   "duration_days" integer NOT NULL,
   "start_date" timestamp NOT NULL,
-  "requires_verification" boolean DEFAULT false NOT NULL,
-  "status" tournament_status DEFAULT 'pending' NOT NULL,
+  "requires_verification" boolean NOT NULL DEFAULT false,
+  "status" tournament_status NOT NULL DEFAULT 'pending',
   "timezone" text NOT NULL,
-  "created_at" timestamp DEFAULT now() NOT NULL,
-  "updated_at" timestamp DEFAULT now() NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT now(),
+  "updated_at" timestamp NOT NULL DEFAULT now(),
   CONSTRAINT "tournaments_creator_id_users_id_fk" FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
