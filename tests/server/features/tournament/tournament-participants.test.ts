@@ -1,25 +1,33 @@
-
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from '@jest/globals';
 import { tournaments, users, tournamentParticipants, tournamentScores, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
 describe('TournamentParticipant Models', () => {
   beforeAll(async () => {
+    console.log('Starting tournament participants test setup...');
     await setupTestDb();
+    console.log('Tournament participants test setup completed');
   }, 30000);
 
   afterEach(async () => {
     // Clean up test data after each test in correct order
-    await db.delete(tournamentScores);
-    await db.delete(tournamentParticipants);
-    await db.delete(tournaments);
-    await db.delete(adminApprovals);
-    await db.delete(users);
+    try {
+      // Delete in proper order to respect foreign key constraints
+      await db.delete(tournamentScores);
+      await db.delete(tournamentParticipants);
+      await db.delete(tournaments);
+      await db.delete(adminApprovals);
+      await db.delete(users);
+    } catch (error) {
+      console.error('Error in test cleanup:', error);
+    }
   });
 
   afterAll(async () => {
+    console.log('Starting tournament participants test teardown...');
     await teardownTestDb();
+    console.log('Tournament participants test teardown completed');
   }, 30000);
 
   it('should create a tournament participant with valid data', async () => {
@@ -58,11 +66,13 @@ describe('TournamentParticipant Models', () => {
   });
 
   it('should update participant status', async () => {
+    // Create a test user
     const user = await db.insert(users).values({
       email: `participant_status_${Date.now()}@example.com`,
       otpAttempts: 0
     }).returning();
 
+    // Create a test tournament
     const tournament = await db.insert(tournaments).values({
       creatorId: user[0].id,
       name: 'Status Test Tournament',
@@ -71,12 +81,14 @@ describe('TournamentParticipant Models', () => {
       timezone: 'UTC',
     }).returning();
 
+    // Create a participant
     const participant = await db.insert(tournamentParticipants).values({
       tournamentId: tournament[0].id,
       userId: user[0].id,
       status: 'invited',
     }).returning();
 
+    // Update the participant status
     const updatedParticipant = await db.update(tournamentParticipants)
       .set({ status: 'joined' })
       .where(eq(tournamentParticipants.id, participant[0].id))

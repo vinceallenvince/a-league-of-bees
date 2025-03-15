@@ -1,4 +1,3 @@
-
 import { describe, it, expect, beforeAll, afterAll, afterEach } from '@jest/globals';
 import { tournaments, users, tournamentScores, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
@@ -6,27 +5,38 @@ import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
 describe('TournamentScore Models', () => {
   beforeAll(async () => {
+    console.log('Starting tournament scores test setup...');
     await setupTestDb();
+    console.log('Tournament scores test setup completed');
   }, 30000);
 
   afterEach(async () => {
     // Clean up test data after each test in correct order
-    await db.delete(tournamentScores);
-    await db.delete(tournaments);
-    await db.delete(adminApprovals);
-    await db.delete(users);
+    // Make sure we delete in proper order to respect foreign key constraints
+    try {
+      await db.delete(tournamentScores);
+      await db.delete(tournaments);
+      await db.delete(adminApprovals);
+      await db.delete(users);
+    } catch (error) {
+      console.error('Error in test cleanup:', error);
+    }
   });
 
   afterAll(async () => {
+    console.log('Starting tournament scores test teardown...');
     await teardownTestDb();
+    console.log('Tournament scores test teardown completed');
   }, 30000);
 
   it('should create a tournament score with valid data', async () => {
+    // First create a user
     const user = await db.insert(users).values({
       email: `participant_${Date.now()}@example.com`,
       otpAttempts: 0
     }).returning();
 
+    // Then create a tournament with that user as creator
     const tournament = await db.insert(tournaments).values({
       creatorId: user[0].id,
       name: 'Test Tournament',
@@ -35,6 +45,7 @@ describe('TournamentScore Models', () => {
       timezone: 'UTC',
     }).returning();
 
+    // Then add a score for that tournament and user
     const score = await db.insert(tournamentScores).values({
       tournamentId: tournament[0].id,
       userId: user[0].id,
@@ -58,11 +69,13 @@ describe('TournamentScore Models', () => {
   });
 
   it('should update tournament score', async () => {
+    // Create a test user
     const user = await db.insert(users).values({
       email: `score_update_${Date.now()}@example.com`,
       otpAttempts: 0
     }).returning();
 
+    // Create a test tournament
     const tournament = await db.insert(tournaments).values({
       creatorId: user[0].id,
       name: 'Score Update Test Tournament',
@@ -71,6 +84,7 @@ describe('TournamentScore Models', () => {
       timezone: 'UTC',
     }).returning();
 
+    // Add a score
     const score = await db.insert(tournamentScores).values({
       tournamentId: tournament[0].id,
       userId: user[0].id,
@@ -78,6 +92,7 @@ describe('TournamentScore Models', () => {
       score: 100
     }).returning();
 
+    // Update the score
     const updatedScore = await db.update(tournamentScores)
       .set({ score: 150 })
       .where(eq(tournamentScores.id, score[0].id))

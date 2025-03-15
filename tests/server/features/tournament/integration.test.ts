@@ -1,4 +1,3 @@
-
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
@@ -13,21 +12,43 @@ import {
 
 describe('Tournament Integration Tests', () => {
   beforeAll(async () => {
+    console.log('Starting integration test setup...');
     await setupTestDb();
-  });
+    console.log('Integration test setup completed');
+  }, 30000);
 
   afterAll(async () => {
+    console.log('Starting integration test teardown...');
     await teardownTestDb();
-  });
+    console.log('Integration test teardown completed');
+  }, 30000);
 
   beforeEach(async () => {
-    // Clean up before each test
-    await db.delete(notifications);
-    await db.delete(tournamentScores);
-    await db.delete(tournamentParticipants);
-    await db.delete(tournaments);
-    await db.delete(adminApprovals);
-    await db.delete(users);
+    // Ensure clean state before each test
+    try {
+      await db.delete(notifications);
+      await db.delete(tournamentScores);
+      await db.delete(tournamentParticipants);
+      await db.delete(tournaments);
+      await db.delete(adminApprovals);
+      await db.delete(users);
+    } catch (error) {
+      console.error('Error in test setup cleanup:', error);
+    }
+  });
+
+  afterEach(async () => {
+    // Clean up after each test
+    try {
+      await db.delete(notifications);
+      await db.delete(tournamentScores);
+      await db.delete(tournamentParticipants);
+      await db.delete(tournaments);
+      await db.delete(adminApprovals);
+      await db.delete(users);
+    } catch (error) {
+      console.error('Error in test cleanup:', error);
+    }
   });
 
   describe('Foreign Key Relationships', () => {
@@ -42,6 +63,7 @@ describe('Tournament Integration Tests', () => {
     });
 
     it('should enforce tournament foreign key in participants', async () => {
+      // Create a test user
       const user = await db.insert(users).values({
         email: 'test@example.com',
         otpAttempts: 0
@@ -80,11 +102,14 @@ describe('Tournament Integration Tests', () => {
   describe('Constraint Validations', () => {
     it('should enforce unique email constraint on users', async () => {
       const email = 'unique@example.com';
+      
+      // Create initial user
       await db.insert(users).values({
         email,
         otpAttempts: 0
       });
 
+      // Try to create another user with the same email
       await expect(db.insert(users).values({
         email,
         otpAttempts: 0
@@ -92,11 +117,13 @@ describe('Tournament Integration Tests', () => {
     });
 
     it('should enforce non-null constraints', async () => {
+      // Create a test user
       const user = await db.insert(users).values({
         email: 'constraints@example.com',
         otpAttempts: 0
       }).returning();
 
+      // Try to create a tournament with a null name
       await expect(db.insert(tournaments).values({
         creator_id: user[0].id,
         name: undefined,

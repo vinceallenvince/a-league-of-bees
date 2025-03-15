@@ -1,4 +1,3 @@
-
 import { describe, it, expect, beforeAll, afterAll, afterEach } from '@jest/globals';
 import { tournaments, users, notifications, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
@@ -6,26 +5,37 @@ import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
 describe('Notification Models', () => {
   beforeAll(async () => {
+    console.log('Starting notifications test setup...');
     await setupTestDb();
+    console.log('Notifications test setup completed');
   }, 30000);
 
   afterEach(async () => {
-    await db.delete(notifications);
-    await db.delete(tournaments);
-    await db.delete(adminApprovals);
-    await db.delete(users);
+    try {
+      // Clean up test data after each test in correct order
+      await db.delete(notifications);
+      await db.delete(tournaments);
+      await db.delete(adminApprovals);
+      await db.delete(users);
+    } catch (error) {
+      console.error('Error in test cleanup:', error);
+    }
   });
 
   afterAll(async () => {
+    console.log('Starting notifications test teardown...');
     await teardownTestDb();
+    console.log('Notifications test teardown completed');
   }, 30000);
 
   it('should create a notification with valid data', async () => {
+    // Create a test user
     const user = await db.insert(users).values({
       email: `notify_${Date.now()}@example.com`,
       otpAttempts: 0
     }).returning();
 
+    // Create a test tournament
     const tournament = await db.insert(tournaments).values({
       creatorId: user[0].id,
       name: 'Test Tournament',
@@ -34,6 +44,7 @@ describe('Notification Models', () => {
       timezone: 'UTC',
     }).returning();
 
+    // Create a notification
     const notification = await db.insert(notifications).values({
       userId: user[0].id,
       tournamentId: tournament[0].id,
