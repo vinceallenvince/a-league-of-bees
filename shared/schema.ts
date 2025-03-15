@@ -1,6 +1,9 @@
-import { pgTable, text, serial, timestamp, boolean, integer, pgEnum } from "drizzle-orm/pg-core";
+
+import { pgTable, text, serial, timestamp, boolean, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export const tournamentStatusEnum = pgEnum('tournament_status', ['pending', 'in_progress', 'completed', 'cancelled']);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -22,23 +25,23 @@ export const adminApprovals = pgTable("adminApprovals", {
   id: serial("id").primaryKey(),
   userId: serial("userId").references(() => users.id),
   approvedBy: serial("approvedBy").references(() => users.id),
-  status: text("status").notNull(), // pending, approved, rejected
+  status: text("status").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
 });
 
 export const tournaments = pgTable("tournaments", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  creatorId: uuid("creator_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
-  startDate: timestamp("startDate").notNull(),
-  endDate: timestamp("endDate").notNull(),
+  durationDays: integer("duration_days").notNull(),
+  startDate: timestamp("start_date").notNull(),
+  requiresVerification: boolean("requires_verification").notNull().default(false),
   status: tournamentStatusEnum("status").notNull().default("pending"),
-  maxParticipants: integer("maxParticipants").notNull(),
-  // Add other relevant columns as needed
+  timezone: text("timezone").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow()
 });
-
-
-export const tournamentStatusEnum = pgEnum('tournament_status', ['pending', 'in_progress', 'completed', 'cancelled']);
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
