@@ -52,6 +52,17 @@ export const tournamentParticipants = pgTable('tournament_participants', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+export const tournamentScores = pgTable('tournament_scores', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tournamentId: uuid('tournament_id').references(() => tournaments.id).notNull(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  day: integer('day').notNull(),
+  score: integer('score').notNull(),
+  screenshotUrl: text('screenshot_url'),
+  submittedAt: timestamp('submitted_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   firstName: true,
