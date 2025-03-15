@@ -23,7 +23,7 @@ async function generateMigration() {
   try {
     console.log('Generating migration...');
     await migrate(db, {
-      migrationsFolder: './migrations'
+      migrationsFolder: '../../../../migrations'
     });
     console.log('Migration generated successfully!');
   } catch (error) {
