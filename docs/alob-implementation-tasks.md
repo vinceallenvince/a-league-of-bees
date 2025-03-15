@@ -99,7 +99,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-2  
-**Status**: In Progress
+**Status**: COMPLETE
 
 ### ALOB-6: Database Schema Integration and Testing
 **Type**: Task  
@@ -114,7 +114,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-2, ALOB-3, ALOB-4, ALOB-5  
-**Status**: Todo
+**Status**: In Progress
 
 ### ALOB-7: Database Query Optimization
 **Type**: Task  
