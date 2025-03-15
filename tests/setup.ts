@@ -1,9 +1,14 @@
 import '@testing-library/jest-dom';
 import 'jest-axe/extend-expect';
 import { cleanup } from '@testing-library/react';
+import { TextEncoder, TextDecoder } from 'util';
 
 // Mock fetch globally
 global.fetch = jest.fn();
+
+// Add TextEncoder/TextDecoder to global
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 // Automatically cleanup after each test
 afterEach(() => {
