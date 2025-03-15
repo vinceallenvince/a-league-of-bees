@@ -1,4 +1,3 @@
-
 import { pgTable, text, serial, timestamp, boolean, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -6,7 +5,7 @@ import { z } from "zod";
 export const tournamentStatusEnum = pgEnum('tournament_status', ['pending', 'in_progress', 'completed', 'cancelled']);
 
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").notNull().unique(),
   firstName: text("firstName"),
   lastName: text("lastName"),
