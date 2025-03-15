@@ -1,0 +1,55 @@
+tsx server/features/tournament/migrations/migrate.ts
+Connecting to database...
+Running migrations...
+Migration failed: error: foreign key constraint "tournaments_creator_id_users_id_fk" cannot be implemented
+    at /home/runner/workspace/node_modules/pg/lib/client.js:545:17
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/node_modules/src/pg-core/dialect.ts:102:7)
+    at async NodePgSession.transaction (/home/runner/workspace/node_modules/src/node-postgres/session.ts:193:19)
+    at async PgDialect.migrate (/home/runner/workspace/node_modules/src/pg-core/dialect.ts:95:3)
+    at async migrate (/home/runner/workspace/node_modules/src/node-postgres/migrator.ts:10:2)
+    at async runMigration (/home/runner/workspace/server/features/tournament/migrations/migrate.ts:26:5) {
+  length: 235,
+  severity: 'ERROR',
+  code: '42804',
+  detail: 'Key columns "creator_id" and "id" are of incompatible types: uuid and integer.',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'tablecmds.c',
+  line: '9486',
+  routine: 'ATAddForeignKeyConstraint'
+}
+Migration process failed: error: foreign key constraint "tournaments_creator_id_users_id_fk" cannot be implemented
+    at /home/runner/workspace/node_modules/pg/lib/client.js:545:17
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (/home/runner/workspace/node_modules/src/pg-core/dialect.ts:102:7)
+    at async NodePgSession.transaction (/home/runner/workspace/node_modules/src/node-postgres/session.ts:193:19)
+    at async PgDialect.migrate (/home/runner/workspace/node_modules/src/pg-core/dialect.ts:95:3)
+    at async migrate (/home/runner/workspace/node_modules/src/node-postgres/migrator.ts:10:2)
+    at async runMigration (/home/runner/workspace/server/features/tournament/migrations/migrate.ts:26:5) {
+  length: 235,
+  severity: 'ERROR',
+  code: '42804',
+  detail: 'Key columns "creator_id" and "id" are of incompatible types: uuid and integer.',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'tablecmds.c',
+  line: '9486',
+  routine: 'ATAddForeignKeyConstraint'
+}

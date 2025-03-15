@@ -8,6 +8,13 @@
       "when": 1741989645007,
       "tag": "0000_reflective_white_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1742038948762,
+      "tag": "0001_tranquil_tempest",
+      "breakpoints": true
     }
   ]
 }
