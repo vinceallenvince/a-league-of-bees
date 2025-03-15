@@ -15,13 +15,30 @@ This implementation plan outlines the necessary steps to build a feature that en
 
 ## Database Schema Design
 
+### Users Table
+```
+- id: UUID (Primary Key, default: gen_random_uuid())
+- email: String (Unique, Not Null)
+- firstName: String (Optional)
+- lastName: String (Optional)
+- username: String (Optional)
+- bio: String (Optional)
+- avatar: String (Optional)
+- isAdmin: Boolean (Default: false)
+- lastLogin: DateTime (Optional)
+- otpSecret: String (Optional)
+- otpExpiry: DateTime (Optional)
+- otpAttempts: Integer (Default: 0)
+- otpLastRequest: DateTime (Optional)
+```
+
 ### Tournament Table
 ```
-- id: UUID (Primary Key)
-- creator_id: UUID (Foreign Key to User)
-- name: String
+- id: UUID (Primary Key, default: gen_random_uuid())
+- creator_id: UUID (Foreign Key to User, Not Null)
+- name: String (Not Null)
 - description: String (Optional)
-- duration_days: Integer
+- duration_days: Integer (Not Null)
 - start_date: DateTime
 - requires_verification: Boolean
 - status: Enum ['pending', 'in_progress', 'completed', 'cancelled']
@@ -32,7 +49,7 @@ This implementation plan outlines the necessary steps to build a feature that en
 
 ### TournamentParticipant Table
 ```
-- id: UUID (Primary Key)
+- id: UUID (Primary Key, default: gen_random_uuid())
 - tournament_id: UUID (Foreign Key to Tournament)
 - user_id: UUID (Foreign Key to User)
 - joined_at: DateTime
@@ -41,7 +58,7 @@ This implementation plan outlines the necessary steps to build a feature that en
 
 ### TournamentScore Table
 ```
-- id: UUID (Primary Key)
+- id: UUID (Primary Key, default: gen_random_uuid())
 - tournament_id: UUID (Foreign Key to Tournament)
 - user_id: UUID (Foreign Key to User)
 - day: Integer (Day number in tournament)
@@ -51,9 +68,18 @@ This implementation plan outlines the necessary steps to build a feature that en
 - updated_at: DateTime
 ```
 
+### AdminApprovals Table
+```
+- id: Serial (Primary Key)
+- userId: UUID (Foreign Key to User, Optional)
+- approvedBy: UUID (Foreign Key to User, Optional)
+- status: String (Not Null)
+- createdAt: DateTime (Default: now())
+```
+
 ### NotificationTable
 ```
-- id: UUID (Primary Key)
+- id: UUID (Primary Key, default: gen_random_uuid())
 - user_id: UUID (Foreign Key to User)
 - tournament_id: UUID (Foreign Key to Tournament)
 - type: Enum ['invitation', 'reminder', 'tournament_start', 'tournament_end', 'tournament_cancelled']
