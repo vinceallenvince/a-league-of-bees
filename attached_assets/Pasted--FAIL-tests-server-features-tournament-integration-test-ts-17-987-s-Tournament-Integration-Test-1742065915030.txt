@@ -1,0 +1,126 @@
+ FAIL  tests/server/features/tournament/integration.test.ts (17.987 s)
+  Tournament Integration Tests
+    Foreign Key Relationships
+      ✓ should enforce user foreign key in tournaments (533 ms)
+      ✕ should enforce tournament foreign key in participants (2756 ms)
+      ✓ should enforce tournament and user foreign keys in scores (524 ms)
+      ✓ should enforce tournament and user foreign keys in notifications (988 ms)
+    Cascade Operations
+      ✕ should delete related records when a tournament is deleted (3395 ms)
+    Constraint Validations
+      ✓ should enforce unique email constraint on users (1086 ms)
+      ✓ should enforce non-null constraints (1038 ms)
+
+  ● Tournament Integration Tests › Foreign Key Relationships › should enforce tournament foreign key in participants
+
+    Unhandled error. (error: terminating connection due to administrator command
+
+      at Parser.parseErrorMessage (node_modules/pg-protocol/src/parser.ts:368:69)
+      at Parser.handlePacket (node_modules/pg-protocol/src/parser.ts:187:21)
+      at Parser.parse (node_modules/pg-protocol/src/parser.ts:102:30)
+      at TLSSocket.<anonymous> (node_modules/pg-protocol/src/index.ts:7:48)
+      at TLSWrap.onStreamRead (node:internal/stream_base_commons:191:23) {
+        length: 116,
+        severity: 'FATAL',
+        code: '57P01',
+        detail: undefined,
+        hint: undefined,
+        position: undefined,
+        internalPosition: undefined,
+        internalQuery: undefined,
+        where: undefined,
+        schema: undefined,
+        table: undefined,
+        column: undefined,
+        dataType: undefined,
+        constraint: undefined,
+        file: 'postgres.c',
+        line: '3289',
+        routine: 'ProcessInterrupts',
+        client: Client {
+          _events: [Object: null prototype] { error: [Function (anonymous)] },
+          _eventsCount: 1,
+          _maxListeners: undefined,
+          connectionParameters: ConnectionParameters {
+            user: 'neondb_owner',
+            database: 'neondb',
+            port: 5432,
+            host: 'ep-royal-night-a66m1qzn.us-west-2.aws.neon.tech',
+            binary: false,
+            options: undefined,
+            ssl: {},
+            client_encoding: '',
+            replication: undefined,
+            isDomainSocket: false,
+            application_name: undefined,
+            fallback_application_name: undefined,
+            statement_timeout: false,
+            lock_timeout: false,
+            idle_in_transaction_session_timeout: false,
+            query_timeout: false,
+            connect_timeout: 0
+          },
+          user: 'neondb_owner',
+          database: 'neondb',
+          port: 5432,
+          host: 'ep-royal-night-a66m1qzn.us-west-2.aws.neon.tech',
+          replication: undefined,
+          _Promise: [Function: Promise],
+          _types: TypeOverrides { _types: [Object], text: {}, binary: {} },
+          _ending: true,
+          _ended: false,
+          _connecting: false,
+          _connected: true,
+          _connectionError: false,
+          _queryable: false,
+          enableChannelBinding: false,
+          connection: Connection {
+            _events: [Object: null prototype],
+            _eventsCount: 23,
+            _maxListeners: undefined,
+            stream: [TLSSocket],
+            _keepAlive: false,
+            _keepAliveInitialDelayMillis: 0,
+            lastBuffer: false,
+            parsedStatements: {},
+            ssl: {},
+            _ending: true,
+            _emitMessage: false,
+            _connecting: true,
+            [Symbol(shapeMode)]: false,
+            [Symbol(kCapture)]: false
+          },
+          queryQueue: [],
+          binary: false,
+          processID: 914464932,
+          secretKey: -128924583,
+          ssl: {},
+          _connectionTimeoutMillis: 0,
+          _connectionCallback: null,
+          saslSession: null,
+          release: [Function (anonymous)],
+          activeQuery: null,
+          readyForQuery: true,
+          hasExecuted: true,
+          _poolUseCount: 11,
+          [Symbol(shapeMode)]: false,
+          [Symbol(kCapture)]: false
+        }
+      })
+      at Client.idleListener (node_modules/pg-pool/index.js:62:10)
+      at Client._handleErrorEvent (node_modules/pg/lib/client.js:350:10)
+      at Client._handleErrorMessage (node_modules/pg/lib/client.js:361:12)
+      at node_modules/pg/lib/connection.js:116:12
+      at Parser.parse (node_modules/pg-protocol/src/parser.ts:103:9)
+      at TLSSocket.<anonymous> (node_modules/pg-protocol/src/index.ts:7:48)
+
+  ● Tournament Integration Tests › Cascade Operations › should delete related records when a tournament is deleted
+
+    error: update or delete on table "tournaments" violates foreign key constraint "tournament_participants_tournament_id_tournaments_id_fk" on table "tournament_participants"
+
+      at node_modules/pg-pool/index.js:45:11
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 5 passed, 7 total
+Snapshots:   0 total
+Time:        18.364 s, estimated 24 s
