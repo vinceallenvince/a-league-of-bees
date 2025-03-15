@@ -114,7 +114,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-2, ALOB-3, ALOB-4, ALOB-5  
-**Status**: In Progress
+**Status**: TODO
 
 ### ALOB-7: Database Query Optimization
 **Type**: Task  
