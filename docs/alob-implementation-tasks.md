@@ -13,6 +13,7 @@
 
 **Story Points**: 3  
 **Dependencies**: None
+**Status**: Complete
 
 ### ALOB-2: Create Tournament Table Schema
 **Type**: Task  
@@ -36,6 +37,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-1
+**Status**: Todo
 
 ### ALOB-3: Create TournamentParticipant Table Schema
 **Type**: Task  
@@ -54,6 +56,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-2
+**Status**: Todo
 
 ### ALOB-4: Create TournamentScore Table Schema
 **Type**: Task  
@@ -75,6 +78,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-2
+**Status**: Todo
 
 ### ALOB-5: Create Notification Table Schema
 **Type**: Task  
@@ -95,6 +99,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-2
+**Status**: Todo
 
 ### ALOB-6: Database Schema Integration and Testing
 **Type**: Task  
@@ -109,6 +114,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-2, ALOB-3, ALOB-4, ALOB-5
+**Status**: Todo
 
 ### ALOB-7: Database Query Optimization
 **Type**: Task  
@@ -122,3 +128,4 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-6 
+**Status**: Todo
