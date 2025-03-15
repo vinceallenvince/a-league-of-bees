@@ -1,0 +1,27 @@
+ FAIL  tests/server/features/tournament/models.test.ts
+  ● Test suite failed to run
+
+    tests/server/features/tournament/models.test.ts:18:41 - error TS2769: No overload matches this call.
+      Overload 1 of 2, '(value: { email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }): PgInsertBase<...>', gave the following error.
+        Argument of type '{ email: string; }' is not assignable to parameter of type '{ email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }'.
+          Property 'otpAttempts' is missing in type '{ email: string; }' but required in type '{ email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }'.
+      Overload 2 of 2, '(values: { email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }[]): PgInsertBase<...>', gave the following error.
+        Object literal may only specify known properties, and 'email' does not exist in type '{ email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }[]'.
+
+    18     const user = await db.insert(users).values({
+                                               ~~~~~~
+
+    tests/server/features/tournament/models.test.ts:45:41 - error TS2769: No overload matches this call.
+      Overload 1 of 2, '(value: { email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }): PgInsertBase<...>', gave the following error.
+        Argument of type '{ email: string; }' is not assignable to parameter of type '{ email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }'.
+          Property 'otpAttempts' is missing in type '{ email: string; }' but required in type '{ email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }'.
+      Overload 2 of 2, '(values: { email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }[]): PgInsertBase<...>', gave the following error.
+        Object literal may only specify known properties, and 'email' does not exist in type '{ email: string | SQL<unknown> | Placeholder<string, any>; otpAttempts: number | SQL<unknown> | Placeholder<string, any>; id?: string | SQL<unknown> | Placeholder<...> | undefined; ... 9 more ...; otpLastRequest?: SQL<...> | ... 3 more ... | undefined; }[]'.
+
+    45     const user = await db.insert(users).values({
+                                               ~~~~~~
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        13.92 s
