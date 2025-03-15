@@ -1,1 +1,0 @@
-ALTER TABLE "tournaments" ALTER COLUMN "creator_id" SET DATA TYPE serial;
