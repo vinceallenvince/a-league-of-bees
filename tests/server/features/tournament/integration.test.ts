@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 import { eq } from 'drizzle-orm';
-import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
+import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase } from '../../core/test-db';
 import { 
   users, 
   tournaments, 
@@ -23,29 +23,14 @@ describe('Tournament Integration Tests', () => {
     console.log('Integration test teardown completed');
   }, 30000);
 
-  // Helper function to clean database tables
-  async function cleanupTables() {
-    try {
-      // Delete in proper order to respect foreign key constraints
-      await db.delete(notifications).execute();
-      await db.delete(tournamentScores).execute();
-      await db.delete(tournamentParticipants).execute();
-      await db.delete(tournaments).execute();
-      await db.delete(adminApprovals).execute();
-      await db.delete(users).execute();
-    } catch (error) {
-      console.error('Error in test cleanup:', error);
-    }
-  }
-
   beforeEach(async () => {
     // Ensure clean state before each test
-    await cleanupTables();
+    await cleanupDatabase();
   });
 
   afterEach(async () => {
     // Clean up after each test
-    await cleanupTables();
+    await cleanupDatabase();
   });
 
   describe('Foreign Key Relationships', () => {

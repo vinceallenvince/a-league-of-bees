@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from '@jest/globals';
 import { tournaments, users, notifications, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
-import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
+import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase } from '../../core/test-db';
 
 describe('Notification Models', () => {
   beforeAll(async () => {
@@ -10,21 +10,8 @@ describe('Notification Models', () => {
     console.log('Notifications test setup completed');
   }, 30000);
 
-  // Helper function to clean database tables
-  async function cleanupTables() {
-    try {
-      // Clean up test data after each test in correct order
-      await db.delete(notifications).execute();
-      await db.delete(tournaments).execute();
-      await db.delete(adminApprovals).execute();
-      await db.delete(users).execute();
-    } catch (error) {
-      console.error('Error in test cleanup:', error);
-    }
-  }
-
   afterEach(async () => {
-    await cleanupTables();
+    await cleanupDatabase();
   });
 
   afterAll(async () => {

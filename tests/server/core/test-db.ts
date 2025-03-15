@@ -8,6 +8,14 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 import * as schema from '../../../shared/schema';
+import { 
+  users, 
+  tournaments, 
+  tournamentParticipants, 
+  tournamentScores, 
+  notifications,
+  adminApprovals 
+} from '../../../shared/schema';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is required for tests. Please check your .env.test file.');
@@ -39,5 +47,22 @@ export async function teardownTestDb() {
   } catch (error) {
     console.error('Error during database teardown:', error);
     throw error;
+  }
+}
+
+/**
+ * Helper function to clean all database tables in the correct order to respect foreign key constraints
+ */
+export async function cleanupDatabase() {
+  try {
+    // Delete in proper order to respect foreign key constraints
+    await testDb.delete(notifications).execute();
+    await testDb.delete(tournamentScores).execute();
+    await testDb.delete(tournamentParticipants).execute();
+    await testDb.delete(tournaments).execute();
+    await testDb.delete(adminApprovals).execute();
+    await testDb.delete(users).execute();
+  } catch (error) {
+    console.error('Error in database cleanup:', error);
   }
 }
