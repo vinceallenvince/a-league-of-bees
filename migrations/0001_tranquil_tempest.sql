@@ -1,8 +1,13 @@
 
--- Create enum first
+-- Create enum
 CREATE TYPE "tournament_status" AS ENUM('pending', 'in_progress', 'completed', 'cancelled');
 
--- Create users table first since it's referenced by others
+-- Drop existing tables to ensure clean state
+DROP TABLE IF EXISTS "adminApprovals";
+DROP TABLE IF EXISTS "tournaments";
+DROP TABLE IF EXISTS "users";
+
+-- Create users table first (referenced by others)
 CREATE TABLE IF NOT EXISTS "users" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "email" text NOT NULL,
@@ -16,10 +21,11 @@ CREATE TABLE IF NOT EXISTS "users" (
   "otpSecret" text,
   "otpExpiry" timestamp,
   "otpAttempts" integer NOT NULL DEFAULT 0,
-  "otpLastRequest" timestamp
+  "otpLastRequest" timestamp,
+  CONSTRAINT "users_email_unique" UNIQUE ("email")
 );
 
--- Create tournaments table with correct UUID type
+-- Create tournaments table
 CREATE TABLE IF NOT EXISTS "tournaments" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   "creator_id" uuid NOT NULL,
@@ -31,24 +37,20 @@ CREATE TABLE IF NOT EXISTS "tournaments" (
   "status" tournament_status NOT NULL DEFAULT 'pending',
   "timezone" text NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT now(),
-  "updated_at" timestamp NOT NULL DEFAULT now()
+  "updated_at" timestamp NOT NULL DEFAULT now(),
+  CONSTRAINT "tournaments_creator_id_users_id_fk" 
+    FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE CASCADE
 );
 
--- Add foreign key after both tables exist
-ALTER TABLE "tournaments" 
-ADD CONSTRAINT "tournaments_creator_id_users_id_fk" 
-FOREIGN KEY ("creator_id") REFERENCES "users"("id") ON DELETE CASCADE;
-
--- Create adminApprovals table last
+-- Create adminApprovals table
 CREATE TABLE IF NOT EXISTS "adminApprovals" (
   "id" serial PRIMARY KEY,
   "userId" uuid,
   "approvedBy" uuid,
   "status" text NOT NULL,
   "createdAt" timestamp DEFAULT now(),
-  CONSTRAINT "adminApprovals_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL,
-  CONSTRAINT "adminApprovals_approvedBy_users_id_fk" FOREIGN KEY ("approvedBy") REFERENCES "users"("id") ON DELETE SET NULL
+  CONSTRAINT "adminApprovals_userId_users_id_fk" 
+    FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL,
+  CONSTRAINT "adminApprovals_approvedBy_users_id_fk" 
+    FOREIGN KEY ("approvedBy") REFERENCES "users"("id") ON DELETE SET NULL
 );
-
--- Create indexes
-CREATE UNIQUE INDEX IF NOT EXISTS "users_email_unique" ON "users" ("email");
