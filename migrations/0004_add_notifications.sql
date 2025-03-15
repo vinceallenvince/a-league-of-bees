@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "notifications" (
   CONSTRAINT "notifications_user_id_users_id_fk"
     FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE,
   CONSTRAINT "notifications_tournament_id_tournaments_id_fk"
-    FOREIGN KEY ("tournament_id") REFERENCES "tournaments"("id") ON DELETE CASCADE
+    FOREIGN KEY ("tournament_id") REFERENCES "tournaments"("id") ON DELETE CASCADE ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- Add indexes for efficient querying
