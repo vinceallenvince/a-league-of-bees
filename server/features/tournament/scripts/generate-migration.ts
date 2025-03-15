@@ -1,4 +1,3 @@
-
 import pkg from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
@@ -23,7 +22,7 @@ async function generateMigration() {
   try {
     console.log('Generating migration...');
     await migrate(db, {
-      migrationsFolder: '../../../../migrations'
+      migrationsFolder: './migrations'
     });
     console.log('Migration generated successfully!');
   } catch (error) {
