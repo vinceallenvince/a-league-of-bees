@@ -12,7 +12,7 @@
 - Document migration process
 
 **Story Points**: 3  
-**Dependencies**: None
+**Dependencies**: None  
 **Status**: Complete
 
 ### ALOB-2: Create Tournament Table Schema
@@ -36,7 +36,7 @@
 - Write unit tests for model/entity
 
 **Story Points**: 5  
-**Dependencies**: ALOB-1
+**Dependencies**: ALOB-1  
 **Status**: Todo
 
 ### ALOB-3: Create TournamentParticipant Table Schema
@@ -55,7 +55,7 @@
 - Write unit tests for model/entity
 
 **Story Points**: 3  
-**Dependencies**: ALOB-2
+**Dependencies**: ALOB-2  
 **Status**: Todo
 
 ### ALOB-4: Create TournamentScore Table Schema
@@ -77,7 +77,7 @@
 - Write unit tests for model/entity
 
 **Story Points**: 3  
-**Dependencies**: ALOB-2
+**Dependencies**: ALOB-2  
 **Status**: Todo
 
 ### ALOB-5: Create Notification Table Schema
@@ -98,7 +98,7 @@
 - Write unit tests for model/entity
 
 **Story Points**: 3  
-**Dependencies**: ALOB-2
+**Dependencies**: ALOB-2  
 **Status**: Todo
 
 ### ALOB-6: Database Schema Integration and Testing
@@ -113,7 +113,7 @@
 - Create integration tests with all tables
 
 **Story Points**: 5  
-**Dependencies**: ALOB-2, ALOB-3, ALOB-4, ALOB-5
+**Dependencies**: ALOB-2, ALOB-3, ALOB-4, ALOB-5  
 **Status**: Todo
 
 ### ALOB-7: Database Query Optimization
@@ -127,5 +127,5 @@
 - Document query optimization strategies
 
 **Story Points**: 5  
-**Dependencies**: ALOB-6 
+**Dependencies**: ALOB-6   
 **Status**: Todo
