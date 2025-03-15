@@ -1,12 +1,11 @@
 
-import pg from 'pg';
+import pkg from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import * as dotenv from 'dotenv';
 
+const { Pool } = pkg;
 dotenv.config();
-
-const { Pool } = pg;
 
 async function generateMigration() {
   if (!process.env.DATABASE_URL) {
