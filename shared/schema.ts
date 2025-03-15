@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, boolean, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -14,7 +14,7 @@ export const users = pgTable("users", {
   lastLogin: timestamp("lastLogin"),
   otpSecret: text("otpSecret"),
   otpExpiry: timestamp("otpExpiry"),
-  otpAttempts: serial("otpAttempts"),
+  otpAttempts: integer("otpAttempts").notNull().default(0),
   otpLastRequest: timestamp("otpLastRequest"),
 });
 
