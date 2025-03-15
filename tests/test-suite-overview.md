@@ -159,12 +159,32 @@ See output from test runs in https://github.com/vinceallenvince/a-league-of-bees
 
 The tournament-related tests are currently failing with errors like "relation 'notifications' does not exist" or "relation 'tournament_participants' does not exist". This is because these tables are defined in the schema but are missing from the database migrations.
 
-To fix this issue:
-1. A new migration file `0002_tournament_tables.sql` has been created to add the missing tables:
-   - `tournament_participants`
-   - `tournament_scores`
-   - `notifications`
-2. After running this migration, the tests should pass
+#### Root Cause
+There's a mismatch between the database schema definitions in `shared/schema.ts` and the actual tables created by the migrations. The test database is correctly initialized but is missing tables required by the tests.
+
+#### Steps to Fix
+
+1. **Apply the new migration file to the test database:**
+   - We've created a new migration file `migrations/0002_tournament_tables.sql` that adds the missing tables:
+     - `tournament_participants`
+     - `tournament_scores`
+     - `notifications`
+   - We've also added a script to apply migrations specifically to the test database
+   - Run the script with: `npm run db:migrate:test`
+
+2. **Ensure tests clean up properly:**
+   - Each test file should include proper cleanup in `afterEach` hooks
+   - Tables should be deleted in the correct order to respect foreign key constraints
+   - Example order: notifications → tournamentScores → tournamentParticipants → tournaments → adminApprovals → users
+
+3. **Verify database connection:**
+   - Make sure your test database is running and accessible
+   - Check that `.env.test` has the correct `DATABASE_URL` 
+
+4. **If issues persist:**
+   - Try recreating the test database from scratch
+   - Make sure the migration scripts are being called correctly
+   - Check for any errors in the migration process
 
 ### Database Setup Process
 

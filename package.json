@@ -6,6 +6,7 @@
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx server/features/tournament/scripts/generate-migration.ts",
+    "db:migrate:test": "tsx scripts/apply-test-migrations.ts",
     "db:studio": "drizzle-kit studio --config=server/features/tournament/migrations/config.ts",
     "dev": "tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
