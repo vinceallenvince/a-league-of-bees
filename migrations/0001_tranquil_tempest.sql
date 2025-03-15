@@ -1,18 +1,40 @@
-CREATE TYPE "public"."tournament_status" AS ENUM('pending', 'in_progress', 'completed', 'cancelled');--> statement-breakpoint
-CREATE TABLE "tournaments" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"creator_id" uuid NOT NULL,
-	"name" text NOT NULL,
-	"description" text,
-	"duration_days" integer NOT NULL,
-	"start_date" timestamp NOT NULL,
-	"requires_verification" boolean DEFAULT false NOT NULL,
-	"status" "tournament_status" DEFAULT 'pending' NOT NULL,
-	"timezone" text NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+
+CREATE TABLE IF NOT EXISTS "users" (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "email" text NOT NULL,
+  "firstName" text,
+  "lastName" text,
+  "username" text,
+  "bio" text,
+  "avatar" text,
+  "isAdmin" boolean NOT NULL DEFAULT false,
+  "lastLogin" timestamp,
+  "otpSecret" text,
+  "otpExpiry" timestamp,
+  "otpAttempts" integer NOT NULL,
+  "otpLastRequest" timestamp
 );
---> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "otpAttempts" SET DATA TYPE integer;--> statement-breakpoint
-ALTER TABLE "users" ALTER COLUMN "otpAttempts" DROP DEFAULT;--> statement-breakpoint
-ALTER TABLE "tournaments" ADD CONSTRAINT "tournaments_creator_id_users_id_fk" FOREIGN KEY ("creator_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+
+CREATE TABLE IF NOT EXISTS "adminApprovals" (
+  "id" serial PRIMARY KEY,
+  "userId" uuid REFERENCES "users"("id"),
+  "approvedBy" uuid REFERENCES "users"("id"),
+  "status" text NOT NULL,
+  "createdAt" timestamp DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS "tournaments" (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "creator_id" uuid NOT NULL REFERENCES "users"("id"),
+  "name" text NOT NULL,
+  "description" text,
+  "duration_days" integer NOT NULL,
+  "start_date" timestamp NOT NULL,
+  "requires_verification" boolean NOT NULL DEFAULT false,
+  "status" tournament_status NOT NULL DEFAULT 'pending',
+  "timezone" text NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT now(),
+  "updated_at" timestamp NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS "users_email_unique" ON "users" ("email");
