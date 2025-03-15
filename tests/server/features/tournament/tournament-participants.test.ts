@@ -9,6 +9,13 @@ describe('TournamentParticipant Models', () => {
     await setupTestDb();
   }, 30000);
 
+  afterEach(async () => {
+    // Clean up test data after each test
+    await db.delete(tournamentParticipants);
+    await db.delete(tournaments);
+    await db.delete(users);
+  });
+
   afterAll(async () => {
     await teardownTestDb();
   }, 30000);
@@ -16,7 +23,7 @@ describe('TournamentParticipant Models', () => {
   it('should create a tournament participant with valid data', async () => {
     // Create a test user
     const user = await db.insert(users).values({
-      email: 'participant1@example.com',
+      email: `participant_${Date.now()}@example.com`,
       otpAttempts: 0
     }).returning();
 
@@ -50,7 +57,7 @@ describe('TournamentParticipant Models', () => {
 
   it('should update participant status', async () => {
     const user = await db.insert(users).values({
-      email: 'participant2@example.com',
+      email: `participant_status_${Date.now()}@example.com`,
       otpAttempts: 0
     }).returning();
 
