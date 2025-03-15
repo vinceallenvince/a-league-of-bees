@@ -13,6 +13,7 @@ describe('TournamentParticipant Models', () => {
     // Clean up test data after each test
     await db.delete(tournamentParticipants);
     await db.delete(tournaments);
+    await db.delete(adminApprovals);
     await db.delete(users);
   });
 
