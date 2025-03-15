@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, boolean, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, boolean, integer, pgEnum, uuid, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -42,6 +42,16 @@ export const tournaments = pgTable("tournaments", {
   updatedAt: timestamp("updated_at").notNull().defaultNow()
 });
 
+export const tournamentParticipants = pgTable('tournament_participants', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tournamentId: uuid('tournament_id').references(() => tournaments.id).notNull(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  joinedAt: timestamp('joined_at').defaultNow(),
+  status: varchar('status', { length: 255 }).notNull().default('invited'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   firstName: true,
@@ -61,3 +71,4 @@ export type InsertOtp = z.infer<typeof insertOtpSchema>;
 export type User = typeof users.$inferSelect;
 export type AdminApproval = typeof adminApprovals.$inferSelect;
 export type Tournament = typeof tournaments.$inferSelect;
+export type TournamentParticipant = typeof tournamentParticipants.$inferSelect;
