@@ -14,7 +14,7 @@ export const users = pgTable("users", {
   lastLogin: timestamp("lastLogin"),
   otpSecret: text("otpSecret"),
   otpExpiry: timestamp("otpExpiry"),
-  otpAttempts: integer("otpAttempts").default(0),
+  otpAttempts: integer("otpAttempts").notNull().default(0),
   otpLastRequest: timestamp("otpLastRequest"),
 });
 
