@@ -30,6 +30,10 @@ npm run db:migrate
 
 ## Migration Files
 
+### Existing Tables
+- `users`: User account information and authentication
+- `adminApprovals`: Admin role approval tracking
+
 ### Tournament Tables
 - `Tournament`: Main tournament information
 - `TournamentParticipant`: Tournament participation records
