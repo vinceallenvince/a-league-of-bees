@@ -153,6 +153,33 @@ Tests for UI components to ensure proper rendering and behavior.
 
 See output from test runs in https://github.com/vinceallenvince/a-league-of-bees/actions
 
+## Database Test Setup
+
+### Known Issues
+
+The tournament-related tests are currently failing with errors like "relation 'notifications' does not exist" or "relation 'tournament_participants' does not exist". This is because these tables are defined in the schema but are missing from the database migrations.
+
+To fix this issue:
+1. A new migration file `0002_tournament_tables.sql` has been created to add the missing tables:
+   - `tournament_participants`
+   - `tournament_scores`
+   - `notifications`
+2. After running this migration, the tests should pass
+
+### Database Setup Process
+
+The test database is set up using the following process:
+
+1. The `setupTestDb()` function in `tests/server/core/test-db.ts` creates a clean test database
+2. Migrations are run to create the database schema
+3. Test data is inserted and tests are run
+4. The `teardownTestDb()` function cleans up the database after tests complete
+
+Some tests may require specific database state. Make sure to:
+- Clean up data after each test using `afterEach` hooks
+- Ensure database operations are properly wrapped in try/catch blocks
+- Use appropriate timeouts for database operations (30 seconds for setup/teardown)
+
 ## Test Utilities
 
 The project includes various test utilities and mocks:
