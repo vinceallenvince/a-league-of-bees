@@ -6,7 +6,7 @@ import { z } from "zod";
 export const tournamentStatusEnum = pgEnum('tournament_status', ['pending', 'in_progress', 'completed', 'cancelled']);
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
   firstName: text("firstName"),
   lastName: text("lastName"),
@@ -23,15 +23,15 @@ export const users = pgTable("users", {
 
 export const adminApprovals = pgTable("adminApprovals", {
   id: serial("id").primaryKey(),
-  userId: serial("userId").references(() => users.id),
-  approvedBy: serial("approvedBy").references(() => users.id),
+  userId: uuid("userId").references(() => users.id),
+  approvedBy: uuid("approvedBy").references(() => users.id),
   status: text("status").notNull(),
   createdAt: timestamp("createdAt").defaultNow(),
 });
 
 export const tournaments = pgTable("tournaments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  creatorId: serial("creator_id").references(() => users.id).notNull(),
+  creatorId: uuid("creator_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   description: text("description"),
   durationDays: integer("duration_days").notNull(),
