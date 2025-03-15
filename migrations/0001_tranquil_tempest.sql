@@ -54,3 +54,10 @@ CREATE TABLE IF NOT EXISTS "adminApprovals" (
   CONSTRAINT "adminApprovals_approvedBy_users_id_fk" 
     FOREIGN KEY ("approvedBy") REFERENCES "users"("id") ON DELETE SET NULL
 );
+
+-- Add indexes for efficient querying
+CREATE INDEX IF NOT EXISTS "tournaments_creator_id_idx" ON "tournaments" ("creator_id");
+CREATE INDEX IF NOT EXISTS "tournaments_status_idx" ON "tournaments" ("status");
+CREATE INDEX IF NOT EXISTS "tournaments_start_date_idx" ON "tournaments" ("start_date");
+CREATE INDEX IF NOT EXISTS "adminApprovals_userId_idx" ON "adminApprovals" ("userId");
+CREATE INDEX IF NOT EXISTS "adminApprovals_status_idx" ON "adminApprovals" ("status");
