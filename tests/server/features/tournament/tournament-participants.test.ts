@@ -1,6 +1,6 @@
 
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { tournaments, users, tournamentParticipants } from '../../../../shared/schema';
+import { tournaments, users, tournamentParticipants, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb } from '../../core/test-db';
 
