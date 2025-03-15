@@ -3,7 +3,6 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { randomBytes } from "crypto";
 import logger from "./logger";
-import crypto from "crypto";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -84,12 +83,6 @@ export class MemStorage implements IStorage {
 
     this.users.set(newUser.id, newUser);
     this.currentId++; // Still increment the counter for tracking purposes
-    logger.info("User created", { 
-      userId: newUser.id, 
-      email: newUser.email, 
-      isFirstUser, 
-      isAdmin: newUser.isAdmin 
-    });
     return newUser;
   }
 
