@@ -9,7 +9,7 @@ import logger from "./logger";
 declare global {
   namespace Express {
     interface User {
-      id: number;
+      id: string;
       email: string;
       isAdmin: boolean;
     }

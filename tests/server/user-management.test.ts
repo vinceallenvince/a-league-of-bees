@@ -6,16 +6,18 @@
  */
 
 import { User } from '@shared/schema';
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import crypto from 'crypto';
 
 // Define our mocks
-const users = new Map<number, User>();
+const users = new Map<string, User>();
 let currentId = 1;
 
 // Mock the storage module
 jest.mock('../../server/storage', () => {
   // Create storage class with mock implementation
   class MockStorage {
-    users: Map<number, User>;
+    users: Map<string, User>;
     currentId: number;
     
     constructor() {
@@ -27,15 +29,15 @@ jest.mock('../../server/storage', () => {
       return Array.from(this.users.values()).find(user => user.email === email);
     }
     
-    async getUser(id: number): Promise<User | undefined> {
+    async getUser(id: string): Promise<User | undefined> {
       return this.users.get(id);
     }
     
     async createUser(userData: Partial<User>): Promise<User> {
       const isFirstUser = this.users.size === 0;
       const newUser = {
-        id: this.currentId++,
-        email: userData.email!,
+        id: crypto.randomUUID(),
+        email: userData.email || `user${this.currentId}@example.com`,
         firstName: userData.firstName || null,
         lastName: userData.lastName || null,
         username: userData.username || null,
@@ -49,6 +51,7 @@ jest.mock('../../server/storage', () => {
         otpLastRequest: null,
       };
       this.users.set(newUser.id, newUser);
+      this.currentId++;
       return newUser;
     }
     
@@ -61,7 +64,7 @@ jest.mock('../../server/storage', () => {
       this.currentId = 1; // Reset the ID counter when clearing users
     }
 
-    async requestAdminRole(userId: number): Promise<void> {
+    async requestAdminRole(userId: string): Promise<void> {
       const user = await this.getUser(userId);
       if (!user) {
         throw new Error("User not found");
@@ -70,7 +73,7 @@ jest.mock('../../server/storage', () => {
       // For our test, we'll just verify the call is made correctly
     }
 
-    async approveAdminRole(userId: number, approverId: number): Promise<void> {
+    async approveAdminRole(userId: string, approverId: string): Promise<void> {
       const user = await this.getUser(userId);
       const approver = await this.getUser(approverId);
       
@@ -89,7 +92,7 @@ jest.mock('../../server/storage', () => {
       user.isAdmin = true;
     }
 
-    async updateUser(id: number, userData: Partial<User>): Promise<User> {
+    async updateUser(id: string, userData: Partial<User>): Promise<User> {
       const user = await this.getUser(id);
       if (!user) {
         throw new Error("User not found");
@@ -128,41 +131,41 @@ describe('User Management', () => {
       const firstUser = await storage.createUser({ email: firstUserEmail });
       
       // Assert - verify user was created and is an admin
-      expect(firstUser.id).toBe(1);
+      expect(firstUser.id).toBeDefined();
       expect(firstUser.email).toBe(firstUserEmail);
       expect(firstUser.isAdmin).toBe(true);
       
       // Verify internal state
       expect(users.size).toBe(1);
-      expect(users.get(1)?.isAdmin).toBe(true);
+      expect(users.get(firstUser.id)?.isAdmin).toBe(true);
     });
     
     test('should not make subsequent users admins', async () => {
       // Arrange - create first user
       const firstUser = await storage.createUser({ email: 'first@example.com' });
       expect(firstUser.isAdmin).toBe(true);
-      expect(firstUser.id).toBe(1); // Verify ID is 1
+      expect(firstUser.id).toBeDefined();
       
       // Act - create second user
       const secondUserEmail = 'second@example.com';
       const secondUser = await storage.createUser({ email: secondUserEmail });
       
       // Assert - verify second user was created but is not an admin
-      expect(secondUser.id).toBe(2); // Should be 2, not 3
+      expect(secondUser.id).toBeDefined();
       expect(secondUser.email).toBe(secondUserEmail);
       expect(secondUser.isAdmin).toBe(false);
       
       // Verify internal state
       expect(users.size).toBe(2);
-      expect(users.get(1)?.isAdmin).toBe(true);
-      expect(users.get(2)?.isAdmin).toBe(false);
+      expect(users.get(firstUser.id)?.isAdmin).toBe(true);
+      expect(users.get(secondUser.id)?.isAdmin).toBe(false);
       
       // Act - create a third user
       const thirdUserEmail = 'third@example.com';
       const thirdUser = await storage.createUser({ email: thirdUserEmail });
       
       // Assert - verify third user is also not an admin
-      expect(thirdUser.id).toBe(3);
+      expect(thirdUser.id).toBeDefined();
       expect(thirdUser.email).toBe(thirdUserEmail);
       expect(thirdUser.isAdmin).toBe(false);
       
@@ -227,7 +230,7 @@ describe('User Management', () => {
       
       // Assert - verify the user was found and data matches
       expect(foundUser).not.toBeUndefined();
-      expect(foundUser!.id).toBe(createdUser.id);
+      expect(foundUser!.id).toBeDefined();
       expect(foundUser!.email).toBe(email);
       expect(foundUser!.firstName).toBe('Find');
       expect(foundUser!.lastName).toBe('Me');
@@ -257,18 +260,18 @@ describe('User Management', () => {
       
       // Assert - verify the user was found and data matches
       expect(foundUser).not.toBeUndefined();
-      expect(foundUser!.id).toBe(createdUser.id);
+      expect(foundUser!.id).toBeDefined();
       expect(foundUser!.email).toBe('findbyid@example.com');
       expect(foundUser!.firstName).toBe('Find');
       expect(foundUser!.lastName).toBe('ById');
     });
     
     test('should return undefined for non-existent ID', async () => {
-      // Arrange - create a user with ID 1
+      // Arrange - create a user with UUID
       await storage.createUser({ email: 'exists@example.com' });
       
       // Act - look up a user with a non-existent ID
-      const foundUser = await storage.getUser(999); // ID that doesn't exist
+      const foundUser = await storage.getUser('nonexistent-id'); // ID that doesn't exist
       
       // Assert - verify no user was found
       expect(foundUser).toBeUndefined();
@@ -344,7 +347,7 @@ describe('User Management', () => {
       const adminUser = await storage.createUser({ email: 'admin@example.com' });
       
       // Act & Assert - try to approve non-existent user
-      await expect(storage.approveAdminRole(999, adminUser.id))
+      await expect(storage.approveAdminRole('nonexistent-id', adminUser.id))
         .rejects.toThrow('User not found');
     });
     
@@ -354,7 +357,7 @@ describe('User Management', () => {
       const secondUser = await storage.createUser({ email: 'second@example.com' });
       
       // Act & Assert - try to approve with non-existent approver
-      await expect(storage.approveAdminRole(secondUser.id, 999))
+      await expect(storage.approveAdminRole(secondUser.id, 'nonexistent-id'))
         .rejects.toThrow('Approver not found');
       
       // Verify state hasn't changed

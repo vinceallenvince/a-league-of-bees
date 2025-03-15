@@ -84,7 +84,7 @@ describe('AuthPage', () => {
     // Mock useAuth to return a user (logged in)
     mockUseAuth.mockImplementation(() => ({
       user: { 
-        id: 123, 
+        id: "user-uuid-123", 
         email: 'test@example.com',
         firstName: null,
         lastName: null,

@@ -48,7 +48,7 @@ describe('OTP Verification', () => {
       
       // Set up the mock user with the OTP
       const mockUser: Partial<User> = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpSecret: validOtp,
         otpExpiry: expiry,
@@ -102,7 +102,7 @@ describe('OTP Verification', () => {
       
       // Set up the mock user with the expired OTP
       const mockUser: Partial<User> = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpSecret: validOtp,
         otpExpiry: expiry,
@@ -150,7 +150,7 @@ describe('OTP Verification', () => {
       
       // Set up the mock user with the OTP
       const mockUser: Partial<User> = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpSecret: validOtp,
         otpExpiry: expiry,

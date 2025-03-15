@@ -74,7 +74,7 @@ describe('OTP Verification', () => {
       
       // Set up the mock user with the OTP
       const mockUser = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpSecret: validOtp,
         otpExpiry: expiry,
@@ -153,7 +153,7 @@ describe('OTP Verification', () => {
       
       // Set up the mock user with maximum attempts reached
       const mockUser = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpSecret: otp,
         otpExpiry: expiry,
@@ -216,7 +216,7 @@ describe('OTP Verification', () => {
       
       // Set up a mock user that has reached the maximum number of OTP attempts
       const mockUser = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpAttempts: maxAttempts,
         otpLastRequest: lastRequestTime
@@ -284,7 +284,7 @@ describe('OTP Verification', () => {
       
       // Set up a mock user that has reached the maximum number of OTP attempts but cooldown has passed
       const mockUser = {
-        id: 1,
+        id: "mock-uuid-1",
         email,
         otpAttempts: maxAttempts,
         otpLastRequest: lastRequestTime
