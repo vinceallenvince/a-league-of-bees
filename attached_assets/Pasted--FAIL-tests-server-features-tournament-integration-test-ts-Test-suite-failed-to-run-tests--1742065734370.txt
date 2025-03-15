@@ -1,0 +1,28 @@
+ FAIL  tests/server/features/tournament/integration.test.ts
+  ● Test suite failed to run
+
+    tests/server/features/tournament/integration.test.ts:151:43 - error TS2769: No overload matches this call.
+      Overload 1 of 2, '(value: { name: string | SQL<unknown> | Placeholder<string, any>; creatorId: string | SQL<unknown> | Placeholder<string, any>; durationDays: number | SQL<unknown> | Placeholder<...>; ... 7 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }): PgInsertBase<...>', gave the following error.
+        Type 'null' is not assignable to type 'string | SQL<unknown> | Placeholder<string, any>'.
+      Overload 2 of 2, '(values: { name: string | SQL<unknown> | Placeholder<string, any>; creatorId: string | SQL<unknown> | Placeholder<string, any>; durationDays: number | SQL<unknown> | Placeholder<...>; ... 7 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }[]): PgInsertBase<...>', gave the following error.
+        Object literal may only specify known properties, and 'creatorId' does not exist in type '{ name: string | SQL<unknown> | Placeholder<string, any>; creatorId: string | SQL<unknown> | Placeholder<string, any>; durationDays: number | SQL<unknown> | Placeholder<...>; ... 7 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }[]'.
+
+    151       await expect(db.insert(tournaments).values({
+                                                  ~~~~~~
+
+      node_modules/drizzle-orm/pg-core/query-builders/insert.d.ts:28:101
+         28 export type PgInsertValue<TTable extends PgTable<TableConfig>, OverrideT extends boolean = false> = {
+                                                                                                                ~
+         29     [Key in keyof InferInsertModel<TTable, {
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ... 
+         35     }>[Key] | SQL | Placeholder;
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         36 } & {};
+            ~
+        The expected type comes from property 'name' which is declared here on type '{ name: string | SQL<unknown> | Placeholder<string, any>; creatorId: string | SQL<unknown> | Placeholder<string, any>; durationDays: number | SQL<unknown> | Placeholder<...>; ... 7 more ...; updatedAt?: SQL<...> | ... 2 more ... | undefined; }'
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        18.75 s
