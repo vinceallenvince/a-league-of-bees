@@ -78,7 +78,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-2  
-**Status**: Todo
+**Status**: COMPLETE
 
 ### ALOB-5: Create Notification Table Schema
 **Type**: Task  
@@ -99,7 +99,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-2  
-**Status**: Todo
+**Status**: In Progress
 
 ### ALOB-6: Database Schema Integration and Testing
 **Type**: Task  
