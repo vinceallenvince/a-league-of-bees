@@ -2,21 +2,23 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
+import * as schema from '../../../shared/schema';
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
 
 const pool = new Pool({
-  host: process.env.TEST_DB_HOST || '0.0.0.0',
-  port: Number(process.env.TEST_DB_PORT) || 5432,
-  user: process.env.TEST_DB_USER || 'postgres',
-  password: process.env.TEST_DB_PASSWORD || 'postgres',
-  database: process.env.TEST_DB_NAME || 'test_db'
+  connectionString: process.env.DATABASE_URL,
+  max: 1
 });
 
-export const testDb = drizzle(pool);
+export const testDb = drizzle(pool, { schema });
 
-export const setupTestDb = async () => {
+export async function setupTestDb() {
   await migrate(testDb, { migrationsFolder: './migrations' });
-};
+}
 
-export const teardownTestDb = async () => {
+export async function teardownTestDb() {
   await pool.end();
-};
+}
