@@ -10,18 +10,23 @@ describe('TournamentParticipant Models', () => {
     console.log('Tournament participants test setup completed');
   }, 30000);
 
-  afterEach(async () => {
-    // Clean up test data after each test in correct order
+  // Helper function to clean database tables
+  async function cleanupTables() {
     try {
       // Delete in proper order to respect foreign key constraints
-      await db.delete(tournamentScores);
-      await db.delete(tournamentParticipants);
-      await db.delete(tournaments);
-      await db.delete(adminApprovals);
-      await db.delete(users);
+      await db.delete(tournamentScores).execute();
+      await db.delete(tournamentParticipants).execute();
+      await db.delete(tournaments).execute();
+      await db.delete(adminApprovals).execute();
+      await db.delete(users).execute();
     } catch (error) {
       console.error('Error in test cleanup:', error);
     }
+  }
+
+  afterEach(async () => {
+    // Clean up test data after each test
+    await cleanupTables();
   });
 
   afterAll(async () => {

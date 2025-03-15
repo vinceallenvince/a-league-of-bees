@@ -23,32 +23,29 @@ describe('Tournament Integration Tests', () => {
     console.log('Integration test teardown completed');
   }, 30000);
 
+  // Helper function to clean database tables
+  async function cleanupTables() {
+    try {
+      // Delete in proper order to respect foreign key constraints
+      await db.delete(notifications).execute();
+      await db.delete(tournamentScores).execute();
+      await db.delete(tournamentParticipants).execute();
+      await db.delete(tournaments).execute();
+      await db.delete(adminApprovals).execute();
+      await db.delete(users).execute();
+    } catch (error) {
+      console.error('Error in test cleanup:', error);
+    }
+  }
+
   beforeEach(async () => {
     // Ensure clean state before each test
-    try {
-      await db.delete(notifications);
-      await db.delete(tournamentScores);
-      await db.delete(tournamentParticipants);
-      await db.delete(tournaments);
-      await db.delete(adminApprovals);
-      await db.delete(users);
-    } catch (error) {
-      console.error('Error in test setup cleanup:', error);
-    }
+    await cleanupTables();
   });
 
   afterEach(async () => {
     // Clean up after each test
-    try {
-      await db.delete(notifications);
-      await db.delete(tournamentScores);
-      await db.delete(tournamentParticipants);
-      await db.delete(tournaments);
-      await db.delete(adminApprovals);
-      await db.delete(users);
-    } catch (error) {
-      console.error('Error in test cleanup:', error);
-    }
+    await cleanupTables();
   });
 
   describe('Foreign Key Relationships', () => {

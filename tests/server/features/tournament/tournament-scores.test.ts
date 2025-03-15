@@ -10,17 +10,22 @@ describe('TournamentScore Models', () => {
     console.log('Tournament scores test setup completed');
   }, 30000);
 
-  afterEach(async () => {
-    // Clean up test data after each test in correct order
-    // Make sure we delete in proper order to respect foreign key constraints
+  // Helper function to clean database tables
+  async function cleanupTables() {
     try {
-      await db.delete(tournamentScores);
-      await db.delete(tournaments);
-      await db.delete(adminApprovals);
-      await db.delete(users);
+      // Make sure we delete in proper order to respect foreign key constraints
+      await db.delete(tournamentScores).execute();
+      await db.delete(tournaments).execute();
+      await db.delete(adminApprovals).execute();
+      await db.delete(users).execute();
     } catch (error) {
       console.error('Error in test cleanup:', error);
     }
+  }
+  
+  afterEach(async () => {
+    // Clean up test data after each test
+    await cleanupTables();
   });
 
   afterAll(async () => {

@@ -10,16 +10,21 @@ describe('Notification Models', () => {
     console.log('Notifications test setup completed');
   }, 30000);
 
-  afterEach(async () => {
+  // Helper function to clean database tables
+  async function cleanupTables() {
     try {
       // Clean up test data after each test in correct order
-      await db.delete(notifications);
-      await db.delete(tournaments);
-      await db.delete(adminApprovals);
-      await db.delete(users);
+      await db.delete(notifications).execute();
+      await db.delete(tournaments).execute();
+      await db.delete(adminApprovals).execute();
+      await db.delete(users).execute();
     } catch (error) {
       console.error('Error in test cleanup:', error);
     }
+  }
+
+  afterEach(async () => {
+    await cleanupTables();
   });
 
   afterAll(async () => {
