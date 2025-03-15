@@ -3,7 +3,7 @@ import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { tournaments, users, adminApprovals } from '../../../../shared/schema';
-import { db } from '../../../../server/db';
+import { db } from '../../../../server/core/db';
 
 describe('Tournament Models', () => {
   beforeAll(async () => {
