@@ -13,7 +13,7 @@
 
 **Story Points**: 3  
 **Dependencies**: None  
-**Status**: Complete
+**Status**: COMPLETE
 
 ### ALOB-2: Create Tournament Table Schema
 **Type**: Task  
@@ -37,7 +37,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-1  
-**Status**: Todo
+**Status**: COMPLETE
 
 ### ALOB-3: Create TournamentParticipant Table Schema
 **Type**: Task  
