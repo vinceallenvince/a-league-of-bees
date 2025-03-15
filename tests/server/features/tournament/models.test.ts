@@ -17,6 +17,7 @@ describe('Tournament Models', () => {
   it('should create a tournament with valid data', async () => {
     const user = await db.insert(users).values({
       email: 'test@example.com',
+      otpAttempts: 0
     }).returning();
 
     const tournament = await db.insert(tournaments).values({
@@ -44,6 +45,7 @@ describe('Tournament Models', () => {
   it('should create admin approval with valid data', async () => {
     const user = await db.insert(users).values({
       email: 'admin@example.com',
+      otpAttempts: 0
     }).returning();
 
     const approval = await db.insert(adminApprovals).values({
