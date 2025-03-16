@@ -38,12 +38,21 @@ describe('Tournament Participants', () => {
 
   it('should create tournament participant', async () => {
     console.log('Starting test: should create tournament participant');
+    
     // Create a test user
     const user = await db.insert(users).values({
       email: 'participant@example.com',
       otpAttempts: 0
     }).returning();
     console.log('Created test user:', user[0].id);
+
+    // Verify user exists before proceeding
+    const verifyUser = await db.select().from(users).where(eq(users.id, user[0].id));
+    expect(verifyUser.length).toBe(1);
+    expect(verifyUser[0].email).toBe('participant@example.com');
+    
+    // Small delay to ensure transaction is committed
+    await sleep(100);
 
     // Create a test tournament
     const tournament = await db.insert(tournaments).values({
@@ -54,6 +63,13 @@ describe('Tournament Participants', () => {
       timezone: 'UTC',
     }).returning();
     console.log('Created test tournament:', tournament[0].id);
+
+    // Verify tournament exists before proceeding
+    const verifyTournament = await db.select().from(tournaments).where(eq(tournaments.id, tournament[0].id));
+    expect(verifyTournament.length).toBe(1);
+    
+    // Small delay to ensure transaction is committed
+    await sleep(100);
 
     // Create tournament participant
     const participant = await db.insert(tournamentParticipants).values({
@@ -71,12 +87,20 @@ describe('Tournament Participants', () => {
 
   it('should update tournament participant status', async () => {
     console.log('Starting test: should update tournament participant status');
+    
     // Create a test user
     const user = await db.insert(users).values({
       email: 'participant-update@example.com',
       otpAttempts: 0
     }).returning();
     console.log('Created test user:', user[0].id);
+
+    // Verify user exists before proceeding
+    const verifyUser = await db.select().from(users).where(eq(users.id, user[0].id));
+    expect(verifyUser.length).toBe(1);
+    
+    // Small delay to ensure transaction is committed
+    await sleep(100);
 
     // Create a test tournament
     const tournament = await db.insert(tournaments).values({
@@ -87,6 +111,13 @@ describe('Tournament Participants', () => {
       timezone: 'UTC',
     }).returning();
     console.log('Created test tournament:', tournament[0].id);
+
+    // Verify tournament exists before proceeding
+    const verifyTournament = await db.select().from(tournaments).where(eq(tournaments.id, tournament[0].id));
+    expect(verifyTournament.length).toBe(1);
+    
+    // Small delay to ensure transaction is committed
+    await sleep(100);
 
     // Create tournament participant
     const participantData = {
