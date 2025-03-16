@@ -157,8 +157,11 @@ When running in development mode:
 The project includes both unit and integration tests. To run the tests:
 
 ```bash
-# Run all tests
+# Run all tests (with minimal console output)
 npm run test
+
+# Run tests with verbose logging (full console output)
+./run-verbose-tests.sh
 
 # Run tests with coverage report
 npm run test:coverage
@@ -178,6 +181,25 @@ Note: The tests require the test database to be set up properly with the correct
 1. The test database exists (`alob_test`)
 2. Your `.env.test` file has the correct `DATABASE_URL` with your system username
 3. You've run the test migrations with `npm run db:migrate:test`
+
+### Test Console Output
+
+By default, test runs suppress most console output to keep the terminal clean and make it easier to identify test failures. Only critical information like test results and timing data is displayed.
+
+If you need to see all console output (for debugging or troubleshooting):
+
+```bash
+# Run all tests with full console output
+VERBOSE_TESTS=true npm test
+
+# Or use the convenience script
+./run-verbose-tests.sh
+```
+
+This can be particularly helpful when:
+- Debugging test failures
+- Investigating database connection issues
+- Understanding test setup and teardown steps
 
 ### Performance Tests
 
