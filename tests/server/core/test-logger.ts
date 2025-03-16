@@ -24,6 +24,7 @@ interface LoggerOptions {
   keepWarnings?: boolean;     // Keep warning logs (default: true)
   keepSetupTeardown?: boolean; // Keep setup and teardown logs (default: false)
   keepTestResults?: boolean;  // Keep test completion logs (default: true)
+  keepDatabaseLogs?: boolean; // Keep database connection logs (default: false)
 }
 
 // Default options
@@ -32,7 +33,8 @@ const defaultOptions: LoggerOptions = {
   keepErrors: true,
   keepWarnings: true,
   keepSetupTeardown: false,
-  keepTestResults: true
+  keepTestResults: true,
+  keepDatabaseLogs: false
 };
 
 /**
@@ -77,6 +79,22 @@ export function suppressConsoleOutput(optionsOrKeepTiming: LoggerOptions | boole
           message.includes('PASS') ||
           message.includes('FAIL')
       )) {
+        originalConsole.log(...args);
+        return;
+      }
+      
+      // Keep database connection logs if enabled
+      if (options.keepDatabaseLogs && (
+          message.includes('connecting to database') ||
+          message.includes('database pool') ||
+          message.includes('Database connection')
+      )) {
+        originalConsole.log(...args);
+        return;
+      }
+      
+      // Always keep global teardown message
+      if (message.includes('Global teardown:')) {
         originalConsole.log(...args);
         return;
       }

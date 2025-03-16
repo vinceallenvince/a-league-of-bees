@@ -196,10 +196,21 @@ VERBOSE_TESTS=true npm test
 ./run-verbose-tests.sh
 ```
 
-This can be particularly helpful when:
+If you only need to see database-related logs but not other output:
+
+```bash
+# Run tests with only database connection logs
+DEBUG_DB_LOGS=true npm test
+
+# Can be combined with verbose output
+VERBOSE_TESTS=true DEBUG_DB_LOGS=true npm test
+```
+
+These options can be particularly helpful when:
 - Debugging test failures
 - Investigating database connection issues
 - Understanding test setup and teardown steps
+- Troubleshooting database-related problems
 
 ### Performance Tests
 

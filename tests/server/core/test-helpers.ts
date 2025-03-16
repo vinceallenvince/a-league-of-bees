@@ -15,6 +15,10 @@ const poolsClosed = {
   testDb: false
 };
 
+// Control verbose logging
+const VERBOSE_TESTS = process.env.VERBOSE_TESTS === 'true';
+const DEBUG_DB_LOGS = process.env.DEBUG_DB_LOGS === 'true';
+
 // Get the current state of pool closures
 export function getPoolsClosed() {
   return { ...poolsClosed };
@@ -32,7 +36,9 @@ try {
   const tournamentDb = require('../../../server/features/tournament/db');
   appDb = tournamentDb.db;
 } catch (error) {
-  console.warn('Tournament database module not available:', error instanceof Error ? error.message : String(error));
+  if (VERBOSE_TESTS) {
+    console.warn('Tournament database module not available:', error instanceof Error ? error.message : String(error));
+  }
 }
 
 try {
@@ -40,7 +46,9 @@ try {
   const coreDb = require('../../../server/core/db');
   corePool = coreDb.pool;
 } catch (error) {
-  console.warn('Core database module not available:', error instanceof Error ? error.message : String(error));
+  if (VERBOSE_TESTS) {
+    console.warn('Core database module not available:', error instanceof Error ? error.message : String(error));
+  }
 }
 
 /**
@@ -56,7 +64,9 @@ export async function closeAppDbConnections() {
       // @ts-ignore - access internal pool to close it
       await appDb.driver.pool.end();
       poolsClosed.tournament = true;
-      console.log('Tournament feature database pool closed');
+      if (VERBOSE_TESTS || DEBUG_DB_LOGS) {
+        console.log('Tournament feature database pool closed');
+      }
     } catch (error) {
       console.warn('Could not close tournament database pool:', error);
       success = false;
@@ -68,7 +78,9 @@ export async function closeAppDbConnections() {
     try {
       await corePool.end();
       poolsClosed.core = true;
-      console.log('Core database pool closed');
+      if (VERBOSE_TESTS || DEBUG_DB_LOGS) {
+        console.log('Core database pool closed');
+      }
     } catch (error) {
       console.warn('Could not close core database pool:', error);
       success = false;
