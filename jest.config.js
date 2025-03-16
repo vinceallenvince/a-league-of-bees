@@ -23,8 +23,10 @@ export default {
     '<rootDir>/client/src/**/*.test.ts',
     '<rootDir>/client/src/**/*.test.tsx'
   ],
-  // No longer ignoring any tests
-  testPathIgnorePatterns: [],
+  // Ignoring performance tests by default
+  testPathIgnorePatterns: [
+    'query-performance\\.test\\.ts$'
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],

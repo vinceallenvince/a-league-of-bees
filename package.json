@@ -17,6 +17,7 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "test:db": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/server/features/tournament/",
+    "test:performance": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/server/features/tournament/query-performance.test.ts --testPathIgnorePatterns=[] --detectOpenHandles",
     "lint": "eslint \"client/src/**/*.{ts,tsx}\" --quiet"
   },
   "dependencies": {

@@ -165,12 +165,29 @@ npm run test:coverage
 
 # Run only database-related tests
 npm run test:db
+
+# Run performance tests (separately from main test suite)
+npm run test:performance
+# OR use the script with formatted output
+./run-performance-tests.sh
+# OR use the direct script for debugging
+./run-perf-test-direct.sh
 ```
 
 Note: The tests require the test database to be set up properly with the correct configuration in `.env.test`. If you encounter database connection errors when running tests, make sure:
 1. The test database exists (`alob_test`)
 2. Your `.env.test` file has the correct `DATABASE_URL` with your system username
 3. You've run the test migrations with `npm run db:migrate:test`
+
+### Performance Tests
+
+Performance tests for database queries are maintained separately from the main test suite to avoid slowing down the development workflow. These tests:
+
+- Create test data with specified volumes
+- Measure query execution times
+- Verify queries meet performance expectations
+
+See [tests/server/features/tournament/PERFORMANCE-TESTS.md](./tests/server/features/tournament/PERFORMANCE-TESTS.md) for details on when and how to run performance tests.
 
 ### Environment Variables
 

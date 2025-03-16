@@ -5,6 +5,9 @@
  * It validates the effectiveness of the database optimizations.
  */
 
+// Set environment to test before importing database modules
+process.env.NODE_ENV = 'test';
+
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase, sleep } from '../../core/test-db';
 import {
@@ -252,6 +255,7 @@ describe('Tournament Query Performance Tests', () => {
     }
   }
 
+  // Only running this test for isolation
   it('should efficiently retrieve active tournaments with pagination', async () => {
     const { executionTime } = await measureQueryTime('getActiveTournaments', 
       () => queries.getActiveTournaments(1, 10)
@@ -261,6 +265,7 @@ describe('Tournament Query Performance Tests', () => {
     expect(executionTime).toBeLessThan(200);
   });
 
+  // Test for participants query
   it('should efficiently retrieve tournament participants', async () => {
     const tournamentId = testTournaments[0].id;
     
