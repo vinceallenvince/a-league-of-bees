@@ -206,11 +206,22 @@ DEBUG_DB_LOGS=true npm test
 VERBOSE_TESTS=true DEBUG_DB_LOGS=true npm test
 ```
 
+For completely silent test runs (suppressing all console output except errors):
+
+```bash
+# Run tests with minimal output
+SILENT_TESTS=true npm test
+
+# Or use the convenience script
+./run-silent-tests.sh
+```
+
 These options can be particularly helpful when:
-- Debugging test failures
-- Investigating database connection issues
-- Understanding test setup and teardown steps
-- Troubleshooting database-related problems
+- Debugging test failures (verbose mode)
+- Investigating database connection issues (debug mode)
+- Running tests in CI/CD pipelines (silent mode)
+- Understanding test setup and teardown steps (verbose mode)
+- Troubleshooting database-related problems (debug mode)
 
 ### Performance Tests
 

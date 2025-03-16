@@ -17,6 +17,11 @@ const originalConsole = {
 // Track if logging is currently suppressed
 let isLoggingSuppressed = false;
 
+// Get environment variables for logging control
+const VERBOSE_TESTS = process.env.VERBOSE_TESTS === 'true';
+const DEBUG_DB_LOGS = process.env.DEBUG_DB_LOGS === 'true';
+const SILENT_TESTS = process.env.SILENT_TESTS === 'true';
+
 // Additional configuration options
 interface LoggerOptions {
   keepTiming?: boolean;       // Keep query timing logs (default: true)
@@ -25,6 +30,7 @@ interface LoggerOptions {
   keepSetupTeardown?: boolean; // Keep setup and teardown logs (default: false)
   keepTestResults?: boolean;  // Keep test completion logs (default: true)
   keepDatabaseLogs?: boolean; // Keep database connection logs (default: false)
+  keepTeardownLogs?: boolean; // Keep global teardown logs (default: false)
 }
 
 // Default options
@@ -34,7 +40,8 @@ const defaultOptions: LoggerOptions = {
   keepWarnings: true,
   keepSetupTeardown: false,
   keepTestResults: true,
-  keepDatabaseLogs: false
+  keepDatabaseLogs: false,
+  keepTeardownLogs: false
 };
 
 /**
@@ -48,6 +55,24 @@ export function suppressConsoleOutput(optionsOrKeepTiming: LoggerOptions | boole
   const options: LoggerOptions = typeof optionsOrKeepTiming === 'boolean'
     ? { ...defaultOptions, keepTiming: optionsOrKeepTiming }
     : { ...defaultOptions, ...optionsOrKeepTiming };
+  
+  // Override with environment variables if set
+  if (VERBOSE_TESTS) {
+    // Verbose mode keeps all logs
+    Object.keys(options).forEach(key => {
+      options[key as keyof LoggerOptions] = true;
+    });
+  } else if (DEBUG_DB_LOGS) {
+    // Database debug mode keeps database logs
+    options.keepDatabaseLogs = true;
+    options.keepTeardownLogs = true;
+  } else if (SILENT_TESTS) {
+    // Silent mode suppresses everything except critical errors
+    Object.keys(options).forEach(key => {
+      options[key as keyof LoggerOptions] = false;
+    });
+    options.keepErrors = true;
+  }
   
   isLoggingSuppressed = true;
   
@@ -93,9 +118,11 @@ export function suppressConsoleOutput(optionsOrKeepTiming: LoggerOptions | boole
         return;
       }
       
-      // Always keep global teardown message
+      // Handle global teardown message
       if (message.includes('Global teardown:')) {
-        originalConsole.log(...args);
+        if (options.keepTeardownLogs) {
+          originalConsole.log(...args);
+        }
         return;
       }
     }
