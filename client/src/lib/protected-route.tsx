@@ -1,6 +1,7 @@
 import { useAuth } from "@/core/providers/auth-provider";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
+import { LazyExoticComponent } from "react";
 
 export function ProtectedRoute({
   path,
@@ -9,7 +10,7 @@ export function ProtectedRoute({
   key,
 }: {
   path: string;
-  component: () => React.JSX.Element;
+  component: (() => React.JSX.Element) | LazyExoticComponent<() => React.JSX.Element>;
   requireAuth?: boolean;
   key?: string;
 }) {
