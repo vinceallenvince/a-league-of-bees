@@ -114,11 +114,20 @@ For detailed logging specifications, see the [logging-specs.md](./specs/logging-
      ```
    - Note: For local development, the SENDGRID_API_KEY doesn't need to be a real key
    - Replace `your_username` with your actual macOS/Linux username
-5. Run database migrations:
+5. Configure test environment:
+   - Copy the `.env.example` file to `.env.test` (or create one if it doesn't exist)
+   - Required test variables:
+     ```
+     DATABASE_URL=postgresql://your_username@localhost:5432/alob_test
+     JEST_TIMEOUT=30000
+     ```
+   - Replace `your_username` with your actual macOS/Linux username
+6. Run database migrations:
    ```
    npm run db:migrate
+   npm run db:migrate:test
    ```
-6. Starting the development server:
+7. Starting the development server:
    - For OTP authentication: `npm run dev`
    - For Magic Link authentication: `npm run dev:magic-link`
    
@@ -142,6 +151,26 @@ When running in development mode:
    ```
 
 3. Use these codes/links to authenticate in the application
+
+### Running Tests
+
+The project includes both unit and integration tests. To run the tests:
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run only database-related tests
+npm run test:db
+```
+
+Note: The tests require the test database to be set up properly with the correct configuration in `.env.test`. If you encounter database connection errors when running tests, make sure:
+1. The test database exists (`alob_test`)
+2. Your `.env.test` file has the correct `DATABASE_URL` with your system username
+3. You've run the test migrations with `npm run db:migrate:test`
 
 ### Environment Variables
 
