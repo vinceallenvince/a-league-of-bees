@@ -8,7 +8,7 @@
 // Set environment to test before importing database modules
 process.env.NODE_ENV = 'test';
 
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase, sleep } from '../../core/test-db';
 import {
   users,
@@ -24,6 +24,8 @@ import * as queries from '../../../../server/features/tournament/queries';
 import { sql } from 'drizzle-orm';
 // Import helper for closing app db connection
 import { closeAppDbConnections } from '../../core/test-helpers';
+// Import the logging utility
+import { suppressConsoleOutput, restoreConsoleOutput } from '../../core/test-logger';
 
 describe('Tournament Query Performance Tests', () => {
   // Test data volumes
@@ -39,6 +41,51 @@ describe('Tournament Query Performance Tests', () => {
   
   // Set up a larger timeout for this test suite
   jest.setTimeout(120000); // 2 minutes
+
+  // Flag to control verbose output
+  const VERBOSE = process.env.VERBOSE_TESTS === 'true';
+
+  // Suppress console output before all tests if not in verbose mode
+  beforeAll(async () => {
+    // Only suppress logs if not in verbose mode
+    if (!VERBOSE) {
+      suppressConsoleOutput(true); // Keep timing messages
+    }
+    
+    console.log('Setting up database for performance testing...');
+    await setupTestDb();
+    await cleanupDatabase();
+    
+    // Generate test data
+    await generateTestData();
+    
+    // Create necessary views after data is generated
+    await createTestViews();
+    
+    console.log('Test data generated successfully');
+  }, 60000);
+
+  // Restore console output after all tests
+  afterAll(async () => {
+    console.log('Cleaning up after performance tests...');
+    
+    // Ensure all database operations are complete
+    await sleep(1000);
+    
+    // Clean up all test data
+    await cleanupDatabase();
+    
+    // Close the app db pools
+    await closeAppDbConnections();
+    
+    // Teardown the test db
+    await teardownTestDb();
+    
+    // Restore the original console methods if they were suppressed
+    if (!VERBOSE) {
+      restoreConsoleOutput();
+    }
+  }, 30000); // Increase timeout to ensure proper cleanup
 
   // Create necessary database views for testing
   async function createTestViews() {
@@ -133,36 +180,6 @@ describe('Tournament Query Performance Tests', () => {
     console.log('Test views created successfully');
   }
 
-  beforeAll(async () => {
-    console.log('Setting up database for performance testing...');
-    await setupTestDb();
-    await cleanupDatabase();
-    
-    // Generate test data
-    await generateTestData();
-    
-    // Create necessary views after data is generated
-    await createTestViews();
-    
-    console.log('Test data generated successfully');
-  }, 60000);
-
-  afterAll(async () => {
-    console.log('Cleaning up after performance tests...');
-    
-    // Ensure all database operations are complete
-    await sleep(1000);
-    
-    // Clean up all test data
-    await cleanupDatabase();
-    
-    // Close the app db pools
-    await closeAppDbConnections();
-    
-    // Teardown the test db
-    await teardownTestDb();
-  }, 30000); // Increase timeout to ensure proper cleanup
-
   /**
    * Helper function to measure query execution time
    */
@@ -213,7 +230,10 @@ describe('Tournament Query Performance Tests', () => {
       testTournaments.push(tournament[0]);
       
       // Add participants to this tournament
-      console.log(`Adding participants to tournament ${i}...`);
+      if (VERBOSE) {
+        console.log(`Adding participants to tournament ${i}...`);
+      }
+      
       const participantStatuses = ['invited', 'joined', 'declined'];
       for (let j = 0; j < NUM_PARTICIPANTS_PER_TOURNAMENT; j++) {
         const userIndex = (i + j) % NUM_USERS;

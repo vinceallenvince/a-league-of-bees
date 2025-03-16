@@ -8,6 +8,7 @@ echo "===================================================================="
 export NODE_ENV=test
 
 # Run the performance tests with increased timeout and detectOpenHandles flag
+# Note: Regular mode shows only the essential output like query performance times
 npm run test:performance -- --testTimeout=120000 > performance-test-output.log 2>&1
 EXIT_CODE=$?
 
@@ -16,6 +17,7 @@ if [ $EXIT_CODE -ne 0 ]; then
   tail -n 20 performance-test-output.log
   echo ""
   echo "Check the full log in performance-test-output.log for more details."
+  echo "To run with full output, use: VERBOSE_TESTS=true ./run-perf-test-direct.sh"
 else
   echo "✅ Performance tests succeeded!"
   

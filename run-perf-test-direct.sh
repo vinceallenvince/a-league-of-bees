@@ -1,6 +1,12 @@
 #!/bin/bash
 
 echo "Running performance tests directly (output will be shown in terminal)..."
+if [ "$VERBOSE_TESTS" = "true" ]; then
+  echo "VERBOSE mode enabled - showing all output"
+else
+  echo "Regular mode - showing only essential output"
+  echo "To see all logs, run with: VERBOSE_TESTS=true ./run-perf-test-direct.sh"
+fi
 echo "======================================================================"
 
 # Set environment to test

@@ -33,6 +33,7 @@ This script:
 - Runs only the performance tests
 - Captures the output to a log file
 - Displays a summary of query execution times
+- Suppresses non-essential console output
 
 ### Option 2: Run with direct script
 
@@ -44,7 +45,17 @@ If you want to see the output directly in the terminal:
 
 This script runs the tests with output displayed directly in the terminal, which can be helpful for debugging.
 
-### Option 3: Run with npm
+### Option 3: Run with verbose output
+
+To see all console output for debugging purposes:
+
+```bash
+VERBOSE_TESTS=true ./run-perf-test-direct.sh
+```
+
+This mode shows all console logs, which is useful when troubleshooting database setup issues or investigating unexpected test behavior.
+
+### Option 4: Run with npm
 
 ```bash
 npm run test:performance
@@ -71,6 +82,16 @@ const NUM_SCORES_PER_PARTICIPANT = 7;
 const NUM_NOTIFICATIONS = 100;
 ```
 
+## Console Output Control
+
+By default, the tests suppress most console output to make it easier to focus on performance results. The only messages displayed are:
+
+- Performance timing results (e.g., "Query 'getActiveTournaments' executed in 45.23ms")
+- Test failures and errors
+- Test summary information
+
+To see all console output, use the `VERBOSE_TESTS=true` environment variable when running the tests.
+
 ## Performance Expectations
 
 The tests assert that queries execute within these time limits:
@@ -93,6 +114,7 @@ If tests fail due to timeout or connection issues:
 2. Ensure adequate delays between database operations
 3. Verify that all database views are created successfully
 4. Try increasing the Jest timeout value (`jest.setTimeout()`)
+5. Run in verbose mode to see all console output: `VERBOSE_TESTS=true ./run-perf-test-direct.sh`
 
 If query performance doesn't meet expectations:
 
