@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase } from '../../core/test-db';
+import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase, sleep } from '../../core/test-db';
 import {
   users,
   tournaments,
@@ -19,6 +19,8 @@ import { v4 as uuidv4 } from 'uuid';
 // Import the query functions we want to test
 import * as queries from '../../../../server/features/tournament/queries';
 import { sql } from 'drizzle-orm';
+// Import db to close connection
+import { db as appDb } from '../../../../server/features/tournament/db';
 
 describe('Tournament Query Performance Tests', () => {
   // Test data volumes
@@ -144,9 +146,25 @@ describe('Tournament Query Performance Tests', () => {
 
   afterAll(async () => {
     console.log('Cleaning up after performance tests...');
+    
+    // Ensure all database operations are complete
+    await sleep(1000);
+    
+    // Clean up all test data
     await cleanupDatabase();
+    
+    // Close the app db pool
+    try {
+      // @ts-ignore - access internal pool to close it
+      await appDb.driver?.pool?.end();
+      console.log('App database pool closed');
+    } catch (error) {
+      console.warn('Could not close app database pool:', error);
+    }
+    
+    // Teardown the test db
     await teardownTestDb();
-  });
+  }, 30000); // Increase timeout to ensure proper cleanup
 
   /**
    * Helper function to measure query execution time
