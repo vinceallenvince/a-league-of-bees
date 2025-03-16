@@ -1,0 +1,12 @@
+fix: enable database integration tests with schema and cleanup improvements
+
+- Fixed TypeScript declarations by adding 'pg' and 'drizzle-orm' to tsconfig.json
+- Enhanced test migration script to run all SQL files manually
+- Fixed schema mismatch between code and database (submittedAt → created_at)
+- Improved database cleanup with better error handling
+- Added detailed logging to track test progress
+- Updated Jest configuration to control which tests are included
+- Added documentation explaining test setup and fixes
+
+The database integration tests now run correctly as part of the regular test suite.
+Only the complex integration test remains skipped for future work. 

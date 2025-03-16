@@ -3,8 +3,8 @@ import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase } from '../../core/test-db';
 import { users, tournaments, tournamentParticipants } from '../../../../shared/schema';
 
-// Using describe.skip to temporarily bypass these tests
-describe.skip('Tournament Participants', () => {
+// Re-enabling test, removing the skip
+describe('Tournament Participants', () => {
   beforeAll(async () => {
     console.log('Starting tournament participants test setup...');
     await setupTestDb();
@@ -28,11 +28,13 @@ describe.skip('Tournament Participants', () => {
   });
 
   it('should create tournament participant', async () => {
+    console.log('Starting test: should create tournament participant');
     // Create a test user
     const user = await db.insert(users).values({
       email: 'participant@example.com',
       otpAttempts: 0
     }).returning();
+    console.log('Created test user:', user[0].id);
 
     // Create a test tournament
     const tournament = await db.insert(tournaments).values({
@@ -42,6 +44,7 @@ describe.skip('Tournament Participants', () => {
       startDate: new Date(),
       timezone: 'UTC',
     }).returning();
+    console.log('Created test tournament:', tournament[0].id);
 
     // Create tournament participant
     const participant = await db.insert(tournamentParticipants).values({
@@ -49,18 +52,22 @@ describe.skip('Tournament Participants', () => {
       userId: user[0].id,
       status: 'invited'
     }).returning();
+    console.log('Created tournament participant:', participant[0].id);
 
     expect(participant[0].tournamentId).toBe(tournament[0].id);
     expect(participant[0].userId).toBe(user[0].id);
     expect(participant[0].status).toBe('invited');
+    console.log('Test completed: should create tournament participant');
   }, 10000);
 
   it('should update tournament participant status', async () => {
+    console.log('Starting test: should update tournament participant status');
     // Create a test user
     const user = await db.insert(users).values({
       email: 'participant-update@example.com',
       otpAttempts: 0
     }).returning();
+    console.log('Created test user:', user[0].id);
 
     // Create a test tournament
     const tournament = await db.insert(tournaments).values({
@@ -70,6 +77,7 @@ describe.skip('Tournament Participants', () => {
       startDate: new Date(),
       timezone: 'UTC',
     }).returning();
+    console.log('Created test tournament:', tournament[0].id);
 
     // Create tournament participant
     const participantData = {
@@ -78,18 +86,22 @@ describe.skip('Tournament Participants', () => {
       status: 'invited'
     };
     await db.insert(tournamentParticipants).values(participantData);
+    console.log('Created tournament participant');
 
     // Update participant status
     await db.update(tournamentParticipants)
       .set({ status: 'accepted' })
       .where(eq(tournamentParticipants.userId, user[0].id))
       .execute();
+    console.log('Updated participant status');
 
     // Fetch updated participant
     const updatedParticipant = await db.select()
       .from(tournamentParticipants)
       .where(eq(tournamentParticipants.userId, user[0].id));
+    console.log('Retrieved updated participant');
 
     expect(updatedParticipant[0].status).toBe('accepted');
+    console.log('Test completed: should update tournament participant status');
   }, 10000);
 });

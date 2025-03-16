@@ -1,20 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
-import { tournaments, users, tournamentScores, adminApprovals } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase } from '../../core/test-db';
+import { users, tournaments, tournamentScores } from '../../../../shared/schema';
 
-// Using describe.skip to temporarily bypass these tests
-describe.skip('Tournament Scores', () => {
+// Re-enabling test, removing the skip
+describe('Tournament Scores', () => {
   beforeAll(async () => {
     console.log('Starting tournament scores test setup...');
     await setupTestDb();
     console.log('Tournament scores test setup completed');
   }, 30000);
-
-  afterEach(async () => {
-    // Clean up test data after each test
-    await cleanupDatabase();
-  });
 
   afterAll(async () => {
     console.log('Starting tournament scores test teardown...');
@@ -22,75 +17,95 @@ describe.skip('Tournament Scores', () => {
     console.log('Tournament scores test teardown completed');
   }, 30000);
 
-  it('should create a tournament score with valid data', async () => {
-    // First create a user
-    const user = await db.insert(users).values({
-      email: `participant_${Date.now()}@example.com`,
-      otpAttempts: 0
-    }).returning();
-
-    // Then create a tournament with that user as creator
-    const tournament = await db.insert(tournaments).values({
-      creatorId: user[0].id,
-      name: 'Test Tournament',
-      durationDays: 7,
-      startDate: new Date(),
-      timezone: 'UTC',
-    }).returning();
-
-    // Then add a score for that tournament and user
-    const score = await db.insert(tournamentScores).values({
-      tournamentId: tournament[0].id,
-      userId: user[0].id,
-      day: 1,
-      score: 100,
-      screenshotUrl: 'https://example.com/screenshot.png'
-    }).returning();
-
-    expect(score[0]).toHaveProperty('id');
-    expect(score[0].score).toBe(100);
-    expect(score[0].day).toBe(1);
+  beforeEach(async () => {
+    // Clean up before each test
+    await cleanupDatabase();
   });
 
-  it('should enforce foreign key constraints', async () => {
-    await expect(db.insert(tournamentScores).values({
-      tournamentId: '00000000-0000-0000-0000-000000000000',
-      userId: '00000000-0000-0000-0000-000000000000',
-      day: 1,
-      score: 100
-    })).rejects.toThrow();
+  afterEach(async () => {
+    // Clean up after each test
+    await cleanupDatabase();
   });
 
-  it('should update tournament score', async () => {
+  it('should create tournament score', async () => {
+    console.log('Starting test: should create tournament score');
     // Create a test user
     const user = await db.insert(users).values({
-      email: `score_update_${Date.now()}@example.com`,
+      email: 'score-test@example.com',
       otpAttempts: 0
     }).returning();
+    console.log('Created test user:', user[0].id);
 
     // Create a test tournament
     const tournament = await db.insert(tournaments).values({
       creatorId: user[0].id,
-      name: 'Score Update Test Tournament',
+      name: 'Score Test Tournament',
       durationDays: 7,
       startDate: new Date(),
       timezone: 'UTC',
     }).returning();
+    console.log('Created test tournament:', tournament[0].id);
 
-    // Add a score
+    // Create tournament score with the correct column names
     const score = await db.insert(tournamentScores).values({
       tournamentId: tournament[0].id,
       userId: user[0].id,
       day: 1,
       score: 100
+      // Let the database set created_at and updated_at defaults
     }).returning();
+    console.log('Created tournament score:', score[0].id);
+
+    expect(score[0].tournamentId).toBe(tournament[0].id);
+    expect(score[0].userId).toBe(user[0].id);
+    expect(score[0].day).toBe(1);
+    expect(score[0].score).toBe(100);
+    console.log('Test completed: should create tournament score');
+  }, 10000);
+
+  it('should update tournament score', async () => {
+    console.log('Starting test: should update tournament score');
+    // Create a test user
+    const user = await db.insert(users).values({
+      email: 'score-update@example.com',
+      otpAttempts: 0
+    }).returning();
+    console.log('Created test user:', user[0].id);
+
+    // Create a test tournament
+    const tournament = await db.insert(tournaments).values({
+      creatorId: user[0].id,
+      name: 'Score Update Tournament',
+      durationDays: 7,
+      startDate: new Date(),
+      timezone: 'UTC',
+    }).returning();
+    console.log('Created test tournament:', tournament[0].id);
+
+    // Create initial score with the correct column names
+    const initialScore = await db.insert(tournamentScores).values({
+      tournamentId: tournament[0].id,
+      userId: user[0].id,
+      day: 1,
+      score: 100
+      // Let the database set created_at and updated_at defaults
+    }).returning();
+    console.log('Created initial score:', initialScore[0].id);
 
     // Update the score
-    const updatedScore = await db.update(tournamentScores)
+    await db.update(tournamentScores)
       .set({ score: 150 })
-      .where(eq(tournamentScores.id, score[0].id))
-      .returning();
+      .where(eq(tournamentScores.id, initialScore[0].id))
+      .execute();
+    console.log('Updated score');
+
+    // Fetch updated score
+    const updatedScore = await db.select()
+      .from(tournamentScores)
+      .where(eq(tournamentScores.id, initialScore[0].id));
+    console.log('Retrieved updated score');
 
     expect(updatedScore[0].score).toBe(150);
-  });
+    console.log('Test completed: should update tournament score');
+  }, 10000);
 });

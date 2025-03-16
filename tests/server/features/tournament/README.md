@@ -1,6 +1,6 @@
 # Database Integration Tests
 
-This directory contains database integration tests for the tournament features. These tests are temporarily excluded from the normal test run (`npm test`) due to dependency issues that need to be fixed.
+This directory contains database integration tests for the tournament features. These tests were previously excluded from the normal test run due to dependency issues, but they have now been fixed and are working correctly.
 
 ## Running Database Tests
 
@@ -10,34 +10,29 @@ To run the database integration tests:
 # Make sure the test database is properly set up
 npm run db:migrate:test
 
-# Run the database integration tests
+# Run all tests including database tests
+npm test
+
+# Run only the database integration tests
 npm run test:db
 ```
 
-## Current Issues
+## Fixed Issues
 
-The database integration tests are currently experiencing the following issues:
+The following issues have been resolved:
 
-1. Missing TypeScript type declarations for some modules (`drizzle-orm`, `pg`, `@jest/globals`)
-2. Table existence issues (e.g., "relation 'tournament_participants' does not exist")
-3. Foreign key constraint violations
-
-## Planned Fixes
-
-These issues will be addressed in a future update, which may include:
-
-1. Adding proper type declarations
-2. Ensuring that all required tables are created in test migrations
-3. Resolving foreign key constraint violations
-4. Improving database cleanup between tests
+1. ✅ Added TypeScript type declarations for modules (`drizzle-orm`, `pg`, `@jest/globals`) in tsconfig.json
+2. ✅ Fixed table existence issues by ensuring all required tables are created in test migrations
+3. ✅ Resolved schema mismatches between code and database (e.g., `submittedAt` vs `created_at`)
+4. ✅ Improved database cleanup between tests to avoid foreign key constraint violations
 
 ## Test Files
 
-- `integration.test.ts`: General database integration tests
+- `integration.test.ts`: General database integration tests (still skipped, can be enabled later)
 - `tournament-participants.test.ts`: Tests for tournament participant functionality
 - `tournament-scores.test.ts`: Tests for tournament scoring functionality  
 - `notifications.test.ts`: Tests for notification functionality
 
-## Temporary Workaround
+## Integration Test
 
-For now, these tests are excluded from the regular test run, which allows the CI/CD pipeline to continue functioning while these issues are being addressed. To include them in your local testing, use the `npm run test:db` command. 
+The main integration test (`integration.test.ts`) is still skipped by default as it contains more complex tests that may need additional work. You can enable it by removing it from the `testPathIgnorePatterns` in `jest.config.js` and removing the `.skip` in the test file. 

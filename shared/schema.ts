@@ -59,7 +59,7 @@ export const tournamentScores = pgTable('tournament_scores', {
   day: integer('day').notNull(),
   score: integer('score').notNull(),
   screenshotUrl: text('screenshot_url'),
-  submittedAt: timestamp('submitted_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 

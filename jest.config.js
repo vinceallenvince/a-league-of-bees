@@ -20,12 +20,9 @@ export default {
     '<rootDir>/client/src/**/*.test.ts',
     '<rootDir>/client/src/**/*.test.tsx'
   ],
-  // Ignore database integration tests by default
+  // Only ignore the integration test for now
   testPathIgnorePatterns: [
-    '<rootDir>/tests/server/features/tournament/integration.test.ts',
-    '<rootDir>/tests/server/features/tournament/tournament-participants.test.ts',
-    '<rootDir>/tests/server/features/tournament/tournament-scores.test.ts',
-    '<rootDir>/tests/server/features/tournament/notifications.test.ts'
+    '<rootDir>/tests/server/features/tournament/integration.test.ts'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   testEnvironmentOptions: {
