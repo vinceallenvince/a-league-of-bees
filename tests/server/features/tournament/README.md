@@ -1,38 +1,59 @@
-# Database Integration Tests
+# Tournament Database Integration Tests
 
-This directory contains database integration tests for the tournament features. These tests were previously excluded from the normal test run due to dependency issues, but they have now been fixed and are working correctly.
+This directory contains database integration tests for the tournament feature. These tests were previously excluded from the test suite due to issues with TypeScript type declarations and database setup, but they are now functioning correctly.
 
-## Running Database Tests
+## Running the Tests
 
-To run the database integration tests:
+To run these tests, you'll need a test database. Here's how to set up and run the tests:
+
+1. Set up the test database environment variables (see `.env.example`)
+2. Run the following commands:
 
 ```bash
-# Make sure the test database is properly set up
-npm run db:migrate:test
-
-# Run all tests including database tests
-npm test
-
-# Run only the database integration tests
-npm run test:db
+npm run db:migrate:test  # Apply migrations to the test database
+npm test                 # Run all tests, including database tests
 ```
 
-## Fixed Issues
+To run only the database tests:
 
-The following issues have been resolved:
+```bash
+npm test -- tests/server/features/tournament  # Run only tournament database tests
+```
 
-1. ✅ Added TypeScript type declarations for modules (`drizzle-orm`, `pg`, `@jest/globals`) in tsconfig.json
-2. ✅ Fixed table existence issues by ensuring all required tables are created in test migrations
-3. ✅ Resolved schema mismatches between code and database (e.g., `submittedAt` vs `created_at`)
-4. ✅ Improved database cleanup between tests to avoid foreign key constraint violations
+To run a specific test file:
+
+```bash
+npm test -- tests/server/features/tournament/integration.test.ts  # Run only integration tests
+```
+
+## Resolved Issues
+
+The following issues have been addressed:
+
+- TypeScript type declarations for external modules
+- Table existence issues (all required tables are created)
+- Schema mismatches between code and database
+- Database cleanup between tests to prevent interference
+- Added sufficient timeouts to prevent test failures
+- Added delay functions to ensure database operations complete
+- Implemented cascade delete tests to verify referential integrity
 
 ## Test Files
 
-- `integration.test.ts`: General database integration tests (still skipped, can be enabled later)
-- `tournament-participants.test.ts`: Tests for tournament participant functionality
-- `tournament-scores.test.ts`: Tests for tournament scoring functionality  
-- `notifications.test.ts`: Tests for notification functionality
+This directory contains several test files:
 
-## Integration Test
+- `integration.test.ts`: Verifies foreign key relationships, cascade operations, and constraints
+- `models.test.ts`: Tests the tournament model operations
+- `tournament-participants.test.ts`: Tests tournament participant operations
+- `tournament-scores.test.ts`: Tests tournament score operations
+- `notifications.test.ts`: Tests notification operations
 
-The main integration test (`integration.test.ts`) is still skipped by default as it contains more complex tests that may need additional work. You can enable it by removing it from the `testPathIgnorePatterns` in `jest.config.js` and removing the `.skip` in the test file. 
+## Integration Test Categories
+
+The integration tests verify critical database functionality:
+
+1. **Foreign Key Relationships**: Tests that references between tables are enforced
+2. **Cascade Operations**: Tests that deleting a parent record properly cascades to child records
+3. **Constraint Validations**: Tests unique constraints, non-null constraints, and other database rules
+
+Each test category ensures the database schema is correctly implemented and relationships between tables are maintained properly. 

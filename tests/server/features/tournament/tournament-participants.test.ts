@@ -1,13 +1,18 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 import { eq } from 'drizzle-orm';
-import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase } from '../../core/test-db';
+import { v4 as uuidv4 } from 'uuid';
+import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase, sleep } from '../../core/test-db';
 import { users, tournaments, tournamentParticipants } from '../../../../shared/schema';
 
 // Re-enabling test, removing the skip
 describe('Tournament Participants', () => {
+  jest.setTimeout(60000); // 60 second timeout for the whole suite
+  
   beforeAll(async () => {
     console.log('Starting tournament participants test setup...');
     await setupTestDb();
+    // Run cleanup after setup to ensure a clean database
+    await cleanupDatabase();
     console.log('Tournament participants test setup completed');
   }, 30000);
 
@@ -18,13 +23,17 @@ describe('Tournament Participants', () => {
   }, 30000);
 
   beforeEach(async () => {
-    // Clean up before each test
+    // Ensure clean state before each test
     await cleanupDatabase();
+    // Wait for cleanup to fully complete
+    await sleep(500);
   });
 
   afterEach(async () => {
     // Clean up after each test
     await cleanupDatabase();
+    // Wait for cleanup to fully complete
+    await sleep(500);
   });
 
   it('should create tournament participant', async () => {

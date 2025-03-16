@@ -20,10 +20,8 @@ export default {
     '<rootDir>/client/src/**/*.test.ts',
     '<rootDir>/client/src/**/*.test.tsx'
   ],
-  // Only ignore the integration test for now
-  testPathIgnorePatterns: [
-    '<rootDir>/tests/server/features/tournament/integration.test.ts'
-  ],
+  // No longer ignoring any tests
+  testPathIgnorePatterns: [],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],

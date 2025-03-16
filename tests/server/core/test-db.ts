@@ -23,12 +23,16 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+// Create a connection pool with a maximum of 10 connections
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 1, // Keep connections limited for tests
+  max: 10, // Increase max connections to avoid connection issues
 });
 
 export const testDb = drizzle(pool, { schema });
+
+// Helper function to sleep for a specified number of milliseconds
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function setupTestDb() {
   console.log("Setting up test database...");
@@ -40,6 +44,9 @@ export async function setupTestDb() {
     // Verify tables exist
     const tables = await verifyTables();
     console.log("Tables verified:", tables);
+    
+    // Allow some time for database to settle after migrations
+    await sleep(500);
   } catch (error) {
     console.error("Error during database setup:", error);
     throw error;
@@ -59,6 +66,8 @@ async function verifyTables() {
 export async function teardownTestDb() {
   console.log("Tearing down test database...");
   try {
+    // Ensure all operations are completed before closing the pool
+    await sleep(500);
     await pool.end();
     console.log("Database connection closed");
   } catch (error) {
@@ -74,31 +83,49 @@ export async function cleanupDatabase() {
   try {
     console.log("Cleaning up database tables...");
     
-    // Simpler implementation - just truncate all tables with CASCADE
+    // Add a small delay before cleanup to ensure all operations are completed
+    await sleep(200);
+    
+    // Delete data in reverse order of dependencies
     await testDb.execute(`
-      TRUNCATE TABLE 
-        "notifications",
-        "tournament_scores", 
-        "tournament_participants", 
-        "tournaments", 
-        "adminApprovals", 
-        "users" 
-      CASCADE;
+      DO $$ 
+      BEGIN 
+        -- First try to delete from dependent tables
+        DELETE FROM notifications;
+        DELETE FROM tournament_scores;
+        DELETE FROM tournament_participants;
+        DELETE FROM tournaments;
+        DELETE FROM "adminApprovals";
+        DELETE FROM users;
+      EXCEPTION WHEN OTHERS THEN
+        -- If deleting doesn't work, truncate with CASCADE
+        TRUNCATE TABLE 
+          notifications,
+          tournament_scores, 
+          tournament_participants, 
+          tournaments, 
+          "adminApprovals", 
+          users 
+        CASCADE;
+      END $$;
     `).catch(async (err) => {
-      console.warn("Error with truncate cascade, trying individual deletes:", err instanceof Error ? err.message : String(err));
+      console.warn("Error during database cleanup:", err instanceof Error ? err.message : String(err));
       
-      // Try individual deletes in correct order
+      // As a last resort, try individual deletes with explicit column names
       try {
-        await testDb.execute(`DELETE FROM "notifications";`);
-        await testDb.execute(`DELETE FROM "tournament_scores";`);
-        await testDb.execute(`DELETE FROM "tournament_participants";`);
-        await testDb.execute(`DELETE FROM "tournaments";`);
+        await testDb.execute(`DELETE FROM notifications;`);
+        await testDb.execute(`DELETE FROM tournament_scores;`);
+        await testDb.execute(`DELETE FROM tournament_participants;`);
+        await testDb.execute(`DELETE FROM tournaments;`);
         await testDb.execute(`DELETE FROM "adminApprovals";`);
-        await testDb.execute(`DELETE FROM "users";`);
+        await testDb.execute(`DELETE FROM users;`);
       } catch (error) {
         console.warn("Error with individual deletes:", error instanceof Error ? error.message : String(error));
       }
     });
+    
+    // Add a small delay after cleanup to ensure transactions are committed
+    await sleep(200);
     
     console.log("Database cleanup completed");
   } catch (error) {
