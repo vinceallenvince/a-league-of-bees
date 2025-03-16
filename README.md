@@ -83,6 +83,8 @@ For detailed logging specifications, see the [logging-specs.md](./specs/logging-
 
 1. Clone the repository
 2. Install dependencies: `npm install`
+   - If you face issues with company npm registry, use: `npm install --registry=https://registry.npmjs.org/`
+   - Note: A local `.npmrc` file is included that configures npm to use the public registry for this project
 3. Start the development server: `npm run dev`
 
 ### Environment Variables
