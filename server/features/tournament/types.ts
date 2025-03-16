@@ -30,6 +30,7 @@ export interface ActiveTournament {
   creator_first_name?: string;
   creator_last_name?: string;
   participant_count: number;
+  [key: string]: unknown;
 }
 
 export interface TournamentLeaderboardEntry {
@@ -41,6 +42,7 @@ export interface TournamentLeaderboardEntry {
   total_score: number;
   highest_score: number;
   days_participated: number;
+  [key: string]: unknown;
 }
 
 export interface UserTournament {
@@ -56,12 +58,14 @@ export interface UserTournament {
   joined_at: Date;
   score_submissions: number;
   total_score?: number;
+  [key: string]: unknown;
 }
 
 export interface UnreadNotificationSummary {
   user_id: string;
   type: NotificationType;
   notification_count: number;
+  [key: string]: unknown;
 }
 
 export interface TournamentDailyStat {
@@ -71,4 +75,5 @@ export interface TournamentDailyStat {
   average_score: number;
   highest_score: number;
   lowest_score: number;
+  [key: string]: unknown;
 } 

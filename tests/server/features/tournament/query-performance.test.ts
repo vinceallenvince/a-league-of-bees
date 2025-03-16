@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Import the query functions we want to test
 import * as queries from '../../../../server/features/tournament/queries';
+import { sql } from 'drizzle-orm';
 
 describe('Tournament Query Performance Tests', () => {
   // Test data volumes
@@ -34,6 +35,99 @@ describe('Tournament Query Performance Tests', () => {
   // Set up a larger timeout for this test suite
   jest.setTimeout(120000); // 2 minutes
 
+  // Create necessary database views for testing
+  async function createTestViews() {
+    console.log('Creating test database views...');
+    
+    // Create active_tournaments view
+    await db.execute(sql`
+      CREATE OR REPLACE VIEW active_tournaments AS
+      SELECT 
+        t.*,
+        u.email as creator_email,
+        u.username as creator_username,
+        u."firstName" as creator_first_name,
+        u."lastName" as creator_last_name,
+        COUNT(tp.id) as participant_count
+      FROM tournaments t
+      LEFT JOIN users u ON t.creator_id = u.id
+      LEFT JOIN tournament_participants tp ON t.id = tp.tournament_id
+      WHERE t.status = 'in_progress'
+      GROUP BY t.id, u.email, u.username, u."firstName", u."lastName"
+    `);
+    
+    // Create tournament_leaderboard view
+    await db.execute(sql`
+      CREATE OR REPLACE VIEW tournament_leaderboard AS
+      SELECT 
+        tp.tournament_id,
+        t.name as tournament_name,
+        tp.user_id,
+        u.username,
+        u.email,
+        COALESCE(SUM(ts.score), 0) as total_score,
+        COALESCE(MAX(ts.score), 0) as highest_score,
+        COUNT(DISTINCT ts.day) as days_participated
+      FROM tournament_participants tp
+      JOIN tournaments t ON tp.tournament_id = t.id
+      JOIN users u ON tp.user_id = u.id
+      LEFT JOIN tournament_scores ts ON tp.user_id = ts.user_id AND tp.tournament_id = ts.tournament_id
+      GROUP BY tp.tournament_id, t.name, tp.user_id, u.username, u.email
+    `);
+    
+    // Create unread_notifications_summary view
+    await db.execute(sql`
+      CREATE OR REPLACE VIEW unread_notifications_summary AS
+      SELECT 
+        user_id,
+        type,
+        COUNT(*) as notification_count
+      FROM notifications
+      WHERE read = false
+      GROUP BY user_id, type
+    `);
+    
+    // Create tournament_daily_stats view
+    await db.execute(sql`
+      CREATE OR REPLACE VIEW tournament_daily_stats AS
+      SELECT 
+        tournament_id,
+        day,
+        COUNT(DISTINCT user_id) as participants,
+        AVG(score) as average_score,
+        MAX(score) as highest_score,
+        MIN(score) as lowest_score
+      FROM tournament_scores
+      GROUP BY tournament_id, day
+      ORDER BY tournament_id, day
+    `);
+    
+    // Create user_tournaments view
+    await db.execute(sql`
+      CREATE OR REPLACE VIEW user_tournaments AS
+      SELECT 
+        u.id as user_id,
+        u.email,
+        u.username,
+        t.id as tournament_id,
+        t.name as tournament_name,
+        t.status as tournament_status,
+        t.start_date,
+        t.duration_days,
+        tp.status as participation_status,
+        tp.joined_at,
+        COUNT(ts.id) as score_submissions,
+        SUM(ts.score) as total_score
+      FROM users u
+      JOIN tournament_participants tp ON u.id = tp.user_id
+      JOIN tournaments t ON tp.tournament_id = t.id
+      LEFT JOIN tournament_scores ts ON u.id = ts.user_id AND t.id = ts.tournament_id
+      GROUP BY u.id, u.email, u.username, t.id, t.name, t.status, t.start_date, t.duration_days, tp.status, tp.joined_at
+    `);
+    
+    console.log('Test views created successfully');
+  }
+
   beforeAll(async () => {
     console.log('Setting up database for performance testing...');
     await setupTestDb();
@@ -42,6 +136,9 @@ describe('Tournament Query Performance Tests', () => {
     // Generate test data
     await generateTestData();
     
+    // Create necessary views after data is generated
+    await createTestViews();
+    
     console.log('Test data generated successfully');
   }, 60000);
 
@@ -49,7 +146,7 @@ describe('Tournament Query Performance Tests', () => {
     console.log('Cleaning up after performance tests...');
     await cleanupDatabase();
     await teardownTestDb();
-  }, 30000);
+  });
 
   /**
    * Helper function to measure query execution time
