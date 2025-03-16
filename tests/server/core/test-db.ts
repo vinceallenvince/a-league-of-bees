@@ -57,13 +57,18 @@ export async function teardownTestDb() {
  */
 export async function cleanupDatabase() {
   try {
-    // Delete in proper order to respect foreign key constraints
-    await testDb.delete(notifications).execute();
-    await testDb.delete(tournamentScores).execute();
-    await testDb.delete(tournamentParticipants).execute();
-    await testDb.delete(tournaments).execute();
-    await testDb.delete(adminApprovals).execute();
-    await testDb.delete(users).execute();
+    // Use SQL to truncate all tables with CASCADE to avoid foreign key issues
+    // This is safer and more efficient than deleting rows one by one
+    await testDb.execute(
+      `DO $$ 
+      BEGIN 
+        TRUNCATE TABLE "users", "tournaments", "tournament_participants", "tournament_scores", "admin_approvals" CASCADE;
+        -- Add any other tables that need to be cleaned here
+      EXCEPTION WHEN undefined_table THEN 
+        -- If tables don't exist yet, this is a no-op
+        NULL;
+      END $$;`
+    );
   } catch (error) {
     console.error("Error in database cleanup:", error);
   }
