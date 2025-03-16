@@ -22,3 +22,16 @@ ci: fix GitHub Actions workflow for database integration tests
 These changes ensure that database integration tests run properly in CI by
 explicitly setting up the test database with migrations and providing 
 adequate timeouts for the slower CI environment. 
+
+feat: implement database query optimization for tournament feature
+
+This commit completes ALOB-7 (Database Query Optimization) with the following improvements:
+
+- Add strategic indexes for all tournament-related tables to optimize common query patterns
+- Create database views for complex queries (active tournaments, leaderboards, stats)
+- Implement optimized query functions in TypeScript with proper type safety
+- Add performance testing with simulated data load
+- Create comprehensive documentation of optimization strategies
+
+These changes enhance query performance and scalability for tournament-related features
+while providing a solid foundation for future development. 
