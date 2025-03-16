@@ -25,5 +25,7 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],
-  }
+  },
+  // Default timeout that can be overridden by JEST_TIMEOUT env variable
+  testTimeout: process.env.JEST_TIMEOUT ? parseInt(process.env.JEST_TIMEOUT) : 30000
 }

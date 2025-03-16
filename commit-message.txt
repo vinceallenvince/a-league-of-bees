@@ -10,4 +10,15 @@ fix: enhance test reliability with improved database handling
 
 These changes ensure database tests run reliably by addressing race conditions, 
 connection issues, and timing problems that were causing intermittent failures.
-All integration tests are now enabled and consistently passing. 
+All integration tests are now enabled and consistently passing.
+
+ci: fix GitHub Actions workflow for database integration tests
+
+- Add explicit database migration step before running tests
+- Create .env.test file with CI database configuration
+- Update Jest config to support JEST_TIMEOUT environment variable
+- Set longer timeouts for CI environment (120 seconds)
+
+These changes ensure that database integration tests run properly in CI by
+explicitly setting up the test database with migrations and providing 
+adequate timeouts for the slower CI environment. 
