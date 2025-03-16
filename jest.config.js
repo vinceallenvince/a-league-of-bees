@@ -7,7 +7,10 @@ export default {
     '^@shared/(.*)$': '<rootDir>/shared/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
   },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  setupFilesAfterEnv: [
+    '<rootDir>/tests/setup.ts',
+    '<rootDir>/jest.setup.js'
+  ],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',

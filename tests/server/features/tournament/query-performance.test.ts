@@ -19,8 +19,8 @@ import { v4 as uuidv4 } from 'uuid';
 // Import the query functions we want to test
 import * as queries from '../../../../server/features/tournament/queries';
 import { sql } from 'drizzle-orm';
-// Import db to close connection
-import { db as appDb } from '../../../../server/features/tournament/db';
+// Import helper for closing app db connection
+import { closeAppDbConnections } from '../../core/test-helpers';
 
 describe('Tournament Query Performance Tests', () => {
   // Test data volumes
@@ -153,14 +153,8 @@ describe('Tournament Query Performance Tests', () => {
     // Clean up all test data
     await cleanupDatabase();
     
-    // Close the app db pool
-    try {
-      // @ts-ignore - access internal pool to close it
-      await appDb.driver?.pool?.end();
-      console.log('App database pool closed');
-    } catch (error) {
-      console.warn('Could not close app database pool:', error);
-    }
+    // Close the app db pools
+    await closeAppDbConnections();
     
     // Teardown the test db
     await teardownTestDb();
