@@ -30,6 +30,7 @@ const HomePage = lazy(() => import("@/pages/home-page"));
 export const coreRoutes = [
   <Route key="auth" path="/auth" component={AuthPage} />,
   <Route key="auth-verify" path="/auth/verify" component={MagicLinkVerifyPage} />,
+  <Route key="auth-magic-link" path="/auth/magic-link" component={MagicLinkVerifyPage} />,
   <Route key="auth-success" path="/auth/success" component={AuthSuccessPage} />,
 ];
 
