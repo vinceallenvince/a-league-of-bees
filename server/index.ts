@@ -1,10 +1,14 @@
+// Load environment variables from .env file
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { createApp } from "./core";
 import { setupVite, serveStatic } from "./vite";
 import logger from "./core/logger";
 import { createServer } from "net";
 
-const PORT = process.env.PORT || 3000;
-const HMR_PORT = process.env.HMR_PORT || 24678;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const HMR_PORT = process.env.HMR_PORT ? Number(process.env.HMR_PORT) : 24678;
 
 // Check if a port is in use
 function isPortInUse(port: number): Promise<boolean> {

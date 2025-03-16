@@ -85,7 +85,63 @@ For detailed logging specifications, see the [logging-specs.md](./specs/logging-
 2. Install dependencies: `npm install`
    - If you face issues with company npm registry, use: `npm install --registry=https://registry.npmjs.org/`
    - Note: A local `.npmrc` file is included that configures npm to use the public registry for this project
-3. Start the development server: `npm run dev`
+3. Set up a local database:
+   - Install PostgreSQL on your machine if not already installed
+     - macOS: `brew install postgresql@15` (using Homebrew)
+     - Windows: Download from [PostgreSQL website](https://www.postgresql.org/download/windows/)
+     - Linux: `sudo apt-get install postgresql`
+   - Create a local development database:
+     ```
+     createdb alob_dev
+     ```
+   - Create a test database (for running tests):
+     ```
+     createdb alob_test
+     ```
+4. Set up environment variables:
+   - Copy the `.env.example` file to `.env` (or create one if it doesn't exist)
+   - Required variables:
+     ```
+     NODE_ENV=development
+     SENDGRID_API_KEY=dummy_key_for_development
+     AUTH_METHOD=otp
+     BASE_URL=http://localhost:3000
+     MAX_OTP_ATTEMPTS=5
+     OTP_COOLDOWN_HOURS=1
+     SESSION_SECRET=local-dev-session-secret
+     DATABASE_URL=postgresql://your_username@localhost:5432/alob_dev
+     APP_URL=http://localhost:3000
+     ```
+   - Note: For local development, the SENDGRID_API_KEY doesn't need to be a real key
+   - Replace `your_username` with your actual macOS/Linux username
+5. Run database migrations:
+   ```
+   npm run db:migrate
+   ```
+6. Starting the development server:
+   - For OTP authentication: `npm run dev`
+   - For Magic Link authentication: `npm run dev:magic-link`
+   
+   **Note about authentication methods:**
+   - The application supports two authentication methods: OTP (One-Time Password) and Magic Link
+   - If you're setting `AUTH_METHOD=magic-link` in your `.env` file and it's not being recognized, use the dedicated npm script instead: `npm run dev:magic-link`
+   - In development mode, both OTP codes and Magic Links will be displayed in the server logs rather than sent via email
+
+### Viewing Authentication Codes
+
+When running in development mode:
+
+1. OTP codes will appear in the terminal logs with a message like:
+   ```
+   [info]: DEVELOPMENT MODE: Email not sent. OTP code: { otp: "123456", recipient: "user@example.com" }
+   ```
+
+2. Magic Links will appear in the terminal logs with a message like:
+   ```
+   [info]: DEVELOPMENT MODE: Email not sent. Magic link: { magicLinkUrl: "http://localhost:3000/auth/magic-link?token=abc123...", recipient: "user@example.com" }
+   ```
+
+3. Use these codes/links to authenticate in the application
 
 ### Environment Variables
 

@@ -1,23 +1,38 @@
-import sgMail from '@sendgrid/mail';
 import logger from './logger';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error('SENDGRID_API_KEY environment variable must be set');
+// Only import SendGrid in production
+let sgMail: any = null;
+if (process.env.NODE_ENV === 'production') {
+  // Dynamic import for SendGrid only in production
+  import('@sendgrid/mail').then(module => {
+    sgMail = module.default;
+    if (process.env.SENDGRID_API_KEY) {
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      logger.info('SendGrid API initialized for production');
+    } else {
+      logger.error('SENDGRID_API_KEY is required in production');
+    }
+  });
+} else {
+  logger.info('Using mock email implementation for development');
 }
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-// Define interface for SendGrid error
-interface SendGridError extends Error {
-  response?: {
-    body?: any;
-  };
-}
-
+// In development, just log the OTP
 export async function sendOtpEmail(email: string, otp: string) {
+  if (process.env.NODE_ENV === 'development') {
+    logger.info('DEVELOPMENT MODE: Email not sent. OTP code:', { otp, recipient: email });
+    return;
+  }
+  
+  // In production, use SendGrid
+  if (!sgMail) {
+    logger.error('SendGrid not initialized');
+    return;
+  }
+  
   const msg = {
     to: email,
-    from: 'vince@vinceallen.com', // Verified Single Sender address
+    from: 'vince@vinceallen.com',
     subject: 'Your One-Time Password',
     html: `
       <h1>Your One-Time Password</h1>
@@ -25,30 +40,38 @@ export async function sendOtpEmail(email: string, otp: string) {
       <p>This code will expire in 30 minutes.</p>
     `,
   };
-
+  
   try {
-    logger.info('Sending one-time password email', { recipient: email });
     await sgMail.send(msg);
-    logger.info('One-time password email sent successfully', { recipient: email });
-  } catch (error) {
-    const sgError = error as SendGridError;
-    logger.error('Error sending one-time password email', {
-      recipient: email,
-      error: sgError.message,
-      response: sgError.response?.body || {}
+    logger.info('OTP email sent successfully', { recipient: email });
+  } catch (error: any) {
+    logger.error('Failed to send OTP email', { 
+      error: error.message,
+      response: error.response?.body || {},
+      recipient: email 
     });
-    throw new Error('Failed to send OTP email');
   }
 }
 
+// In development, just log the magic link
 export async function sendMagicLinkEmail(email: string, token: string) {
-  // Base URL (use environment variable in production)
   const baseUrl = process.env.APP_URL || 'http://localhost:3000';
   const magicLinkUrl = `${baseUrl}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
   
+  if (process.env.NODE_ENV === 'development') {
+    logger.info('DEVELOPMENT MODE: Email not sent. Magic link:', { magicLinkUrl, recipient: email });
+    return;
+  }
+  
+  // In production, use SendGrid
+  if (!sgMail) {
+    logger.error('SendGrid not initialized');
+    return;
+  }
+  
   const msg = {
     to: email,
-    from: 'vince@vinceallen.com', // Verified Single Sender address
+    from: 'vince@vinceallen.com',
     subject: 'Your Magic Link for Sign In',
     html: `
       <h1>Magic Link Sign In</h1>
@@ -59,18 +82,15 @@ export async function sendMagicLinkEmail(email: string, token: string) {
       <p>This link will expire in 15 minutes and can only be used once.</p>
     `,
   };
-
+  
   try {
-    logger.info('Sending magic link email', { recipient: email });
     await sgMail.send(msg);
     logger.info('Magic link email sent successfully', { recipient: email });
-  } catch (error) {
-    const sgError = error as SendGridError;
-    logger.error('Error sending magic link email', {
-      recipient: email,
-      error: sgError.message,
-      response: sgError.response?.body || {}
+  } catch (error: any) {
+    logger.error('Failed to send magic link email', { 
+      error: error.message,
+      response: error.response?.body || {},
+      recipient: email 
     });
-    throw new Error('Failed to send magic link email');
   }
 } 

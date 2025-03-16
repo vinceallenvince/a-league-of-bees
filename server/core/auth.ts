@@ -18,6 +18,10 @@ declare global {
 
 // Environment variable to control auth method
 const AUTH_METHOD = process.env.AUTH_METHOD || 'otp'; // 'otp' or 'magic-link'
+logger.info('Auth method loaded from environment', { 
+  authMethod: AUTH_METHOD, 
+  envValue: process.env.AUTH_METHOD 
+});
 
 function generateOtp(): string {
   return randomInt(100000, 999999).toString();
