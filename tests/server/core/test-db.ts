@@ -17,6 +17,9 @@ import {
   adminApprovals,
 } from "../../../shared/schema";
 
+// Import from test-helpers to coordinate pool closures
+import { getPoolsClosed, markPoolClosed } from './test-helpers';
+
 if (!process.env.DATABASE_URL) {
   throw new Error(
     "DATABASE_URL environment variable is required for tests. Please check your .env.test file.",
@@ -36,6 +39,9 @@ export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, 
 
 export async function setupTestDb() {
   console.log("Setting up test database...");
+  // Log the test database URL
+  console.log(`Test database URL: ${process.env.DATABASE_URL?.split('@')[1]?.split('/')[1]}`);
+  
   try {
     // Use correct path to migrations folder from project root
     await migrate(testDb, { migrationsFolder: "./migrations" });
@@ -68,8 +74,17 @@ export async function teardownTestDb() {
   try {
     // Ensure all operations are completed before closing the pool
     await sleep(500);
-    await pool.end();
-    console.log("Database connection closed");
+    
+    // Check if the pool was already closed elsewhere
+    const poolsClosed = getPoolsClosed();
+    
+    if (!poolsClosed.testDb) {
+      await pool.end();
+      markPoolClosed('testDb', true);
+      console.log("Database connection closed");
+    } else {
+      console.log("Database connection already closed");
+    }
   } catch (error) {
     console.error("Error during database teardown:", error);
     throw error;
