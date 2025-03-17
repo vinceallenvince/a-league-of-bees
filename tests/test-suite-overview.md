@@ -211,9 +211,14 @@ The project includes various test utilities and mocks:
 
 ## Running Tests
 
-To run all tests:
+To run all tests (sequentially by default):
 ```bash
 npm test
+```
+
+To run tests in parallel (faster but may cause conflicts between tests):
+```bash
+npm run test:parallel
 ```
 
 To run a specific test file:
@@ -226,4 +231,21 @@ To run with coverage:
 npm run test:coverage
 ```
 
-The `test:coverage` script will run the complete test suite and generate a full coverage report. Using `npm test -- --coverage` will only show coverage for files imported by the tests that were executed in that specific run. 
+The `test:coverage` script will run the complete test suite and generate a full coverage report. Using `npm test -- --coverage` will only show coverage for files imported by the tests that were executed in that specific run.
+
+### Sequential vs Parallel Testing
+
+By default, tests run in sequential mode (using `--runInBand`) to prevent test interference. This is important for tests that share resources like database connections or manipulate the same database tables.
+
+Benefits of sequential testing:
+- More reliable test results
+- Prevents test interference
+- Easier to debug test failures
+- Recommended for CI/CD pipelines
+
+Benefits of parallel testing:
+- Faster execution (especially for large test suites)
+- Better for local development when testing specific features
+- Useful when you need quick feedback
+
+If you encounter test failures in parallel mode that pass in sequential mode, it typically indicates test isolation issues that should be addressed. 

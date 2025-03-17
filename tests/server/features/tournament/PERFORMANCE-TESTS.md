@@ -20,6 +20,8 @@ Performance tests are **excluded from the regular test suite** to avoid slowing 
 - Implementing new database indexes
 - Before deploying to production
 
+> **Note:** Performance tests always run in sequential mode (with `--runInBand`) to ensure consistent timing measurements and prevent resource conflicts.
+
 ### Option 1: Run with script (recommended)
 
 Use the provided shell script:

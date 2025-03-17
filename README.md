@@ -182,6 +182,20 @@ Note: The tests require the test database to be set up properly with the correct
 2. Your `.env.test` file has the correct `DATABASE_URL` with your system username
 3. You've run the test migrations with `npm run db:migrate:test`
 
+### Sequential vs Parallel Test Execution
+
+By default, tests run in sequential mode to prevent interference between tests. This ensures more reliable results, especially for database-related tests.
+
+```bash
+# Run tests sequentially (default behavior)
+npm test
+
+# Run tests in parallel (faster but may cause test interference)
+npm run test:parallel
+```
+
+Sequential execution is particularly important for tests that share resources like database connections. If you encounter failures in parallel mode that pass in sequential mode, this typically indicates test isolation issues.
+
 ### Test Console Output
 
 By default, test runs suppress most console output to keep the terminal clean and make it easier to identify test failures. Only critical information like test results and timing data is displayed.
