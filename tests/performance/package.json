@@ -1,0 +1,20 @@
+{
+  "name": "a-league-of-bees-performance-tests",
+  "version": "1.0.0",
+  "description": "Performance testing infrastructure for A League of Bees",
+  "type": "module",
+  "scripts": {
+    "test:perf": "node performance-runner.js",
+    "test:perf:tournament": "node tournament-performance.test.js",
+    "test:perf:participants": "node participant-performance.test.js",
+    "test:perf:scores": "node score-performance.test.js",
+    "test:perf:all": "npm run test:perf"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

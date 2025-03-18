@@ -18,7 +18,8 @@
     "test:parallel": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand",
     "test:db": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/server/features/tournament/",
-    "test:performance": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/server/features/tournament/query-performance.test.ts --testPathIgnorePatterns=[] --detectOpenHandles",
+    "test:performance:old": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/server/features/tournament/query-performance.test.ts --testPathIgnorePatterns=[] --detectOpenHandles",
+    "test:performance": "node tests/performance/run-performance-tests.js",
     "lint": "eslint \"client/src/**/*.{ts,tsx}\" --quiet"
   },
   "dependencies": {
