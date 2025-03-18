@@ -160,4 +160,118 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-7  
+**Status**: COMPLETE
+
+## Backend Implementation Tasks
+
+### ALOB-9: Create Tournament Feature Module Structure
+**Type**: Task  
+**Summary**: Set up the directory structure and base files for the tournament feature  
+**Description**:
+- Create directory structure for the tournament feature module
+- Set up base files for controllers, services, validators, and types
+- Implement module exports and imports
+- Configure feature initialization in the main application
+- Document feature module organization
+
+**Story Points**: 3  
+**Dependencies**: ALOB-8  
+**Status**: TODO
+
+### ALOB-10: Tournament Creation and Management API
+**Type**: Task  
+**Summary**: Implement API endpoints for tournament CRUD operations  
+**Description**:
+- Implement tournament creation endpoint (POST /api/tournaments)
+- Implement tournament listing endpoint (GET /api/tournaments)
+- Implement tournament details endpoint (GET /api/tournaments/:id)
+- Implement tournament update endpoint (PUT /api/tournaments/:id)
+- Implement tournament cancellation endpoint (DELETE /api/tournaments/:id)
+- Add input validation for all endpoints
+- Write unit and integration tests for all endpoints
+- Document API usage and error responses
+
+**Story Points**: 8  
+**Dependencies**: ALOB-9  
+**Status**: TODO
+
+### ALOB-11: Tournament Participant Management API
+**Type**: Task  
+**Summary**: Implement API endpoints for managing tournament participants  
+**Description**:
+- Implement join tournament endpoint (POST /api/tournaments/:id/join)
+- Implement invite users endpoint (POST /api/tournaments/:id/invite)
+- Implement participant listing endpoint (GET /api/tournaments/:id/participants)
+- Implement participant status update endpoint (PUT /api/tournaments/:id/participants/:userId)
+- Add authorization checks for tournament creator vs participants
+- Write unit and integration tests for all endpoints
+- Document API usage and error responses
+
+**Story Points**: 5  
+**Dependencies**: ALOB-10  
+**Status**: TODO
+
+### ALOB-12: Tournament Score Management API
+**Type**: Task  
+**Summary**: Implement API endpoints for submitting and retrieving scores  
+**Description**:
+- Implement score submission endpoint (POST /api/tournaments/:id/scores)
+- Implement score update endpoint (PUT /api/tournaments/:id/scores/:day)
+- Implement score history endpoint (GET /api/tournaments/:id/scores)
+- Implement leaderboard endpoint (GET /api/tournaments/:id/leaderboard)
+- Add validation for score submissions including time constraints
+- Handle optional screenshot uploads for score verification
+- Write unit and integration tests for all endpoints
+- Document API usage and error responses
+
+**Story Points**: 8  
+**Dependencies**: ALOB-11  
+**Status**: TODO
+
+### ALOB-13: Dashboard and Notification API
+**Type**: Task  
+**Summary**: Implement API endpoints for user dashboard and notifications  
+**Description**:
+- Implement dashboard data endpoint (GET /api/dashboard)
+- Implement notifications listing endpoint (GET /api/notifications)
+- Implement mark notification as read endpoint (PUT /api/notifications/:id/read)
+- Implement dashboard data aggregation service
+- Add pagination and filtering for dashboard and notification data
+- Write unit and integration tests for all endpoints
+- Document API usage and error responses
+
+**Story Points**: 5  
+**Dependencies**: ALOB-12  
+**Status**: TODO
+
+### ALOB-14: Tournament Background Jobs
+**Type**: Task  
+**Summary**: Implement background jobs for tournament lifecycle management  
+**Description**:
+- Implement tournament lifecycle management job (start/end tournaments)
+- Implement reminder notification job (daily reminders, upcoming tournaments)
+- Set up job scheduling infrastructure
+- Ensure proper error handling and retries for failed jobs
+- Implement logging for job execution
+- Write tests for job logic and scheduling
+- Document job configuration and monitoring
+
+**Story Points**: 5  
+**Dependencies**: ALOB-13  
+**Status**: TODO
+
+### ALOB-15: Backend Integration and Optimization
+**Type**: Task  
+**Summary**: Integrate all backend components and optimize performance  
+**Description**:
+- Ensure proper integration between all tournament feature components
+- Optimize database queries for tournament listing and leaderboards
+- Implement caching for frequently accessed tournament data
+- Perform load testing with realistic user scenarios
+- Address any performance bottlenecks
+- Document optimization techniques and results
+- Ensure proper error handling across all endpoints
+
+**Story Points**: 5  
+**Dependencies**: ALOB-14  
 **Status**: TODO
