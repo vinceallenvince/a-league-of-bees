@@ -123,9 +123,41 @@
 - Identify and create necessary indexes for common query patterns
 - Create database views for complex data requirements
 - Define database query helper functions/stored procedures if needed
-- Performance test with simulated load
 - Document query optimization strategies
 
 **Story Points**: 5  
 **Dependencies**: ALOB-6   
 **Status**: COMPLETE
+
+### ALOB-8: Performance Testing
+**Type**: Task  
+**Summary**: Implement the performance testing in a way that doesn't affect the existing test infrastructure  
+**Description**:
+- Avoid affecting database connection management for client and server tests
+- Add basic query performance measurement
+- Set up a minimal test dataset for performance testing
+- Implement proper database connection cleanup
+- Create isolated test files for performance testing
+- Document performance testing approach and results
+
+**Implementation Details**:
+- Before committing changes, always run the existing tests via npm test to confirm there are no negative side effects
+- Performance tests should run in a separate environment from regular tests
+- Use a dedicated connection pool for performance tests
+- Ensure proper cleanup of all resources after tests complete
+
+**Additional Implementation Steps**:
+1. **Create Isolated Directory Structure**: Set up a completely separate directory for performance tests, configurations, utilities, and fixtures
+2. **Implement Dedicated Database Connection Management**: Create standalone database connection utilities that don't interact with regular test utilities
+3. **Use Standalone Scripts**: Run performance tests through Node.js scripts instead of Jest to avoid shared test setup
+4. **Develop Performance-Specific Data Setup and Cleanup**: Create functions specifically for performance test data that won't affect regular test data
+5. **Build Measurement Utilities**: Implement timing utilities dedicated to performance measurement
+6. **Add Separate npm Script**: Create a distinct npm script for running performance tests
+7. **Maintain Complete Isolation**: Never import regular test utilities into performance tests and vice versa
+8. **Use Manual Resource Cleanup**: Always explicitly close connections when performance tests complete
+9. **Run Tests in Independent Processes**: Execute performance tests in a separate process from Jest tests
+10. **Regularly Verify No Side Effects**: After any changes, run regular tests to confirm no interference
+
+**Story Points**: 5  
+**Dependencies**: ALOB-7  
+**Status**: TODO
