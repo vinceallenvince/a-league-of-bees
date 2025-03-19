@@ -1,10 +1,47 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { Request, Response } from 'express';
-import { tournamentController } from '../../../../server/features/tournament/controllers/tournament';
-import { tournamentService } from '../../../../server/features/tournament/services/tournament';
+
+// Create mock functions
+const loggerMock = {
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+  debug: jest.fn()
+};
+
+// Mock validator
+const validateCreateTournamentMock = jest.fn();
+const validateUpdateTournamentMock = jest.fn();
+
+// Mock all the dependencies before importing the tested code
+// Mock the logger to prevent console output during tests
+jest.mock('../../../../server/core/logger', () => {
+  return {
+    __esModule: true,
+    default: loggerMock
+  };
+});
+
+// Mock the tournament validator
+jest.mock('../../../../server/features/tournament/validators/tournament', () => ({
+  validateCreateTournament: validateCreateTournamentMock,
+  validateUpdateTournament: validateUpdateTournamentMock
+}));
 
 // Mock the tournament service
-jest.mock('../../../../server/features/tournament/services/tournament');
+jest.mock('../../../../server/features/tournament/services/tournament', () => ({
+  tournamentService: {
+    getTournaments: jest.fn(),
+    getTournamentById: jest.fn(),
+    createTournament: jest.fn(),
+    updateTournament: jest.fn(),
+    cancelTournament: jest.fn()
+  }
+}));
+
+// Now import the code being tested
+import { tournamentController } from '../../../../server/features/tournament/controllers/tournament';
+import { tournamentService } from '../../../../server/features/tournament/services/tournament';
 
 type TournamentStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
 
@@ -49,6 +86,27 @@ describe('Tournament Controller', () => {
     
     // Reset mock implementations
     jest.clearAllMocks();
+    
+    // Set default validator responses
+    validateCreateTournamentMock.mockReturnValue({ 
+      success: true, 
+      data: { 
+        name: 'New Tournament',
+        description: 'Test description',
+        durationDays: 7,
+        startDate: new Date(),
+        requiresVerification: false,
+        timezone: 'UTC'
+      } 
+    });
+    
+    validateUpdateTournamentMock.mockReturnValue({ 
+      success: true, 
+      data: { 
+        name: 'Updated Tournament',
+        description: 'Updated description'
+      } 
+    });
   });
 
   describe('getTournamentsHandler', () => {
@@ -98,6 +156,10 @@ describe('Tournament Controller', () => {
         mockResponse as Response
       );
       
+      expect(loggerMock.error).toHaveBeenCalledWith(
+        'Error getting tournaments', 
+        expect.objectContaining({ error: expect.any(Error) })
+      );
       expect(responseStatus).toHaveBeenCalledWith(500);
       expect(responseJson).toHaveBeenCalledWith({ 
         error: 'Failed to get tournaments',
@@ -184,9 +246,35 @@ describe('Tournament Controller', () => {
         mockResponse as Response
       );
       
-      expect(tournamentService.createTournament).toHaveBeenCalledWith(mockTournamentData, 'test-user-id');
+      expect(tournamentService.createTournament).toHaveBeenCalledWith(
+        expect.objectContaining(mockTournamentData), 
+        'test-user-id'
+      );
       expect(responseStatus).toHaveBeenCalledWith(201);
       expect(responseJson).toHaveBeenCalledWith(mockCreatedTournament);
+    });
+    
+    it('should handle validation errors', async () => {
+      validateCreateTournamentMock.mockReturnValue({
+        success: false,
+        error: {
+          format: () => ({ name: { _errors: ['Name is required'] } })
+        }
+      });
+      
+      mockRequest.body = { description: 'Missing name' };
+      
+      await tournamentController.createTournamentHandler(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      
+      expect(responseStatus).toHaveBeenCalledWith(400);
+      expect(responseJson).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid tournament data'
+        })
+      );
     });
   });
   
@@ -222,8 +310,36 @@ describe('Tournament Controller', () => {
         mockResponse as Response
       );
       
-      expect(tournamentService.updateTournament).toHaveBeenCalledWith('1', mockUpdateData, 'test-user-id');
+      expect(tournamentService.updateTournament).toHaveBeenCalledWith(
+        '1', 
+        expect.objectContaining(mockUpdateData), 
+        'test-user-id'
+      );
       expect(responseJson).toHaveBeenCalledWith(mockUpdatedTournament);
+    });
+    
+    it('should handle validation errors', async () => {
+      validateUpdateTournamentMock.mockReturnValue({
+        success: false,
+        error: {
+          format: () => ({ name: { _errors: ['Name is too short'] } })
+        }
+      });
+      
+      mockRequest.params = { id: '1' };
+      mockRequest.body = { name: 'A' };
+      
+      await tournamentController.updateTournamentHandler(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      
+      expect(responseStatus).toHaveBeenCalledWith(400);
+      expect(responseJson).toHaveBeenCalledWith(
+        expect.objectContaining({ 
+          error: 'Invalid update data'
+        })
+      );
     });
   });
   
@@ -255,6 +371,24 @@ describe('Tournament Controller', () => {
       
       expect(tournamentService.cancelTournament).toHaveBeenCalledWith('1', 'test-user-id');
       expect(responseJson).toHaveBeenCalledWith(mockCancelledTournament);
+    });
+    
+    it('should handle not found errors', async () => {
+      jest.spyOn(tournamentService, 'cancelTournament')
+        .mockRejectedValue(new Error('Tournament not found'));
+      
+      mockRequest.params = { id: 'non-existent' };
+      
+      await tournamentController.cancelTournamentHandler(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      
+      expect(loggerMock.error).toHaveBeenCalled();
+      expect(responseStatus).toHaveBeenCalledWith(404);
+      expect(responseJson).toHaveBeenCalledWith({
+        error: 'Tournament not found'
+      });
     });
   });
 }); 
