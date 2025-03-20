@@ -24,6 +24,16 @@ import {
 } from './types';
 
 /**
+ * Get tournament by ID
+ * Uses the primary key index
+ */
+export async function getTournamentById(id: string) {
+  return db.query.tournaments.findFirst({
+    where: eq(tournaments.id, id)
+  });
+}
+
+/**
  * Get active tournaments with pagination
  * Uses the idx_tournaments_status index
  */
