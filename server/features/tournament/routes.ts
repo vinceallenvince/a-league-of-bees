@@ -3,6 +3,8 @@ import { requireAuth } from '../../core/middleware/auth';
 import { tournamentController } from './controllers/tournament';
 import { participantController } from './controllers/participant';
 import { scoreController } from './controllers/score';
+import { dashboardController } from './controllers/dashboard';
+import { notificationController } from './controllers/notification';
 
 // Create a router for tournament routes
 const router = express.Router();
@@ -25,6 +27,13 @@ router.post('/:id/scores', requireAuth, scoreController.submitScoreHandler);
 router.put('/:id/scores/:day', requireAuth, scoreController.updateScoreHandler);
 router.get('/:id/scores', requireAuth, scoreController.getScoreHistoryHandler);
 router.get('/:id/leaderboard', requireAuth, scoreController.getLeaderboardHandler);
+
+// Dashboard route - will be registered at /api/tournaments/dashboard
+router.get('/dashboard', requireAuth, dashboardController.getDashboardHandler);
+
+// Notification routes - will be registered at /api/tournaments/notifications
+router.get('/notifications', requireAuth, notificationController.getNotificationsHandler);
+router.put('/notifications/read', requireAuth, notificationController.markAsReadHandler);
 
 // Export the router
 export const tournamentRoutes = router; 
