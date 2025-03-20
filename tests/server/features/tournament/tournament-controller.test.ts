@@ -247,7 +247,14 @@ describe('Tournament Controller', () => {
       );
       
       expect(tournamentService.createTournament).toHaveBeenCalledWith(
-        expect.objectContaining(mockTournamentData), 
+        expect.objectContaining({
+          name: 'New Tournament',
+          description: 'Test description',
+          durationDays: 7,
+          startDate: expect.any(Date),
+          requiresVerification: false,
+          timezone: 'UTC'
+        }), 
         'test-user-id'
       );
       expect(responseStatus).toHaveBeenCalledWith(201);
