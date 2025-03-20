@@ -216,6 +216,63 @@
 - Write unit and integration tests for all endpoints
 - Document API usage and error responses
 
+**Implementation Details**:
+- Follow a test-driven development approach for all endpoints:
+  1. **Create controller test files first**: Define test files for each controller action before implementation
+  2. **Define test cases for each endpoint**:
+     - Happy path tests (valid requests with expected responses)
+     - Error case tests (invalid input, unauthorized access, not found)
+     - Edge case tests (boundary conditions, special scenarios)
+  3. **Set up request validation tests**:
+     - Test validation for required fields
+     - Test validation for field types and formats
+     - Test validation for business rules (e.g., start date must be in future)
+  4. **Mock dependencies in tests**:
+     - Mock tournament service in controller tests
+     - Mock database queries in service tests
+     - Define test fixtures and factory functions for test data
+  5. **Implement minimal controller code** to make tests pass
+  6. **Implement service layer tests** for business logic
+  7. **Implement minimal service code** to make tests pass
+  8. **Refactor and optimize** while maintaining test coverage
+
+- Specific TDD steps for each endpoint:
+  1. **POST /api/tournaments (Create)**:
+     - Test validation of required fields (name, start_date, etc.)
+     - Test authorization (only authenticated users can create)
+     - Test successful creation returns correct response format
+     - Test service layer handles database interactions correctly
+  
+  2. **GET /api/tournaments (List)**:
+     - Test pagination parameters
+     - Test filtering options (status, date range)
+     - Test response format and structure
+     - Test proper handling of empty results
+  
+  3. **GET /api/tournaments/:id (Details)**:
+     - Test not found case for invalid ID
+     - Test authorized access to private tournaments
+     - Test response includes all required tournament data
+     - Test relationships (creator, participants) are properly included
+  
+  4. **PUT /api/tournaments/:id (Update)**:
+     - Test only creator can update tournament
+     - Test validation of update fields
+     - Test business rules (e.g., cannot update after start date)
+     - Test partial updates work correctly
+  
+  5. **DELETE /api/tournaments/:id (Cancel)**:
+     - Test only creator can cancel tournament
+     - Test business rules (e.g., cannot cancel completed tournament)
+     - Test proper status update instead of actual deletion
+     - Test related data handling (participant notifications)
+
+- Implement tests with proper isolation and setup/teardown:
+  - Use beforeEach/afterEach for test isolation
+  - Create helper functions for common test scenarios
+  - Implement proper mocking of external dependencies
+  - Use in-memory test database for integration tests
+
 **Story Points**: 8  
 **Dependencies**: ALOB-9  
 **Status**: TODO
