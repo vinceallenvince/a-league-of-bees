@@ -6,6 +6,7 @@ import { createApp } from "./core";
 import { setupVite, serveStatic } from "./vite";
 import logger from "./core/logger";
 import { createServer } from "net";
+import { initializeTournamentJobs } from './features/tournament/jobs';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const HMR_PORT = process.env.HMR_PORT ? Number(process.env.HMR_PORT) : 24678;
@@ -49,6 +50,18 @@ async function startServer() {
       }
       throw error;
     }
+  }
+
+  // Initialize background jobs
+  if (process.env.ENABLE_JOBS !== 'false') {
+    try {
+      initializeTournamentJobs();
+      logger.info('Background jobs initialized successfully', { service: 'jobs' });
+    } catch (error) {
+      logger.error('Failed to initialize background jobs', { error, service: 'jobs' });
+    }
+  } else {
+    logger.info('Background jobs disabled via ENABLE_JOBS environment variable', { service: 'jobs' });
   }
 
   // Start the server - listen on all interfaces to be accessible externally
