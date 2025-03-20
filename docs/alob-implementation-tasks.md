@@ -289,9 +289,79 @@
 - Write unit and integration tests for all endpoints
 - Document API usage and error responses
 
+**Implementation Details**:
+- Follow a test-driven development approach for all participant management endpoints:
+  1. **Create controller test files first**:
+     - Define test files for the participant controller
+     - Implement test setup for participant-related operations
+     - Use proper mocking for dependencies
+  
+  2. **Design tests for authorization logic**:
+     - Test creator-only operations (e.g., inviting users)
+     - Test participant operations (e.g., joining tournaments)
+     - Test permissions for viewing participant data
+  
+  3. **Set up service layer tests**:
+     - Test business logic for participant management
+     - Test validation rules for participant operations
+     - Test participant status transitions (invited → joined/declined)
+  
+  4. **Implement request validation tests**:
+     - Test validation for invite list formats
+     - Test validation for join request requirements
+     - Test validation for status update operations
+  
+  5. **Mock dependencies across test layers**:
+     - Mock participant service in controller tests
+     - Mock database interactions in service tests
+     - Create test fixtures for participant data
+  
+  6. **Implement error handling tests**:
+     - Test appropriate error responses for invalid operations
+     - Test conflict handling (already invited, already joined)
+     - Test not found scenarios
+
+- Specific TDD steps for each endpoint:
+  1. **POST /api/tournaments/:id/join (Join Tournament)**:
+     - Test authorization (authenticated users only)
+     - Test validation (tournament must exist and be in valid state)
+     - Test business rules (cannot join completed/cancelled tournaments)
+     - Test idempotency (handling repeated join requests)
+     - Test success response with participant information
+     - Test error cases (tournament not found, already joined, etc.)
+  
+  2. **POST /api/tournaments/:id/invite (Invite Users)**:
+     - Test creator-only authorization
+     - Test validation of invite list format
+     - Test bulk invitation handling
+     - Test notification creation for invited users
+     - Test duplicate invitation handling
+     - Test error cases (invalid emails, tournament not active, etc.)
+  
+  3. **GET /api/tournaments/:id/participants (List Participants)**:
+     - Test response format and structure
+     - Test pagination parameters
+     - Test filtering by participant status
+     - Test authorization (tournament creator sees all, participants see limited data)
+     - Test error cases (tournament not found, unauthorized access)
+  
+  4. **PUT /api/tournaments/:id/participants/:userId (Update Status)**:
+     - Test authorization (user can only update their own status)
+     - Test creator permissions (can update any participant)
+     - Test valid status transitions (invited → joined/declined)
+     - Test invalid transition handling
+     - Test notification creation for status changes
+     - Test error cases (participant not found, invalid status)
+
+- Implement integration tests for participant flows:
+  - Test complete invitation → join flow
+  - Test invitation → decline flow
+  - Test creator removing participants
+  - Test tournament cancellation effect on participants
+
 **Story Points**: 5  
 **Dependencies**: ALOB-10  
-**Status**: TODO
+**Status**: In Progres
 
 ### ALOB-12: Tournament Score Management API
 **Type**: Task  
