@@ -275,7 +275,7 @@
 
 **Story Points**: 8  
 **Dependencies**: ALOB-9  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-11: Tournament Participant Management API
 **Type**: Task  
