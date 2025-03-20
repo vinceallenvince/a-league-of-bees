@@ -361,7 +361,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-10  
-**Status**: In Progres
+**Status**: COMPLETE
 
 ### ALOB-12: Tournament Score Management API
 **Type**: Task  
@@ -376,9 +376,95 @@
 - Write unit and integration tests for all endpoints
 - Document API usage and error responses
 
+**Implementation Details**:
+- Follow a test-driven development approach for all score management endpoints:
+  1. **Create score controller test files first**:
+     - Define test files for the score controller actions
+     - Set up test fixtures for tournament scores data
+     - Implement mocking for file uploads and storage
+     - Create helper functions for testing time-based constraints
+
+  2. **Design tests for score submission validation**:
+     - Test score value validation (numeric, positive, within allowed range)
+     - Test day validation (within tournament duration)
+     - Test time window validation (submissions only allowed on specific days)
+     - Test screenshot validation for tournaments requiring verification
+     - Test duplicate submission handling
+
+  3. **Implement authorization test cases**:
+     - Test only tournament participants can submit scores
+     - Test participants can only submit their own scores
+     - Test access controls on score history and leaderboard views
+
+  4. **Create service layer tests for score business logic**:
+     - Test score calculation and aggregation logic
+     - Test leaderboard generation and sorting
+     - Test daily score limits and constraints
+     - Test tournament status checks (can't submit to completed tournaments)
+
+  5. **Design file upload test cases**:
+     - Test valid file uploads (images only)
+     - Test file size limits
+     - Test file storage and retrieval
+     - Test file validation for required screenshots
+
+  6. **Implement error handling tests**:
+     - Test appropriate error responses for invalid scores
+     - Test time window violations (too early/late submissions)
+     - Test file upload failures
+     - Test not found scenarios (tournament, day, user)
+
+- Specific TDD steps for each endpoint:
+  1. **POST /api/tournaments/:id/scores (Submit Score)**:
+     - Test authorization (only joined participants can submit)
+     - Test validation of score data (value, day, etc.)
+     - Test time constraints (can only submit for current/past days)
+     - Test file upload for screenshot (when verification required)
+     - Test business rules (maximum one score per day, etc.)
+     - Test successful submission returns correct response
+     - Test error cases (invalid score, wrong day, etc.)
+
+  2. **PUT /api/tournaments/:id/scores/:day (Update Score)**:
+     - Test authorization (users can only update their own scores)
+     - Test time window for updates (e.g., can only update within 24 hours)
+     - Test score value validation
+     - Test screenshot replacement
+     - Test tournament state validation (can't update after tournament ends)
+     - Test error cases (expired update window, invalid day, etc.)
+
+  3. **GET /api/tournaments/:id/scores (Score History)**:
+     - Test response format and structure
+     - Test filtering by user and day parameters
+     - Test pagination
+     - Test authorization (participants can see their own scores)
+     - Test screenshot URL inclusion in responses
+     - Test error cases (tournament not found, unauthorized access)
+
+  4. **GET /api/tournaments/:id/leaderboard (Leaderboard)**:
+     - Test response format with aggregated scores
+     - Test correct sorting order (highest total score first)
+     - Test tie-breaking rules
+     - Test day filtering (leaderboard for specific day)
+     - Test result limiting and pagination
+     - Test performance with large number of participants
+     - Test error cases (tournament not found, invalid parameters)
+
+- Implement integration tests for score flows:
+  - Test complete score submission → view on leaderboard flow
+  - Test score update → reflected in history and leaderboard
+  - Test daily progression of tournament scores
+  - Test tournament completion effect on score submissions
+  - Test leaderboard calculation accuracy with various score patterns
+
+- Implement screenshot handling:
+  - Test file storage integration
+  - Test image validation and processing
+  - Test URL generation and access control
+  - Test cleanup of invalid/rejected uploads
+
 **Story Points**: 8  
 **Dependencies**: ALOB-11  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-13: Dashboard and Notification API
 **Type**: Task  
@@ -392,9 +478,94 @@
 - Write unit and integration tests for all endpoints
 - Document API usage and error responses
 
+**Implementation Details**:
+- Follow a test-driven development approach for dashboard and notification endpoints:
+  1. **Create controller test files first**:
+     - Define test files for dashboard and notification controllers
+     - Set up test fixtures with sample tournament, participant, and notification data
+     - Create mock responses for aggregated dashboard data
+     - Design appropriate test cases for notification status changes
+
+  2. **Design tests for dashboard data aggregation**:
+     - Test tournament summary calculation (active, completed, pending counts)
+     - Test tournament participation metrics (joined vs. invited counts)
+     - Test user performance data (average scores, ranking)
+     - Test recently active tournaments display
+     - Test upcoming tournament reminders
+
+  3. **Implement pagination and filtering tests**:
+     - Test notification pagination parameters
+     - Test filtering by notification type
+     - Test filtering by read/unread status
+     - Test sorting options (newest first, oldest first)
+     - Test combined filters with pagination
+
+  4. **Create service layer tests for data processing**:
+     - Test notification grouping by tournament
+     - Test dashboard data compilation from multiple sources
+     - Test notification read/unread status management
+     - Test efficient querying patterns for dashboard data
+
+  5. **Implement proper error handling tests**:
+     - Test invalid notification ID scenarios
+     - Test unauthorized access attempts
+     - Test invalid pagination parameters
+     - Test malformed filter requests
+
+  6. **Design authorization test cases**:
+     - Test that users can only access their own dashboard data
+     - Test that users can only access their own notifications
+     - Test that users can only mark their own notifications as read
+
+- Specific TDD steps for each endpoint:
+  1. **GET /api/dashboard (Dashboard Data)**:
+     - Test response structure with all required dashboard sections
+     - Test authenticated user access requirement
+     - Test tournament summary section (counts by status)
+     - Test user participation section (tournaments joined)
+     - Test recent activity section (latest scores, invitations)
+     - Test upcoming events section (imminent tournaments)
+     - Test performance metrics section (user rankings)
+     - Test error cases and graceful degradation (partial data availability)
+
+  2. **GET /api/notifications (List Notifications)**:
+     - Test pagination with page and pageSize parameters
+     - Test default pagination values
+     - Test sorting order (newest notifications first)
+     - Test filtering by notification type
+     - Test filtering by read/unread status
+     - Test combined filters (type + status)
+     - Test response format with notification details
+     - Test tournament context inclusion in response
+     - Test empty result handling
+     - Test error cases (invalid parameters)
+
+  3. **PUT /api/notifications/:id/read (Mark as Read)**:
+     - Test successful status update to read
+     - Test idempotent behavior (marking already-read notification)
+     - Test batch operation for multiple notifications
+     - Test authorization (can only mark own notifications)
+     - Test validation of notification IDs
+     - Test error cases (notification not found, unauthorized)
+     - Test proper response format (updated notification)
+
+- Implement integration tests for notification flows:
+  - Test tournament invitation → notification creation → mark as read flow
+  - Test tournament start → notification creation → dashboard update flow
+  - Test score submission → leaderboard update → notification flow
+  - Test notification aggregation in dashboard
+  - Test notification counts update when marking as read
+
+- Design dashboard data aggregation service:
+  - Test efficient query patterns to minimize database load
+  - Test caching strategies for dashboard data
+  - Test incremental updates vs. full refreshes
+  - Test error handling in aggregation process
+  - Test performance with various data volumes
+
 **Story Points**: 5  
 **Dependencies**: ALOB-12  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-14: Tournament Background Jobs
 **Type**: Task  

@@ -5,6 +5,8 @@ import profileRoutes from "../features/profile/routes";
 import adminRoutes from "../features/admin/routes";
 import infoRoutes from "../features/info/routes";
 import { tournamentRoutes } from "../features/tournament/routes";
+import { dashboardRoutes } from "../features/dashboard/routes";
+import { notificationRoutes } from "../features/notification/routes";
 import logger from "./logger";
 
 /**
@@ -31,13 +33,16 @@ export function registerRoutes(app: Express): Server {
     app.use('/api/admin', adminRoutes);
     app.use('/api/info', infoRoutes);
     app.use('/api/tournaments', tournamentRoutes);
+    app.use('/api/dashboard', dashboardRoutes);
+    app.use('/api/notifications', notificationRoutes);
     
     // API 404 handler - only applied to /api routes
     app.use('/api/*', apiNotFoundHandler);
     
     // Log successful route registration
     logger.info('Routes registered successfully', {
-      routes: ['/api/profile', '/api/admin', '/api/info', '/api/tournaments']
+      routes: ['/api/profile', '/api/admin', '/api/info', '/api/tournaments', 
+              '/api/dashboard', '/api/notifications']
     });
   } catch (error) {
     logger.error('Error registering routes', { error });
