@@ -79,6 +79,14 @@ async function sendDailyScoreReminders(currentDate: Date): Promise<number> {
         const diffTime = Math.abs(currentDate.getTime() - startDate.getTime());
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         
+        logger.debug('Tournament day calculation', {
+          tournamentId: tournament.id,
+          startDate: startDate.toISOString(),
+          currentDate: currentDate.toISOString(),
+          diffTime,
+          diffDays
+        });
+        
         // Only send reminders if within tournament duration
         if (diffDays < tournament.durationDays) {
           const currentDay = diffDays + 1; // 1-indexed for user display
@@ -95,17 +103,40 @@ async function sendDailyScoreReminders(currentDate: Date): Promise<number> {
           
           // For each participant, check if they've submitted a score today
           for (const participant of participants) {
+            // Get the day for which we should check scores
+            // Since tournament days are 0-indexed, with day 0 being the start date,
+            // if the tournament started yesterday (diffDays = 1), we should look for day 0 scores
+            const dayToCheck = Math.max(0, diffDays - 1);
+            
+            logger.debug('Checking for scores', {
+              tournamentId: tournament.id,
+              userId: participant.userId,
+              dayToCheck,
+              diffDays
+            });
+            
             const todayScore = await db.select()
               .from(tournamentScores)
               .where(and(
                 eq(tournamentScores.tournamentId, tournament.id),
                 eq(tournamentScores.userId, participant.userId),
-                eq(tournamentScores.day, diffDays) // 0-indexed in database
+                eq(tournamentScores.day, dayToCheck)
               ))
               .limit(1);
             
-            // If no score submitted today, send a reminder
-            if (todayScore.length === 0) {
+            // Check if there are any existing reminders for today to avoid duplicates
+            const existingReminders = await db.select()
+              .from(notifications)
+              .where(and(
+                eq(notifications.tournamentId, tournament.id),
+                eq(notifications.userId, participant.userId),
+                eq(notifications.type, 'reminder'),
+                sql`DATE(${notifications.createdAt}) = DATE(${currentDate})`
+              ))
+              .limit(1);
+              
+            // If no score submitted today and no reminder yet, send a reminder
+            if (todayScore.length === 0 && existingReminders.length === 0) {
               await db.insert(notifications)
                 .values({
                   id: uuidv4(),
@@ -118,6 +149,21 @@ async function sendDailyScoreReminders(currentDate: Date): Promise<number> {
                 .execute();
               
               remindersSent++;
+              
+              logger.info('Sent score submission reminder', {
+                tournamentId: tournament.id,
+                userId: participant.userId,
+                day: dayToCheck,
+                currentDay
+              });
+            } else {
+              logger.debug('Skipped sending reminder', {
+                tournamentId: tournament.id,
+                userId: participant.userId,
+                day: dayToCheck,
+                hasScore: todayScore.length > 0,
+                hasReminder: existingReminders.length > 0
+              });
             }
           }
         }
@@ -178,20 +224,45 @@ async function sendUpcomingTournamentReminders(currentDate: Date): Promise<numbe
         // Remove duplicates
         const uniqueRecipientIds = Array.from(new Set(recipientIds));
         
-        // Send reminder to each participant
+        // Check for existing reminders to avoid duplicates
         for (const userId of uniqueRecipientIds) {
-          await db.insert(notifications)
-            .values({
-              id: uuidv4(),
-              userId,
+          // Check if we've already sent a reminder today
+          const existingReminders = await db.select()
+            .from(notifications)
+            .where(and(
+              eq(notifications.tournamentId, tournament.id),
+              eq(notifications.userId, userId),
+              eq(notifications.type, 'tournament_start'),
+              sql`DATE(${notifications.createdAt}) = DATE(${currentDate})`
+            ))
+            .limit(1);
+            
+          // Only send reminder if we haven't already sent one today
+          if (existingReminders.length === 0) {
+            await db.insert(notifications)
+              .values({
+                id: uuidv4(),
+                userId,
+                tournamentId: tournament.id,
+                type: 'tournament_start',
+                message: `Tournament "${tournament.name}" will start tomorrow!`,
+                read: false
+              })
+              .execute();
+            
+            remindersSent++;
+            
+            logger.info('Sent upcoming tournament reminder', {
               tournamentId: tournament.id,
-              type: 'tournament_start',
-              message: `Tournament "${tournament.name}" will start tomorrow!`,
-              read: false
-            })
-            .execute();
-          
-          remindersSent++;
+              userId,
+              startDate: tournament.startDate
+            });
+          } else {
+            logger.debug('Skipped sending upcoming tournament reminder (already sent today)', {
+              tournamentId: tournament.id,
+              userId
+            });
+          }
         }
       } catch (error) {
         logger.error(`Error sending upcoming tournament reminders for ${tournament.id}`, { error });

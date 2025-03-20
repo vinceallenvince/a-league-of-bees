@@ -7,6 +7,7 @@ import { setupVite, serveStatic } from "./vite";
 import logger from "./core/logger";
 import { createServer } from "net";
 import { initializeTournamentJobs } from './features/tournament/jobs';
+import { jobScheduler } from './core/jobs/scheduler';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const HMR_PORT = process.env.HMR_PORT ? Number(process.env.HMR_PORT) : 24678;
@@ -68,6 +69,33 @@ async function startServer() {
   server.listen(PORT, '0.0.0.0', () => {
     logger.info(`Server is running on port ${PORT}`, { service: 'web-service' });
   });
+
+  // Setup graceful shutdown
+  const shutdown = () => {
+    logger.info('Server shutting down...', { service: 'web-service' });
+    
+    // First, shutdown the job scheduler
+    jobScheduler.shutdown();
+    logger.info('Job scheduler shutdown complete', { service: 'jobs' });
+    
+    // Then, close the server
+    server.close(() => {
+      logger.info('Server shutdown complete', { service: 'web-service' });
+      process.exit(0);
+    });
+    
+    // Force exit after 10s if server doesn't close gracefully
+    setTimeout(() => {
+      logger.error('Server did not close gracefully, forcing exit', { service: 'web-service' });
+      process.exit(1);
+    }, 10000);
+  };
+  
+  // Register shutdown handlers
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+
+  return { app, server };
 }
 
 // Handle uncaught exceptions

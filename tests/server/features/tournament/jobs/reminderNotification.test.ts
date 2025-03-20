@@ -4,6 +4,7 @@ import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase, sleep } fro
 import { tournaments, users, tournamentParticipants, notifications, tournamentScores } from '../../../../../shared/schema';
 import { reminderNotificationJob } from '../../../../../server/features/tournament/jobs/reminderNotification';
 import { JobContext } from '../../../../../server/core/jobs/types';
+import { jobScheduler } from '../../../../../server/core/jobs/scheduler';
 
 // Mock logger to prevent noisy test output
 jest.mock('../../../../../server/core/logger', () => ({
@@ -30,6 +31,8 @@ describe('Reminder Notification Job', () => {
 
   afterAll(async () => {
     await teardownTestDb();
+    // Reset the job scheduler at the end of all tests
+    jobScheduler.reset();
   }, 30000);
 
   beforeEach(async () => {

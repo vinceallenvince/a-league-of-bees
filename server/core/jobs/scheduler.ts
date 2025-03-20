@@ -257,6 +257,17 @@ class JobScheduler {
   }
 
   /**
+   * Reset the scheduler state (for testing purposes)
+   */
+  public reset(): void {
+    this.shutdown();
+    this.jobs.clear();
+    this.executionHistory = [];
+    this.isInitialized = false;
+    logger.debug('Job scheduler reset complete');
+  }
+
+  /**
    * Restore scheduled jobs (used after initialization)
    */
   private restoreScheduledJobs(): void {

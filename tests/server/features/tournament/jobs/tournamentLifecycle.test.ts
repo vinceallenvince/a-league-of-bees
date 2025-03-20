@@ -4,6 +4,7 @@ import { testDb as db, setupTestDb, teardownTestDb, cleanupDatabase, sleep } fro
 import { tournaments, users, tournamentParticipants, notifications } from '../../../../../shared/schema';
 import { tournamentLifecycleJob } from '../../../../../server/features/tournament/jobs/tournamentLifecycle';
 import { JobContext } from '../../../../../server/core/jobs/types';
+import { jobScheduler } from '../../../../../server/core/jobs/scheduler';
 
 // Mock logger to prevent noisy test output
 jest.mock('../../../../../server/core/logger', () => ({
@@ -30,6 +31,8 @@ describe('Tournament Lifecycle Job', () => {
 
   afterAll(async () => {
     await teardownTestDb();
+    // Reset the job scheduler at the end of all tests
+    jobScheduler.reset();
   }, 30000);
 
   beforeEach(async () => {
