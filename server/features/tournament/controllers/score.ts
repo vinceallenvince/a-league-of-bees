@@ -3,6 +3,16 @@ import logger from '../../../core/logger';
 import { scoreService } from '../services/score';
 import { validateSubmitScore, validateUpdateScore } from '../validators/score';
 
+// Extended Request type that includes the file property
+interface RequestWithFile extends Request {
+  file?: {
+    filename: string;
+    path?: string;
+    mimetype?: string;
+    size?: number;
+  };
+}
+
 /**
  * Controller for tournament score operations
  */
@@ -10,7 +20,7 @@ export const scoreController = {
   /**
    * Submit a new score for a tournament day
    */
-  submitScoreHandler: async (req: Request, res: Response) => {
+  submitScoreHandler: async (req: RequestWithFile, res: Response) => {
     try {
       const { id: tournamentId } = req.params;
       const validationResult = validateSubmitScore(req.body);
@@ -51,7 +61,7 @@ export const scoreController = {
           return res.status(404).json({ error: error.message });
         }
         
-        if (error.message.includes('already submitted')) {
+        if (error.message.includes('already been submitted') || error.message.includes('already submitted')) {
           return res.status(400).json({ error: error.message });
         }
         
@@ -74,7 +84,7 @@ export const scoreController = {
   /**
    * Update an existing score
    */
-  updateScoreHandler: async (req: Request, res: Response) => {
+  updateScoreHandler: async (req: RequestWithFile, res: Response) => {
     try {
       const { id: tournamentId, day } = req.params;
       const validationResult = validateUpdateScore(req.body);

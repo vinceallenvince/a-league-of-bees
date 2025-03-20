@@ -361,7 +361,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-10  
-**Status**: In Progres
+**Status**: COMPLETE
 
 ### ALOB-12: Tournament Score Management API
 **Type**: Task  
@@ -376,9 +376,95 @@
 - Write unit and integration tests for all endpoints
 - Document API usage and error responses
 
+**Implementation Details**:
+- Follow a test-driven development approach for all score management endpoints:
+  1. **Create score controller test files first**:
+     - Define test files for the score controller actions
+     - Set up test fixtures for tournament scores data
+     - Implement mocking for file uploads and storage
+     - Create helper functions for testing time-based constraints
+
+  2. **Design tests for score submission validation**:
+     - Test score value validation (numeric, positive, within allowed range)
+     - Test day validation (within tournament duration)
+     - Test time window validation (submissions only allowed on specific days)
+     - Test screenshot validation for tournaments requiring verification
+     - Test duplicate submission handling
+
+  3. **Implement authorization test cases**:
+     - Test only tournament participants can submit scores
+     - Test participants can only submit their own scores
+     - Test access controls on score history and leaderboard views
+
+  4. **Create service layer tests for score business logic**:
+     - Test score calculation and aggregation logic
+     - Test leaderboard generation and sorting
+     - Test daily score limits and constraints
+     - Test tournament status checks (can't submit to completed tournaments)
+
+  5. **Design file upload test cases**:
+     - Test valid file uploads (images only)
+     - Test file size limits
+     - Test file storage and retrieval
+     - Test file validation for required screenshots
+
+  6. **Implement error handling tests**:
+     - Test appropriate error responses for invalid scores
+     - Test time window violations (too early/late submissions)
+     - Test file upload failures
+     - Test not found scenarios (tournament, day, user)
+
+- Specific TDD steps for each endpoint:
+  1. **POST /api/tournaments/:id/scores (Submit Score)**:
+     - Test authorization (only joined participants can submit)
+     - Test validation of score data (value, day, etc.)
+     - Test time constraints (can only submit for current/past days)
+     - Test file upload for screenshot (when verification required)
+     - Test business rules (maximum one score per day, etc.)
+     - Test successful submission returns correct response
+     - Test error cases (invalid score, wrong day, etc.)
+
+  2. **PUT /api/tournaments/:id/scores/:day (Update Score)**:
+     - Test authorization (users can only update their own scores)
+     - Test time window for updates (e.g., can only update within 24 hours)
+     - Test score value validation
+     - Test screenshot replacement
+     - Test tournament state validation (can't update after tournament ends)
+     - Test error cases (expired update window, invalid day, etc.)
+
+  3. **GET /api/tournaments/:id/scores (Score History)**:
+     - Test response format and structure
+     - Test filtering by user and day parameters
+     - Test pagination
+     - Test authorization (participants can see their own scores)
+     - Test screenshot URL inclusion in responses
+     - Test error cases (tournament not found, unauthorized access)
+
+  4. **GET /api/tournaments/:id/leaderboard (Leaderboard)**:
+     - Test response format with aggregated scores
+     - Test correct sorting order (highest total score first)
+     - Test tie-breaking rules
+     - Test day filtering (leaderboard for specific day)
+     - Test result limiting and pagination
+     - Test performance with large number of participants
+     - Test error cases (tournament not found, invalid parameters)
+
+- Implement integration tests for score flows:
+  - Test complete score submission → view on leaderboard flow
+  - Test score update → reflected in history and leaderboard
+  - Test daily progression of tournament scores
+  - Test tournament completion effect on score submissions
+  - Test leaderboard calculation accuracy with various score patterns
+
+- Implement screenshot handling:
+  - Test file storage integration
+  - Test image validation and processing
+  - Test URL generation and access control
+  - Test cleanup of invalid/rejected uploads
+
 **Story Points**: 8  
 **Dependencies**: ALOB-11  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-13: Dashboard and Notification API
 **Type**: Task  
