@@ -61,7 +61,8 @@ describe('Dashboard Controller', () => {
       const mockDashboardData = {
         userInfo: {
           id: 'test-user-id',
-          username: 'testuser'
+          username: 'testuser',
+          email: 'testuser@example.com'
         },
         tournamentSummary: {
           active: 2,
@@ -76,25 +77,33 @@ describe('Dashboard Controller', () => {
         },
         recentActivity: [
           {
+            id: 'activity-1',
             type: 'score_submitted',
             tournamentId: 'tournament-1',
             tournamentName: 'Tournament 1',
-            timestamp: new Date()
+            message: 'Score submitted',
+            timestamp: new Date(),
+            read: false
           },
           {
+            id: 'activity-2',
             type: 'invitation',
             tournamentId: 'tournament-2',
             tournamentName: 'Tournament 2',
-            timestamp: new Date()
+            message: 'You were invited',
+            timestamp: new Date(),
+            read: true
           }
         ],
         upcomingTournaments: [
           {
             id: 'tournament-3',
             name: 'Tournament 3',
-            startDate: new Date(Date.now() + 86400000) // tomorrow
+            startDate: new Date(Date.now() + 86400000),
+            creatorId: 'user-1'
           }
-        ]
+        ],
+        unreadNotificationsCount: 1
       };
       
       jest.spyOn(dashboardService, 'getDashboardData').mockResolvedValue(mockDashboardData);
@@ -141,7 +150,8 @@ describe('Dashboard Controller', () => {
       const partialData = {
         userInfo: {
           id: 'test-user-id',
-          username: 'testuser'
+          username: 'testuser',
+          email: 'testuser@example.com'
         },
         tournamentSummary: {
           active: 2,
@@ -149,9 +159,14 @@ describe('Dashboard Controller', () => {
           completed: 3,
           cancelled: 0
         },
-        // Missing participation data
-        // Missing recentActivity data
-        upcomingTournaments: [] // Empty but present
+        participation: {
+          hosting: 0,
+          joined: 0,
+          invited: 0
+        },
+        recentActivity: [],
+        upcomingTournaments: [],
+        unreadNotificationsCount: 0
       };
       
       jest.spyOn(dashboardService, 'getDashboardData').mockResolvedValue(partialData);
