@@ -361,7 +361,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-10  
-**Status**: In Progres
+**Status**: COMPLETE
 
 ### ALOB-12: Tournament Score Management API
 **Type**: Task  
