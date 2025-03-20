@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import pg from 'pg';
 import * as schema from './schema';
 
 // Import dotenv to load .env.test file in test environment
@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== 'test' || process.env.DEBUG_DB_LOGS === 'true') {
   console.log(`Tournament feature connecting to database: ${process.env.DATABASE_URL?.split('@')[1]?.split('/')[1]}`);
 }
 
-const pool = new Pool({
+const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production'
 });
