@@ -5,6 +5,7 @@ import { tournaments, users, tournamentParticipants, notifications, tournamentSc
 import { reminderNotificationJob } from '../../../../../server/features/tournament/jobs/reminderNotification';
 import { JobContext } from '../../../../../server/core/jobs/types';
 import { jobScheduler } from '../../../../../server/core/jobs/scheduler';
+import { closeAppDbConnections } from '../../../core/test-helpers';
 
 // Mock logger to prevent noisy test output
 jest.mock('../../../../../server/core/logger', () => ({
@@ -17,8 +18,19 @@ jest.mock('../../../../../server/core/logger', () => ({
   }
 }));
 
+// Mock node-cron to prevent real scheduling
+jest.mock('node-cron', () => {
+  return {
+    schedule: jest.fn().mockImplementation(() => ({
+      stop: jest.fn()
+    })),
+    validate: jest.fn().mockReturnValue(true)
+  };
+});
+
 describe('Reminder Notification Job', () => {
-  jest.setTimeout(60000); // 60 second timeout
+  // Increase timeout for the entire test suite
+  jest.setTimeout(30000);
   
   // Test data
   let testUser: { id: string };
@@ -26,16 +38,34 @@ describe('Reminder Notification Job', () => {
   let upcomingTournament: { id: string };
   
   beforeAll(async () => {
+    // First setup the DB with real timers
     await setupTestDb();
-  }, 30000);
+    // Only after DB setup use fake timers
+    jest.useFakeTimers();
+  }, 60000); // Increase timeout for beforeAll
 
   afterAll(async () => {
-    await teardownTestDb();
-    // Reset the job scheduler at the end of all tests
+    // Clean up any lingering timers
+    jest.clearAllTimers(); 
+    
+    // Restore real timers before closing connections
+    jest.useRealTimers();
+    
+    // Make sure to reset the scheduler
     jobScheduler.reset();
-  }, 30000);
+    
+    // Close all database connections
+    await closeAppDbConnections();
+    await teardownTestDb();
+  }, 60000); // Increase timeout for afterAll
 
   beforeEach(async () => {
+    // Use real timers for the async operations
+    jest.useRealTimers();
+    
+    // Reset jobs before each test
+    jobScheduler.reset();
+    
     // Ensure clean state before each test
     await cleanupDatabase();
     await sleep(500);
@@ -89,15 +119,30 @@ describe('Reminder Notification Job', () => {
       tournamentId: upcomingTournament.id,
       status: 'joined'
     });
-  });
+    
+    // Switch back to fake timers for the tests
+    jest.useFakeTimers();
+  }, 45000);
 
   afterEach(async () => {
+    // Clean up any lingering timers
+    jest.clearAllTimers();
+    
+    // Switch to real timers for cleanup
+    jest.useRealTimers();
+    
+    // Reset jobs after each test
+    jobScheduler.reset();
+    
     // Clean up after each test
     await cleanupDatabase();
     await sleep(500);
-  });
+  }, 45000);
 
   it('should send daily score reminders for active tournaments', async () => {
+    // Use real timers for the test execution
+    jest.useRealTimers();
+    
     // Run the job
     const context: JobContext = {
       jobId: 'test-job',
@@ -130,6 +175,9 @@ describe('Reminder Notification Job', () => {
   });
 
   it('should not send daily reminders if score is already submitted', async () => {
+    // Use real timers for the test execution
+    jest.useRealTimers();
+    
     // Submit a score for day 0 (yesterday)
     await db.insert(tournamentScores).values({
       userId: testUser.id,
@@ -163,6 +211,9 @@ describe('Reminder Notification Job', () => {
   });
 
   it('should send upcoming tournament reminders', async () => {
+    // Use real timers for the test execution
+    jest.useRealTimers();
+    
     // Run the job
     const context: JobContext = {
       jobId: 'test-job',
