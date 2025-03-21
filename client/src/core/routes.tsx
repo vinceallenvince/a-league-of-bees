@@ -23,6 +23,12 @@ const ContactPage = lazy(() => import("@/features/info/pages/contact-page"));
 // Hello World feature
 const HelloWorldPage = lazy(() => import("@/features/hello-world/pages/hello-world-page"));
 
+// Tournament feature
+const TournamentListPage = lazy(() => import("@/features/tournament/pages/TournamentListPage"));
+const TournamentDetailPage = lazy(() => import("@/features/tournament/pages/TournamentDetailPage"));
+const TournamentCreatePage = lazy(() => import("@/features/tournament/pages/TournamentCreatePage"));
+const TournamentEditPage = lazy(() => import("@/features/tournament/pages/TournamentEditPage"));
+
 // Main application pages
 const HomePage = lazy(() => import("@/pages/home-page"));
 
@@ -48,6 +54,12 @@ export const featureRoutes = {
   helloWorld: [
     <ProtectedRoute key="hello-world" path="/hello-world" component={HelloWorldPage} requireAuth={true} />,
   ],
+  tournament: [
+    <ProtectedRoute key="tournaments" path="/tournaments" component={TournamentListPage} requireAuth={true} />,
+    <ProtectedRoute key="tournament-create" path="/tournaments/new" component={TournamentCreatePage} requireAuth={true} />,
+    <ProtectedRoute key="tournament-detail" path="/tournaments/:id" component={TournamentDetailPage} requireAuth={true} />,
+    <ProtectedRoute key="tournament-edit" path="/tournaments/:id/edit" component={TournamentEditPage} requireAuth={true} />,
+  ],
 };
 
 export const mainRoutes = [
@@ -64,6 +76,7 @@ export const getAllRoutes = () => [
   ...featureRoutes.admin,
   ...featureRoutes.info,
   ...featureRoutes.helloWorld,
+  ...featureRoutes.tournament,
   ...mainRoutes,
   notFoundRoute,
 ]; 
