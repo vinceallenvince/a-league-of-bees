@@ -3,6 +3,14 @@ import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import { TournamentLeaderboardEntry } from '../../../../server/features/tournament/types';
 
+// Define the formatted leaderboard entry interface based on the actual implementation
+interface FormattedLeaderboardEntry {
+  userId: string;
+  username: string;
+  totalScore: number;
+  scoresSubmitted: number;
+}
+
 // Create mock functions
 const loggerMock = {
   info: jest.fn(),
@@ -414,7 +422,7 @@ describe('Score Controller', () => {
     it('should get tournament leaderboard', async () => {
       mockRequest.params = { id: 'tournament-1' };
       
-      // Update the mock leaderboard to be an array of FormattedLeaderboardEntry
+      // Use FormattedLeaderboardEntry[] type that matches the service return type
       const mockLeaderboard = [
         {
           userId: 'user-1',
