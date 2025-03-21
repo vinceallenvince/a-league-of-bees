@@ -849,26 +849,43 @@
 - Document frontend feature organization
 
 **Implementation Details**:
-- Follow the structure outlined in the implementation plan:
-  ```
-  tournament/
-  ├── components/
-  │   ├── tournament/
-  │   ├── participant/
-  │   ├── score/
-  │   └── dashboard/
-  ├── pages/
-  ├── hooks/
-  ├── api/
-  ├── types.ts
-  ├── utils.ts
-  └── README.md
-  ```
-- Create skeleton components with proper TypeScript interfaces
-- Set up routing in the main application for new tournament pages
-- Implement basic API interfaces with TypeScript types
-- Configure proper module exports
-- Document component organization and responsibilities
+- Follow a test-driven development approach for frontend module setup:
+  1. **Create test structure first**:
+     - Set up test directories before implementing actual components
+     - Create test files with initial expectations for components and pages
+     - Define expected interfaces and props through test declarations
+     - Establish testing utilities and common test patterns
+
+  2. **Define component contracts through tests**:
+     - Write tests that specify component props and behavior
+     - Create tests for component rendering in various states (loading, error, empty)
+     - Define accessibility expectations in tests
+     - Establish test fixtures for mock data
+
+  3. **Set up API mocks in tests**:
+     - Create mock implementations of backend API endpoints
+     - Define expected data structures for API responses
+     - Set up tests for loading and error states
+     - Establish patterns for testing asynchronous behavior
+
+  4. **Implement minimal components to satisfy tests**:
+     - Create bare-minimum component implementations to pass tests
+     - Focus on component interfaces rather than styling initially
+     - Establish patterns for component composition
+     - Set up basic routing framework driven by tests
+
+  5. **Create base directory structure guided by tests**:
+     - Follow the structure outlined in the implementation plan
+     - Organize files based on test requirements
+     - Set up proper TypeScript interfaces derived from tests
+     - Establish consistent patterns for exports and imports
+
+- Specific TDD patterns for frontend structure:
+  - Start with simple rendering tests for each planned component
+  - Create tests for routing and navigation before implementation
+  - Use mock data in tests to drive creation of TypeScript interfaces
+  - Test component composition before implementing complex components
+  - Focus on testability in the initial architecture
 
 **Story Points**: 3  
 **Dependencies**: ALOB-15  
@@ -887,13 +904,70 @@
 - Document component usage and props
 
 **Implementation Details**:
-- Follow design guidelines for consistent UI/UX
-- Create responsive components that work on mobile and desktop
-- Implement proper loading, error, and empty states for all components
-- Use TypeScript for type-safe props and state management
-- Implement accessibility features (keyboard navigation, ARIA attributes)
-- Create Storybook stories for component variations (if applicable)
-- Write unit tests for component logic and rendering
+- Follow a test-driven development approach for tournament components:
+  1. **Create tests for each component first**:
+     - Write detailed render tests with various prop combinations
+     - Create tests for component interactions (clicks, form inputs)
+     - Define tests for accessibility requirements
+     - Test responsive behavior with different viewport sizes
+
+  2. **Implement failing tests for component behavior**:
+     - Test TournamentCard displays correct information
+     - Test TournamentForm validation and submission
+     - Test TournamentStatus visual states
+     - Test TournamentFilters interactions and filtering logic
+     - Test ParticipantList rendering and interactions
+     - Test InviteForm validation and submission
+
+  3. **Develop test fixtures and factory functions**:
+     - Create mock tournament data with various statuses
+     - Define participant data fixtures
+     - Establish common test utilities for tournament components
+     - Create helpers for testing form interactions
+
+  4. **Implement minimal components to make tests pass**:
+     - Focus on functionality over styling initially
+     - Ensure components meet accessibility requirements defined in tests
+     - Implement form validation based on test expectations
+     - Create event handlers to satisfy interaction tests
+
+  5. **Refactor and enhance components while maintaining tests**:
+     - Improve component composition and reusability
+     - Enhance styling after functional tests pass
+     - Optimize rendering performance with test-verified techniques
+     - Extract common patterns into shared utilities
+
+- Specific TDD steps for key components:
+  1. **TournamentCard**:
+     - Test rendering with minimal data
+     - Test rendering with complete tournament data
+     - Test different visual states based on tournament status
+     - Test user interactions (clicks, hover states)
+     - Test accessibility features (keyboard navigation, ARIA)
+
+  2. **TournamentForm**:
+     - Test initial rendering with empty state
+     - Test rendering with pre-filled data (for edit mode)
+     - Test field validation logic
+     - Test form submission behavior
+     - Test error handling and display
+     - Test accessibility of form controls
+
+  3. **ParticipantList**:
+     - Test rendering with varying numbers of participants
+     - Test empty state rendering
+     - Test loading state rendering
+     - Test participant actions (invite, remove)
+     - Test sorting and filtering functionality
+     - Test keyboard accessibility
+
+  4. **InviteForm**:
+     - Test initial rendering
+     - Test email validation
+     - Test bulk invitation handling
+     - Test submission behavior
+     - Test error state rendering
+     - Test success confirmation
 
 **Story Points**: 5  
 **Dependencies**: ALOB-16  
@@ -911,15 +985,74 @@
 - Document component usage and integration
 
 **Implementation Details**:
-- Create intuitive score input interface with validation
-- Implement file upload functionality for screenshots with preview
-- Design responsive leaderboard with sorting and filtering options
-- Create animations for score/rank changes
-- Implement proper error handling for submission failures
-- Use skeleton loaders for loading states
-- Add detailed tooltips and help text for score submission rules
-- Ensure all components meet accessibility requirements
-- Write comprehensive unit tests for all components
+- Follow a test-driven development approach for score and leaderboard components:
+  1. **Define tests for score submission flow**:
+     - Test ScoreSubmission rendering in various states
+     - Test score validation logic in isolation
+     - Test submission behavior with mock API
+     - Test error handling and user feedback
+     - Test screenshot upload integration
+
+  2. **Create tests for score history visualization**:
+     - Test rendering with various data patterns
+     - Test empty and loading states
+     - Test filtering and date range selection
+     - Test responsive behavior at different breakpoints
+     - Test accessibility of interactive elements
+
+  3. **Implement screenshot uploader tests**:
+     - Test file selection UI
+     - Test validation of file types and sizes
+     - Test upload progress indication
+     - Test error handling for upload failures
+     - Test successful upload completion
+
+  4. **Define leaderboard component tests**:
+     - Test rendering with various data sets
+     - Test sorting functionality
+     - Test pagination/infinite scroll
+     - Test highlighting of current user
+     - Test animations for rank changes
+     - Test accessibility of interactive elements
+
+  5. **Implement minimal components to pass tests**:
+     - Focus on core functionality identified in tests
+     - Create reusable hooks for data management
+     - Implement proper validation logic
+     - Build accessible UI components
+     - Handle error states defined in tests
+
+  6. **Refactor and enhance with tests as a safety net**:
+     - Improve visual design while maintaining test coverage
+     - Optimize performance for large datasets
+     - Enhance animations and transitions
+     - Improve responsive behavior
+     - Extract common patterns into utilities
+
+- Specific TDD approach for key components:
+  1. **ScoreSubmission**:
+     - Start with tests for the form's validation logic
+     - Test numerical input constraints
+     - Test submission flow and API interaction
+     - Test user feedback for successful submission
+     - Test error state rendering and recovery
+     - Test accessibility of form controls
+
+  2. **ScreenshotUploader**:
+     - Test file input interaction
+     - Test drag-and-drop functionality
+     - Test preview rendering
+     - Test upload progress indication
+     - Test error handling for various failure scenarios
+     - Test successful upload completion and confirmation
+
+  3. **Leaderboard**:
+     - Test data rendering with mock leaderboard data
+     - Test sorting implementation
+     - Test user highlighting feature
+     - Test responsive layout at various screen sizes
+     - Test keyboard navigation for accessibility
+     - Test screen reader accessibility of tabular data
 
 **Story Points**: 5  
 **Dependencies**: ALOB-17  
@@ -938,15 +1071,83 @@
 - Document page flows and state management
 
 **Implementation Details**:
-- Implement responsive layouts for all pages
-- Create consistent page headers and navigation
-- Add proper loading and error states for all pages
-- Implement optimistic UI updates where appropriate
-- Configure proper data fetching and caching strategies
-- Ensure all pages have appropriate meta titles and descriptions
-- Implement deep linking support for sharing specific tournament views
-- Write integration tests for page rendering and interactions
-- Document user flows between pages
+- Follow a test-driven development approach for tournament pages:
+  1. **Define page component tests first**:
+     - Create test files for each page component
+     - Test initial rendering with loading states
+     - Test component composition and layout
+     - Test data fetching behavior
+     - Test user interactions and state changes
+     - Test routing and navigation between pages
+
+  2. **Implement routing tests**:
+     - Test route configuration
+     - Test navigation between pages
+     - Test URL parameter handling
+     - Test route protection/authentication
+     - Test deep linking functionality
+
+  3. **Create tests for page-specific functionality**:
+     - Test dashboard data aggregation
+     - Test tournament list filtering and sorting
+     - Test tournament creation form validation
+     - Test tournament detail view sections
+     - Test tournament editing permission checks
+
+  4. **Implement minimal page components to pass tests**:
+     - Create basic page structures
+     - Implement data fetching logic
+     - Add state management for user interactions
+     - Create navigation between pages
+     - Implement proper error boundaries
+
+  5. **Refactor and enhance pages with tests as a guide**:
+     - Improve component composition
+     - Enhance visual design while maintaining functionality
+     - Optimize data fetching patterns
+     - Improve state management
+     - Enhance user feedback and interactions
+
+- Specific TDD approach for each page:
+  1. **DashboardPage**:
+     - Test rendering of key dashboard sections
+     - Test data loading and aggregation
+     - Test user interaction with dashboard elements
+     - Test navigation to other pages
+     - Test error state handling
+     - Test responsive layout at various screen sizes
+
+  2. **TournamentListPage**:
+     - Test rendering of tournament list
+     - Test filtering and sorting functionality
+     - Test pagination implementation
+     - Test empty and loading states
+     - Test list item interactions
+     - Test create tournament button functionality
+
+  3. **TournamentCreatePage**:
+     - Test form rendering and validation
+     - Test submission flow
+     - Test error handling
+     - Test successful creation and redirect
+     - Test form accessibility
+     - Test responsive behavior
+
+  4. **TournamentDetailPage**:
+     - Test rendering of tournament details
+     - Test participant list rendering
+     - Test leaderboard integration
+     - Test action button visibility based on user role
+     - Test navigation between detail sections
+     - Test responsive layout at different screen sizes
+
+  5. **TournamentEditPage**:
+     - Test form initialization with existing data
+     - Test validation rules for editing
+     - Test permission checks
+     - Test submission and error handling
+     - Test cancellation behavior
+     - Test confirmation dialogs
 
 **Story Points**: 8  
 **Dependencies**: ALOB-18  
@@ -965,15 +1166,80 @@
 - Document hook usage and data flow
 
 **Implementation Details**:
-- Design hooks with TypeScript for type safety
-- Implement optimistic updates for better UX
-- Add proper error handling with retry capabilities
-- Create caching strategies to minimize API calls
-- Implement pagination and infinite scrolling where appropriate
-- Add real-time updates using polling or WebSockets
-- Follow best practices for React Query or similar data fetching libraries
-- Document hook interfaces and example usage
-- Write unit tests for hook logic
+- Follow a test-driven development approach for custom hooks:
+  1. **Create hook test files first**:
+     - Set up testing utilities for hooks (React Testing Library)
+     - Create mock API responses for testing hooks
+     - Design test fixtures for different data scenarios
+     - Establish patterns for testing asynchronous behavior
+
+  2. **Define hook interfaces through tests**:
+     - Write tests that specify hook return values
+     - Test hook behavior with different input parameters
+     - Test error states and loading states
+     - Define expectations for hook side effects
+
+  3. **Implement tests for API interaction patterns**:
+     - Test data fetching logic with mock responses
+     - Test caching behavior
+     - Test retry logic for failed requests
+     - Test optimistic updates
+     - Test error recovery strategies
+
+  4. **Create minimal hook implementations to pass tests**:
+     - Implement core data fetching logic
+     - Add state management for loading/error/data
+     - Create proper TypeScript interfaces
+     - Implement pagination/filtering functionality
+     - Add basic caching mechanisms
+
+  5. **Refactor and optimize hooks with tests as a safety net**:
+     - Improve error handling strategies
+     - Enhance caching mechanisms
+     - Optimize data transformation logic
+     - Extract common patterns into utilities
+     - Improve TypeScript type definitions
+
+- Specific TDD approach for each hook:
+  1. **useTournament**:
+     - Test fetching a single tournament by ID
+     - Test fetching tournament lists with pagination
+     - Test filtering and sorting options
+     - Test tournament creation/update/deletion
+     - Test error handling and loading states
+     - Test optimistic updates for better UX
+
+  2. **useTournamentScores**:
+     - Test score submission functionality
+     - Test score history retrieval with filtering
+     - Test score validation logic
+     - Test optimistic updates for score submission
+     - Test error handling and retry logic
+     - Test caching of score data
+
+  3. **useParticipants**:
+     - Test participant listing with pagination
+     - Test invitation functionality
+     - Test participant status updates
+     - Test permission checking logic
+     - Test optimistic updates for status changes
+     - Test error handling and recovery
+
+  4. **useDashboardData**:
+     - Test data aggregation from multiple sources
+     - Test caching of dashboard data
+     - Test refresh mechanisms
+     - Test empty state handling
+     - Test error states and partial data display
+     - Test real-time update integration
+
+  5. **useNotifications**:
+     - Test notification retrieval and pagination
+     - Test marking notifications as read
+     - Test filtering by notification type
+     - Test grouping and sorting mechanisms
+     - Test real-time update handling
+     - Test error recovery strategies
 
 **Story Points**: 5  
 **Dependencies**: ALOB-19  
@@ -992,16 +1258,75 @@
 - Document dashboard customization options
 
 **Implementation Details**:
-- Design intuitive dashboard layout with responsive behavior
-- Create visually engaging tournament summary cards
-- Implement notification grouping and prioritization
-- Add interactive elements for quick tournament access
-- Create dashboard widgets that can be rearranged (if applicable)
-- Implement proper empty states for new users
-- Ensure dashboard performs well with many tournaments
-- Add keyboard shortcuts for common actions
-- Ensure all dashboard elements meet accessibility requirements
-- Write integration tests for dashboard functionality
+- Follow a test-driven development approach for dashboard implementation:
+  1. **Define dashboard component tests first**:
+     - Create test files for dashboard components
+     - Test rendering of dashboard sections with mock data
+     - Test component composition and layout
+     - Test user interactions with dashboard elements
+     - Test responsive layout at various viewport sizes
+
+  2. **Create notification center tests**:
+     - Test notification rendering with various data patterns
+     - Test read/unread status toggling
+     - Test notification filtering and grouping
+     - Test notification actions (dismiss, view, etc.)
+     - Test empty and loading states
+
+  3. **Implement tests for dashboard data integration**:
+     - Test data aggregation from multiple sources
+     - Test caching and refresh mechanisms
+     - Test real-time update integration
+     - Test error handling and fallback displays
+     - Test partial data rendering when some sources fail
+
+  4. **Create minimal implementations to pass tests**:
+     - Implement core dashboard components based on test requirements
+     - Add data fetching and integration logic
+     - Create state management for user interactions
+     - Implement proper error boundaries
+     - Add basic styling and layout
+
+  5. **Refactor and enhance dashboard with test coverage**:
+     - Improve component composition
+     - Enhance visual design while maintaining functionality
+     - Optimize data fetching and caching
+     - Improve state management
+     - Enhance user feedback and interactions
+
+- Specific TDD approach for dashboard components:
+  1. **DashboardHeader**:
+     - Test rendering with user stats
+     - Test quick action buttons functionality
+     - Test responsive layout
+     - Test accessibility of interactive elements
+     - Test loading and error states
+     - Test user profile information display
+
+  2. **TournamentOverview**:
+     - Test rendering of tournament sections (active, upcoming, past)
+     - Test empty states for each section
+     - Test tournament card interactions
+     - Test filtering and sorting within sections
+     - Test responsive layout for various screen sizes
+     - Test keyboard navigation for accessibility
+
+  3. **NotificationCenter**:
+     - Test notification list rendering
+     - Test read/unread status toggling
+     - Test notification grouping by type
+     - Test notification actions (view, dismiss)
+     - Test empty and loading states
+     - Test real-time updates of notification list
+     - Test keyboard accessibility
+
+  4. **QuickActions**:
+     - Test rendering of action buttons
+     - Test action handling (tournament creation, joining)
+     - Test permission-based visibility
+     - Test tooltips and helper text
+     - Test keyboard shortcuts
+     - Test mobile vs desktop layouts
 
 **Story Points**: 8  
 **Dependencies**: ALOB-20  
@@ -1021,18 +1346,72 @@
 - Document testing coverage and performance benchmarks
 
 **Implementation Details**:
-- Use React Testing Library for component tests
-- Implement Cypress or similar for end-to-end testing
-- Create performance tests with Lighthouse metrics
-- Optimize images and assets for fast loading
-- Implement lazy loading for non-critical components
-- Add Suspense boundaries for improved loading experience
-- Create skeleton loaders for content
-- Implement virtualization for long lists
-- Ensure proper error boundary implementation
-- Verify cross-browser compatibility
-- Document performance optimization techniques
-- Create testing documentation for contributors
+- Continue the test-driven development approach for comprehensive testing:
+  1. **Expand unit test coverage**:
+     - Review existing component tests for completeness
+     - Add test cases for edge cases and error conditions
+     - Enhance test fixtures and factory functions
+     - Implement testing patterns for complex interactions
+     - Document testing patterns for future components
+
+  2. **Create integration tests for key user flows**:
+     - Define critical paths through the application
+     - Implement tests for complete user journeys
+     - Test data persistence across page navigation
+     - Test state management in complex scenarios
+     - Create test helpers for common integration testing patterns
+
+  3. **Implement end-to-end testing framework**:
+     - Set up Cypress or similar E2E testing framework
+     - Create test fixtures and mock data
+     - Implement tests for critical user journeys
+     - Test authentication flows
+     - Test real API interactions with test endpoints
+     - Create visual regression tests for key components
+
+  4. **Define performance tests and benchmarks**:
+     - Create tests that measure component render performance
+     - Implement benchmarks for data fetching and processing
+     - Test bundle size and loading performance
+     - Create visual performance metrics (FCP, LCP, CLS)
+     - Establish performance budgets and thresholds
+
+  5. **Optimize based on test results**:
+     - Implement code splitting guided by performance tests
+     - Add lazy loading based on measured benefits
+     - Optimize component rendering with measured improvements
+     - Enhance data fetching patterns based on benchmarks
+     - Implement rendering optimizations (memo, useMemo, useCallback)
+
+- Specific TDD approaches for optimization work:
+  1. **Bundle Optimization**:
+     - Create tests that measure bundle sizes
+     - Implement code splitting based on router
+     - Add dynamic imports for large components
+     - Test loading performance before and after changes
+     - Measure impact on key performance metrics
+
+  2. **Rendering Performance**:
+     - Create tests that measure component render times
+     - Implement rendering optimizations (memo, virtualization)
+     - Test performance with large datasets
+     - Measure impact of context vs props
+     - Identify and fix render bottlenecks
+
+  3. **Accessibility Testing**:
+     - Implement automated accessibility tests
+     - Create test cases for keyboard navigation
+     - Test screen reader compatibility
+     - Verify color contrast requirements
+     - Test focus management
+     - Create accessibility test documentation
+
+  4. **Responsive Design Testing**:
+     - Implement visual tests at different viewport sizes
+     - Create test cases for touch vs mouse interactions
+     - Test orientation changes on mobile
+     - Verify text readability across devices
+     - Test performance on low-end devices
 
 **Story Points**: 5  
 **Dependencies**: ALOB-21  
