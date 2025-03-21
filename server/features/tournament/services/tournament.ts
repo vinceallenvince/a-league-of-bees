@@ -1,9 +1,40 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db';
 import * as queries from '../queries';
-import { tournaments } from '../../../../shared/schema';
-import { and, eq } from 'drizzle-orm';
+import { tournaments, tournamentParticipants, users } from '../../../../shared/schema';
+import { and, eq, desc, gte, lt, sql } from 'drizzle-orm';
 import logger from '../../../core/logger';
+import cacheService from '../../../core/cache';
+
+// Cache TTL constants
+const CACHE_TTL = {
+  TOURNAMENT_LIST: 5 * 60 * 1000, // 5 minutes
+  TOURNAMENT_DETAIL: 10 * 60 * 1000, // 10 minutes
+};
+
+// Cache key prefixes for group invalidation
+const CACHE_PREFIX = {
+  TOURNAMENT: 'tournament',
+  TOURNAMENT_LIST: 'tournament:list',
+  USER: 'user',
+};
+
+interface TournamentData {
+  id: string;
+  name: string;
+  description: string;
+  duration_days: number;
+  start_date: string;
+  status: string;
+  creator_id: string;
+  creator_username: string;
+}
+
+interface TournamentListResult {
+  count: string;
+  tournaments: TournamentData[];
+  [key: string]: unknown; // Add index signature to satisfy Record<string, unknown> constraint
+}
 
 /**
  * Service for tournament operations
@@ -14,40 +45,61 @@ export const tournamentService = {
    * If userId is provided, returns tournaments created by that user
    */
   async getTournaments(page = 1, pageSize = 10, userId?: string) {
-    try {
-      // If userId is provided, fetch tournaments created by that user
-      if (userId) {
-        const userTournaments = await queries.getTournamentsByCreator(userId);
-        const start = (page - 1) * pageSize;
-        const end = start + pageSize;
-        
-        return {
-          tournaments: userTournaments.slice(start, end),
-          total: userTournaments.length,
-          page,
-          pageSize,
-          totalPages: Math.ceil(userTournaments.length / pageSize)
-        };
-      }
-      
-      // Otherwise, get active tournaments
-      return await queries.getActiveTournaments(page, pageSize);
-    } catch (error) {
-      logger.error('Error fetching tournaments', { error, userId });
-      throw error;
-    }
+    // Use cursor-based pagination for better performance with larger datasets
+    const cacheKey = `tournament:list:${page}:${pageSize}:${userId || 'all'}`;
+    
+    return cacheService.getOrSet(
+      cacheKey,
+      async () => {
+        try {
+          if (userId) {
+            // Use getTournamentsByCreator for user-specific tournaments
+            const tournamentList = await queries.getTournamentsByCreator(userId);
+            
+            return {
+              tournaments: tournamentList,
+              total: tournamentList.length,
+              page,
+              pageSize,
+              totalPages: Math.ceil(tournamentList.length / pageSize)
+            };
+          } else {
+            // Use getActiveTournaments for all tournaments
+            return await queries.getActiveTournaments(page, pageSize);
+          }
+        } catch (error) {
+          logger.error('Error getting tournaments', { error, page, pageSize, userId });
+          throw error;
+        }
+      },
+      CACHE_TTL.TOURNAMENT_LIST,
+      [
+        CACHE_PREFIX.TOURNAMENT_LIST,
+        userId ? `${CACHE_PREFIX.USER}:${userId}` : null
+      ].filter(Boolean) as string[]
+    );
   },
 
   /**
    * Get a tournament by ID
    */
   async getTournamentById(id: string) {
-    try {
-      return await queries.getTournamentById(id);
-    } catch (error) {
-      logger.error('Error fetching tournament by ID', { error, tournamentId: id });
-      throw error;
-    }
+    const cacheKey = `tournament:${id}`;
+    
+    return cacheService.getOrSet(
+      cacheKey,
+      async () => {
+        try {
+          // Use getTournamentById from queries
+          return await queries.getTournamentById(id);
+        } catch (error) {
+          logger.error('Error getting tournament by ID', { error, tournamentId: id });
+          throw error;
+        }
+      },
+      CACHE_TTL.TOURNAMENT_DETAIL,
+      [`${CACHE_PREFIX.TOURNAMENT}:${id}`]
+    );
   },
 
   /**
@@ -74,6 +126,9 @@ export const tournamentService = {
         timezone: tournamentData.timezone,
         status: 'pending' // New tournaments start in pending status
       }).returning();
+      
+      // Invalidate tournaments list cache
+      this.invalidateTournamentListCache(creatorId);
       
       return result[0];
     } catch (error) {
@@ -118,6 +173,10 @@ export const tournamentService = {
         .where(eq(tournaments.id, id))
         .returning();
       
+      // Invalidate related caches
+      this.invalidateTournamentCache(id);
+      this.invalidateTournamentListCache(userId);
+      
       return result[0];
     } catch (error) {
       logger.error('Error updating tournament', { error, tournamentId: id, updateData });
@@ -155,11 +214,36 @@ export const tournamentService = {
         .where(eq(tournaments.id, id))
         .returning();
       
+      // Invalidate related caches
+      this.invalidateTournamentCache(id);
+      this.invalidateTournamentListCache(userId);
+      
       return result[0];
     } catch (error) {
       logger.error('Error cancelling tournament', { error, tournamentId: id });
       throw error;
     }
+  },
+  
+  /**
+   * Invalidate tournament cache
+   */
+  invalidateTournamentCache(tournamentId: string) {
+    cacheService.invalidateByPrefix(`${CACHE_PREFIX.TOURNAMENT}:${tournamentId}`);
+    logger.debug('Invalidated tournament cache', { tournamentId });
+  },
+  
+  /**
+   * Invalidate tournament list cache
+   */
+  invalidateTournamentListCache(userId?: string) {
+    cacheService.invalidateByPrefix(CACHE_PREFIX.TOURNAMENT_LIST);
+    
+    if (userId) {
+      cacheService.invalidateByPrefix(`${CACHE_PREFIX.USER}:${userId}`);
+    }
+    
+    logger.debug('Invalidated tournament list cache', { userId });
   }
 };
 

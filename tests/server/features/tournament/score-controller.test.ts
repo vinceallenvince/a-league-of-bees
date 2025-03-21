@@ -3,6 +3,14 @@ import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
 import { TournamentLeaderboardEntry } from '../../../../server/features/tournament/types';
 
+// Define the formatted leaderboard entry interface based on the actual implementation
+interface FormattedLeaderboardEntry {
+  userId: string;
+  username: string;
+  totalScore: number;
+  scoresSubmitted: number;
+}
+
 // Create mock functions
 const loggerMock = {
   info: jest.fn(),
@@ -412,29 +420,26 @@ describe('Score Controller', () => {
   
   describe('getLeaderboardHandler', () => {
     it('should get tournament leaderboard', async () => {
-      // Create a proper QueryResult that matches the expected type
-      const mockLeaderboard = {
-        rows: [
-          {
-            userId: 'user-1',
-            username: 'user1',
-            totalScore: 300,
-            scoresByDay: { '1': 100, '2': 200 }
-          },
-          {
-            userId: 'test-user-id',
-            username: 'testuser',
-            totalScore: 250,
-            scoresByDay: { '1': 100, '2': 150 }
-          }
-        ],
-        command: '',
-        rowCount: 2,
-        oid: 0,
-        fields: []
-      } as unknown as QueryResult<TournamentLeaderboardEntry>;
+      mockRequest.params = { id: 'tournament-1' };
       
-      jest.spyOn(scoreService, 'getLeaderboard').mockResolvedValue(mockLeaderboard);
+      // Use approach that works with both QueryResult and array formats
+      const mockLeaderboardData = [
+        {
+          userId: 'user-1',
+          username: 'User One',
+          totalScore: 500,
+          scoresSubmitted: 3
+        },
+        {
+          userId: 'user-2',
+          username: 'User Two',
+          totalScore: 300,
+          scoresSubmitted: 2
+        }
+      ];
+      
+      // Cast to any to bypass type checking issues
+      jest.spyOn(scoreService, 'getLeaderboard').mockResolvedValue(mockLeaderboardData as any);
       
       await scoreController.getLeaderboardHandler(
         mockRequest as Request,
@@ -442,7 +447,7 @@ describe('Score Controller', () => {
       );
       
       expect(scoreService.getLeaderboard).toHaveBeenCalledWith('tournament-1');
-      expect(responseJson).toHaveBeenCalledWith(mockLeaderboard);
+      expect(responseJson).toHaveBeenCalledWith(mockLeaderboardData);
     });
     
     it('should handle tournament not found errors', async () => {
