@@ -81,6 +81,32 @@ Tests for tournament creation, participation, and related functionality.
 - ✓ should enforce foreign key constraint on creator_id
 - ✓ should create admin approval with valid data
 
+#### Tournament Service
+- ✓ should get tournaments with pagination
+- ✓ should get tournaments by creator when userId is provided
+- ✓ should get a tournament by ID
+- ✓ should return null when tournament is not found
+
+#### Score Controller
+- ✓ should submit a new score
+- ✓ should handle validation errors
+- ✓ should handle authentication errors
+- ✓ should handle tournament not found errors
+- ✓ should handle already submitted errors
+- ✓ should handle file uploads for screenshots
+- ✓ should update an existing score
+- ✓ should get score history for the current user
+- ✓ should get score history for a specific user if userId is provided
+- ✓ should get tournament leaderboard
+
+#### Backend Performance Optimization
+- ✓ should return dashboard data within performance threshold
+- ✓ should return tournament list within performance threshold
+- ✓ should return tournament details within performance threshold
+- ✓ should return leaderboard data within performance threshold
+- ✓ should calculate leaderboard correctly after new score submissions
+- ✓ should update dashboard data after tournament status change
+
 #### Tournament Participants
 - ✓ should create a tournament participant with valid data
 - ✓ should enforce foreign key constraints
@@ -233,6 +259,24 @@ npm run test:coverage
 
 The `test:coverage` script will run the complete test suite and generate a full coverage report. Using `npm test -- --coverage` will only show coverage for files imported by the tests that were executed in that specific run.
 
+### Test Reliability Improvements
+
+Several improvements have been made to enhance test reliability:
+
+1. **TypeScript fixes**:
+   - Added proper type definitions to service mocks and test data
+   - Fixed interface discrepancies between test mocks and actual implementations
+   - Added missing type declarations for FormattedLeaderboardEntry
+
+2. **Cache module**:
+   - Implemented a caching service for improved performance
+   - Added proper cache invalidation for test isolation
+
+3. **Test Database Management**:
+   - Improved database connection handling to prevent hanging tests
+   - Added proper cleanup between test runs
+   - Implemented timeouts to prevent tests from hanging indefinitely
+
 ### Sequential vs Parallel Testing
 
 By default, tests run in sequential mode (using `--runInBand`) to prevent test interference. This is important for tests that share resources like database connections or manipulate the same database tables.
@@ -249,3 +293,39 @@ Benefits of parallel testing:
 - Useful when you need quick feedback
 
 If you encounter test failures in parallel mode that pass in sequential mode, it typically indicates test isolation issues that should be addressed. 
+
+## Performance Testing
+
+### Backend Performance Thresholds
+
+The project includes performance tests that validate response times for critical API endpoints. These tests ensure that as the codebase evolves, performance remains within acceptable thresholds:
+
+| API Endpoint               | Max Response Time |
+|----------------------------|-------------------|
+| Dashboard API              | 300ms             |
+| Tournament List            | 200ms             |
+| Tournament Detail          | 150ms             |
+| Leaderboard                | 250ms             |
+
+These thresholds are defined in `tests/server/features/tournament/integration/backend-optimization.test.ts` and are enforced during testing to prevent performance regressions.
+
+### Performance Optimizations
+
+To meet these performance requirements, several optimizations have been implemented:
+
+1. **Database Optimizations**:
+   - Added indexes to frequently queried columns
+   - Optimized SQL queries for leaderboard and tournament lists
+   - Used efficient join operations to minimize database roundtrips
+
+2. **Caching Layer**:
+   - Implemented an in-memory cache for frequently accessed data
+   - Added cache invalidation for data consistency
+   - Used time-based expiration for cache entries
+
+3. **Query Efficiency**:
+   - Reduced the number of database queries per request
+   - Implemented pagination to limit result set sizes
+   - Used server-side aggregation for complex calculations
+
+These optimizations ensure responsive API endpoints even as the dataset grows. 
