@@ -62,9 +62,9 @@ export function setupAuth(app: Express) {
       if (!user) {
         user = await storage.createUser({ 
           email: email,
-          name: email.split('@')[0], // Default name from email
+          username: email.split('@')[0], // Default name from email
           isAdmin: false,
-          createdAt: new Date()
+          otpAttempts: 0
         });
         logger.info('Created new user', { email });
       }
@@ -104,9 +104,9 @@ export function setupAuth(app: Express) {
       if (!user) {
         user = await storage.createUser({ 
           email: email,
-          name: email.split('@')[0], // Default name from email
+          username: email.split('@')[0], // Default name from email
           isAdmin: false,
-          createdAt: new Date()
+          otpAttempts: 0
         });
         logger.info('Created new user', { email });
       }
