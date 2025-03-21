@@ -10,6 +10,11 @@ global.fetch = jest.fn();
 global.TextEncoder = TextEncoder as unknown as typeof global.TextEncoder;
 global.TextDecoder = TextDecoder as unknown as typeof global.TextDecoder;
 
+// Polyfill setImmediate for JSDOM environment (needed by winston)
+if (typeof setImmediate === 'undefined') {
+  (global as any).setImmediate = (fn: Function, ...args: any[]) => setTimeout(fn, 0, ...args);
+}
+
 // Automatically cleanup after each test
 afterEach(() => {
   cleanup();

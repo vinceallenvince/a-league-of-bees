@@ -15,6 +15,16 @@ import { jest, afterAll, beforeAll } from '@jest/globals';
 import { closeAppDbConnections } from './tests/server/core/test-helpers';
 // Import console output control functions
 import { suppressConsoleOutput, restoreConsoleOutput } from './tests/server/core/test-logger';
+// Import scheduler for global cleanup
+import { jobScheduler } from './server/core/jobs/scheduler';
+
+// Store original process listeners to restore later if needed
+const originalProcessListeners = {
+  SIGTERM: [...process.listeners('SIGTERM')],
+  SIGINT: [...process.listeners('SIGINT')],
+  unhandledRejection: [...process.listeners('unhandledRejection')],
+  uncaughtException: [...process.listeners('uncaughtException')]
+};
 
 // Increase the default timeout for all tests
 jest.setTimeout(30000);
@@ -54,8 +64,20 @@ afterAll(async () => {
   // Allow time for any pending promises to settle
   await new Promise(resolve => setTimeout(resolve, 1000));
   
+  // Reset the job scheduler
+  if (jobScheduler) {
+    try {
+      jobScheduler.reset();
+    } catch (error) {
+      console.warn('Error resetting job scheduler:', error);
+    }
+  }
+  
   // Close all app database connections
   await closeAppDbConnections();
+  
+  // Clean up event listeners
+  removeAllProcessListeners();
   
   // Only log the global teardown message in verbose or debug mode
   if (VERBOSE_TESTS || DEBUG_DB_LOGS) {
@@ -67,3 +89,43 @@ afterAll(async () => {
     restoreConsoleOutput();
   }
 }, 10000); 
+
+/**
+ * Remove all process event listeners added during tests
+ */
+function removeAllProcessListeners() {
+  // First, get all current listeners
+  const currentListeners = {
+    SIGTERM: process.listeners('SIGTERM'),
+    SIGINT: process.listeners('SIGINT'),
+    unhandledRejection: process.listeners('unhandledRejection'),
+    uncaughtException: process.listeners('uncaughtException')
+  };
+  
+  // Remove all current listeners for these events
+  process.removeAllListeners('SIGTERM');
+  process.removeAllListeners('SIGINT');
+  process.removeAllListeners('unhandledRejection');
+  process.removeAllListeners('uncaughtException');
+  
+  // Restore original listeners if needed
+  originalProcessListeners.SIGTERM.forEach(listener => {
+    process.on('SIGTERM', listener);
+  });
+  
+  originalProcessListeners.SIGINT.forEach(listener => {
+    process.on('SIGINT', listener);
+  });
+  
+  originalProcessListeners.unhandledRejection.forEach(listener => {
+    process.on('unhandledRejection', listener);
+  });
+  
+  originalProcessListeners.uncaughtException.forEach(listener => {
+    process.on('uncaughtException', listener);
+  });
+  
+  if (VERBOSE_TESTS || DEBUG_DB_LOGS) {
+    console.log('Removed process listeners added during tests');
+  }
+} 
