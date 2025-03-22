@@ -889,7 +889,7 @@
 
 **Story Points**: 3  
 **Dependencies**: ALOB-15  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-17: Tournament Component Implementation
 **Type**: Task  
@@ -971,7 +971,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-16  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-18: Score Submission and Leaderboard Components
 **Type**: Task  
@@ -1056,7 +1056,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-17  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-19: Tournament Pages Implementation
 **Type**: Task  
@@ -1151,7 +1151,7 @@
 
 **Story Points**: 8  
 **Dependencies**: ALOB-18  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-20: API Integration and Custom Hooks
 **Type**: Task  
@@ -1243,7 +1243,7 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-19  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-21: Dashboard and Notification Implementation
 **Type**: Task  
@@ -1330,7 +1330,7 @@
 
 **Story Points**: 8  
 **Dependencies**: ALOB-20  
-**Status**: TODO
+**Status**: COMPLETE
 
 ### ALOB-22: Frontend Testing and Optimization
 **Type**: Task  
@@ -1415,4 +1415,4 @@
 
 **Story Points**: 5  
 **Dependencies**: ALOB-21  
-**Status**: TODO
+**Status**: COMPLETE
