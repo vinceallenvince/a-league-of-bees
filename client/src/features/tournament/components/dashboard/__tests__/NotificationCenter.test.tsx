@@ -1,29 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
+import { render } from '../../../test-utils';
 import NotificationCenter from '../NotificationCenter';
 import { Notification, NotificationType } from '../../../types';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-// Create a QueryClient for testing
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      gcTime: 0,
-      staleTime: 0,
-    },
-  },
-});
-
-// Create a wrapper with QueryClientProvider
-const renderWithQueryClient = (ui: React.ReactElement) => {
-  const testQueryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={testQueryClient}>
-      {ui}
-    </QueryClientProvider>
-  );
-};
 
 // Mock functions for testing
 const mockMarkAsRead = jest.fn();
@@ -88,7 +67,7 @@ describe('NotificationCenter', () => {
   });
   
   test('renders notification list correctly', () => {
-    renderWithQueryClient(<NotificationCenter />);
+    render(<NotificationCenter />);
     
     // Check that the component title is displayed
     expect(screen.getByText('Notifications')).toBeInTheDocument();
@@ -106,7 +85,7 @@ describe('NotificationCenter', () => {
   });
   
   test('clicking mark all as read button calls markAllAsRead', () => {
-    renderWithQueryClient(<NotificationCenter />);
+    render(<NotificationCenter />);
     
     const markAllButton = screen.getByText('Mark all as read');
     fireEvent.click(markAllButton);
@@ -115,7 +94,7 @@ describe('NotificationCenter', () => {
   });
   
   test('clicking on a notification calls markAsRead', () => {
-    renderWithQueryClient(<NotificationCenter />);
+    render(<NotificationCenter />);
     
     // Find the unread notification
     const notification = screen.getByText('You have been invited to Summer Tournament');
@@ -149,7 +128,7 @@ describe('NotificationCenter', () => {
       markAllAsReadError: null
     });
     
-    renderWithQueryClient(<NotificationCenter />);
+    render(<NotificationCenter />);
     
     expect(screen.getByText('No notifications')).toBeInTheDocument();
   });
@@ -175,7 +154,7 @@ describe('NotificationCenter', () => {
       markAllAsReadError: null
     });
     
-    renderWithQueryClient(<NotificationCenter />);
+    render(<NotificationCenter />);
     
     expect(screen.getByTestId('notification-center-loading')).toBeInTheDocument();
   });

@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { render } from '../../../test-utils';
 import QuickActions from '../QuickActions';
 
 // Mock wouter's Link component

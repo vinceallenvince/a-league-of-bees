@@ -1,29 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { render } from '../../test-utils';
 import DashboardPage from '../DashboardPage';
 import { DashboardData } from '../../types';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-// Create a QueryClient for testing
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      gcTime: 0,
-      staleTime: 0,
-    },
-  },
-});
-
-// Create a wrapper with QueryClientProvider
-const renderWithQueryClient = (ui: React.ReactElement) => {
-  const testQueryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={testQueryClient}>
-      {ui}
-    </QueryClientProvider>
-  );
-};
 
 // Mock the useDashboardData hook
 jest.mock('../../hooks/useDashboardData', () => ({
@@ -107,7 +86,7 @@ const mockDashboardData: DashboardData = {
 
 describe('DashboardPage', () => {
   test('renders the dashboard page with components', () => {
-    renderWithQueryClient(<DashboardPage />);
+    render(<DashboardPage />);
     
     // Check that the page title is rendered
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
