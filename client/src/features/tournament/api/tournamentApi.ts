@@ -8,7 +8,9 @@ import {
   ScoreEntry,
   Participant,
   ParticipantStatus,
-  ParticipantListResponse
+  ParticipantListResponse,
+  NotificationType,
+  NotificationListResponse
 } from '../types';
 
 // Base API fetch function
@@ -322,6 +324,75 @@ export const tournamentApi = {
     
     if (!response.ok) {
       throw new Error(`Failed to fetch dashboard data: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+
+  /**
+   * Get notifications with filtering and pagination
+   */
+  async getNotifications(params: { 
+    page?: number; 
+    pageSize?: number; 
+    type?: NotificationType;
+    isRead?: boolean;
+  } = {}): Promise<NotificationListResponse> {
+    const queryParams = new URLSearchParams();
+    
+    if (params.page) queryParams.append('page', params.page.toString());
+    if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
+    if (params.type) queryParams.append('type', params.type);
+    if (params.isRead !== undefined) queryParams.append('isRead', params.isRead.toString());
+    
+    const queryString = queryParams.toString();
+    const url = `/api/notifications${queryString ? `?${queryString}` : ''}`;
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch notifications: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+  
+  /**
+   * Mark a notification as read
+   */
+  async markNotificationAsRead(notificationId: string): Promise<{ id: string; read: boolean }> {
+    const response = await fetch(`/api/notifications/${notificationId}/read`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to mark notification as read: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
+  },
+  
+  /**
+   * Mark all notifications as read
+   */
+  async markAllNotificationsAsRead(): Promise<{ count: number }> {
+    const response = await fetch('/api/notifications/read-all', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to mark all notifications as read: ${response.status} ${response.statusText}`);
     }
     
     return response.json();

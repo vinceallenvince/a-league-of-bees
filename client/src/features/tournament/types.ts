@@ -124,6 +124,7 @@ export interface ParticipantListResponse {
 export interface NotificationListResponse {
   notifications: Notification[];
   pagination: Pagination;
+  unreadCount: number;
 }
 
 // Dashboard data
