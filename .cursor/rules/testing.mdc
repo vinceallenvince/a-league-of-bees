@@ -9,3 +9,4 @@ alwaysApply: false
 - When creating tests, use the guidance in [architecture.md](mdc:docs/architecture.md) to determine where to save them
 - When creating, updating or removing tests, update [TEST_OVERVIEW.md](mdc:tests/TEST_OVERVIEW.md) to reflect the changes
 - After running test coverge via 'npm test -- --coverage', update the coverage info in [TEST_OVERVIEW.md](mdc:tests/TEST_OVERVIEW.md)
+- Always organize tests in a /tests folder in the root of the app
