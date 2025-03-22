@@ -2,6 +2,26 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ScoreSubmission } from '@/features/tournament/components/score/ScoreSubmission';
 import { ScoreFormData } from '@/features/tournament/types';
 
+// Mock the ScreenshotUploader component
+jest.mock('@/features/tournament/components/score/ScreenshotUploader', () => ({
+  ScreenshotUploader: ({ onChange, error, required, disabled }: any) => (
+    <div data-testid="screenshot-uploader">
+      <input 
+        type="file" 
+        data-testid="mock-file-input" 
+        onChange={(e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            onChange(e.target.files[0]);
+          }
+        }}
+        disabled={disabled}
+      />
+      {error && <p data-testid="screenshot-error">{error}</p>}
+      {required && <p data-testid="screenshot-required">Screenshot is required for verification</p>}
+    </div>
+  ),
+}));
+
 describe('ScoreSubmission', () => {
   const mockSubmit = jest.fn();
   const currentDay = 3;
@@ -24,7 +44,13 @@ describe('ScoreSubmission', () => {
     
     expect(screen.getByLabelText(/Day/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Score/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Screenshot/i)).toBeInTheDocument();
+    
+    // Check for the Screenshot label using a more specific selector
+    expect(screen.getByText((content, element) => {
+      return element?.tagName.toLowerCase() === 'label' && content.includes('Screenshot');
+    })).toBeInTheDocument();
+    
+    expect(screen.getByTestId('screenshot-uploader')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Submit/i })).toBeInTheDocument();
     
     // Should show the current day by default
@@ -67,7 +93,8 @@ describe('ScoreSubmission', () => {
     fireEvent.click(screen.getByRole('button', { name: /Submit/i }));
     
     await waitFor(() => {
-      expect(screen.getByText(/Screenshot is required/i)).toBeInTheDocument();
+      // Use test ID to find the error message
+      expect(screen.getByTestId('screenshot-error')).toBeInTheDocument();
     });
     
     expect(mockSubmit).not.toHaveBeenCalled();
@@ -106,9 +133,9 @@ describe('ScoreSubmission', () => {
     // Fill score
     fireEvent.change(screen.getByLabelText(/Score/i), { target: { value: '100' } });
     
-    // Mock file upload (difficult to test fully in JSDOM)
+    // Mock file upload using our mocked ScreenshotUploader
     const file = new File(['dummy content'], 'screenshot.png', { type: 'image/png' });
-    const fileInput = screen.getByLabelText(/Screenshot/i) as HTMLInputElement;
+    const fileInput = screen.getByTestId('mock-file-input');
     
     Object.defineProperty(fileInput, 'files', {
       value: [file]
@@ -177,5 +204,22 @@ describe('ScoreSubmission', () => {
     for (let i = currentDay; i < totalDays; i++) {
       expect(options[i].disabled).toBe(true);
     }
+  });
+  
+  it('disables form controls when isLoading is true', () => {
+    render(
+      <ScoreSubmission 
+        onSubmit={mockSubmit} 
+        currentDay={currentDay} 
+        totalDays={totalDays}
+        requiresVerification={requiresVerification}
+        isLoading={true}
+      />
+    );
+    
+    expect(screen.getByLabelText(/Day/i)).toBeDisabled();
+    expect(screen.getByLabelText(/Score/i)).toBeDisabled();
+    expect(screen.getByTestId('mock-file-input')).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Submitting/i })).toBeDisabled();
   });
 }); 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScoreFormData } from '../../types';
+import { ScreenshotUploader } from './ScreenshotUploader';
 
 interface ScoreSubmissionProps {
   onSubmit: (data: ScoreFormData) => void;
@@ -26,7 +27,6 @@ export function ScoreSubmission({
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   // Generate array of days from 1 to totalDays
   const days = Array.from({ length: totalDays }, (_, i) => i + 1);
@@ -55,38 +55,18 @@ export function ScoreSubmission({
     }
   };
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      
-      // Only accept image files
-      if (!file.type.startsWith('image/')) {
-        setErrors({
-          ...errors,
-          screenshot: 'File must be an image'
-        });
-        return;
-      }
-      
-      setFormData({
-        ...formData,
-        screenshot: file
+  const handleScreenshotChange = (file: File | null) => {
+    setFormData({
+      ...formData,
+      screenshot: file || undefined
+    });
+    
+    // Clear error when screenshot is changed
+    if (errors.screenshot) {
+      setErrors({
+        ...errors,
+        screenshot: ''
       });
-      
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      
-      // Clear error when field is changed
-      if (errors.screenshot) {
-        setErrors({
-          ...errors,
-          screenshot: ''
-        });
-      }
     }
   };
   
@@ -155,35 +135,15 @@ export function ScoreSubmission({
       </div>
       
       <div>
-        <label htmlFor="screenshot" className="block text-sm font-medium">
+        <label htmlFor="screenshot" className="block text-sm font-medium mb-1">
           Screenshot {requiresVerification ? '(Required)' : '(Optional)'}
         </label>
-        <div className="mt-1 flex items-center">
-          <input
-            type="file"
-            id="screenshot"
-            name="screenshot"
-            accept="image/*"
-            onChange={handleFileChange}
-            className={`block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 ${
-              errors.screenshot ? 'border-red-500' : ''
-            }`}
-            disabled={isLoading}
-          />
-        </div>
-        {errors.screenshot && (
-          <p className="mt-1 text-sm text-red-600">{errors.screenshot}</p>
-        )}
-        
-        {previewUrl && (
-          <div className="mt-2">
-            <img
-              src={previewUrl}
-              alt="Screenshot preview"
-              className="h-32 w-auto object-cover rounded-md border border-gray-300"
-            />
-          </div>
-        )}
+        <ScreenshotUploader
+          onChange={handleScreenshotChange}
+          error={errors.screenshot}
+          required={requiresVerification}
+          disabled={isLoading}
+        />
       </div>
       
       <div className="flex justify-end pt-4">
