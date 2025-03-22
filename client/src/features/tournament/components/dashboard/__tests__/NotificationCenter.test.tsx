@@ -2,6 +2,32 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import NotificationCenter from '../NotificationCenter';
 import { Notification, NotificationType } from '../../../types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Create a QueryClient for testing
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      gcTime: 0,
+      staleTime: 0,
+    },
+  },
+});
+
+// Create a wrapper with QueryClientProvider
+const renderWithQueryClient = (ui: React.ReactElement) => {
+  const testQueryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={testQueryClient}>
+      {ui}
+    </QueryClientProvider>
+  );
+};
+
+// Mock functions for testing
+const mockMarkAsRead = jest.fn();
+const mockMarkAllAsRead = jest.fn();
 
 // Mock the notifications data
 const mockNotifications: Notification[] = [
@@ -24,10 +50,6 @@ const mockNotifications: Notification[] = [
     createdAt: '2023-04-30T15:30:00Z'
   }
 ];
-
-// Mock functions for testing
-const mockMarkAsRead = jest.fn();
-const mockMarkAllAsRead = jest.fn();
 
 // Mock the useNotifications hook
 jest.mock('../../../hooks/useNotifications', () => ({
@@ -66,7 +88,7 @@ describe('NotificationCenter', () => {
   });
   
   test('renders notification list correctly', () => {
-    render(<NotificationCenter />);
+    renderWithQueryClient(<NotificationCenter />);
     
     // Check that the component title is displayed
     expect(screen.getByText('Notifications')).toBeInTheDocument();
@@ -84,7 +106,7 @@ describe('NotificationCenter', () => {
   });
   
   test('clicking mark all as read button calls markAllAsRead', () => {
-    render(<NotificationCenter />);
+    renderWithQueryClient(<NotificationCenter />);
     
     const markAllButton = screen.getByText('Mark all as read');
     fireEvent.click(markAllButton);
@@ -93,7 +115,7 @@ describe('NotificationCenter', () => {
   });
   
   test('clicking on a notification calls markAsRead', () => {
-    render(<NotificationCenter />);
+    renderWithQueryClient(<NotificationCenter />);
     
     // Find the unread notification
     const notification = screen.getByText('You have been invited to Summer Tournament');
@@ -127,7 +149,7 @@ describe('NotificationCenter', () => {
       markAllAsReadError: null
     });
     
-    render(<NotificationCenter />);
+    renderWithQueryClient(<NotificationCenter />);
     
     expect(screen.getByText('No notifications')).toBeInTheDocument();
   });
@@ -153,7 +175,7 @@ describe('NotificationCenter', () => {
       markAllAsReadError: null
     });
     
-    render(<NotificationCenter />);
+    renderWithQueryClient(<NotificationCenter />);
     
     expect(screen.getByTestId('notification-center-loading')).toBeInTheDocument();
   });
