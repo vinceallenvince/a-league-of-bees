@@ -307,5 +307,23 @@ export const tournamentApi = {
     }
     
     return response.json();
+  },
+
+  /**
+   * Get dashboard data for the current user
+   */
+  async getDashboard(): Promise<any> {
+    const response = await fetch('/api/dashboard', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch dashboard data: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
   }
 }; 
