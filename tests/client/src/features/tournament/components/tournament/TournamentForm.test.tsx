@@ -1,6 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { TournamentForm } from '@/features/tournament/components/tournament/TournamentForm';
-import { TournamentFormData } from '@/features/tournament/types';
+import { TournamentForm } from '../../../../../../../client/src/features/tournament/components/tournament/TournamentForm';
+
+// Define TournamentFormData inline for testing
+interface TournamentFormData {
+  name: string;
+  description?: string;
+  durationDays: number;
+  startDate: Date;
+  requiresVerification: boolean;
+  timezone: string;
+}
 
 describe('TournamentForm', () => {
   const mockSubmit = jest.fn();

@@ -1,6 +1,21 @@
 import { render, screen } from '@testing-library/react';
-import { TournamentCard } from '@/features/tournament/components/tournament/TournamentCard';
-import { Tournament } from '@/features/tournament/types';
+import { TournamentCard } from '../../../../../../../client/src/features/tournament/components/tournament/TournamentCard';
+
+// Define Tournament type locally for testing
+type StatusType = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+interface Tournament {
+  id: string;
+  name: string;
+  description?: string;
+  durationDays: number;
+  startDate: string;
+  status: StatusType;
+  requiresVerification?: boolean;
+  timezone?: string;
+  creatorId: string;
+  creatorUsername?: string;
+  participantCount: number;
+}
 
 describe('TournamentCard', () => {
   const mockTournament: Tournament = {

@@ -9,6 +9,7 @@ import { dashboardRoutes } from "../features/dashboard/routes";
 import { notificationRoutes } from "../features/notification/routes";
 import { jobRoutes } from "./jobs/routes";
 import logger from "./logger";
+import { syncUserIds } from './middleware/auth';
 
 /**
  * API-specific 404 handler
@@ -17,9 +18,9 @@ import logger from "./logger";
 function apiNotFoundHandler(req: Request, res: Response) {
   if (req.path.startsWith('/api')) {
     logger.debug('API 404', { path: req.path, method: req.method });
-    res.status(404).json({ error: "API endpoint not found" });
+    res.status(404).json({ error: 'API endpoint not found' });
   } else {
-    // Let non-API requests pass through to be handled by Vite/static middleware
+    // Let Vite/static handle non-API routes
     res.status(404).end();
   }
 }
@@ -27,6 +28,9 @@ function apiNotFoundHandler(req: Request, res: Response) {
 export function registerRoutes(app: Express): Server {
   // Set up authentication
   setupAuth(app);
+
+  // Apply the sync user IDs middleware to all API routes
+  app.use('/api', syncUserIds);
 
   // Register feature routes
   try {

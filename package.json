@@ -16,7 +16,7 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit --detectOpenHandles --silent",
-    "test:server": "TEST_ENV=server node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit --detectOpenHandles --silent tests/server/",
+    "test:server": "TEST_ENV=server node --experimental-vm-modules node_modules/jest/bin/jest.js --testMatch=\"<rootDir>/tests/server/**/*.test.ts\" --runInBand --forceExit --detectOpenHandles --silent",
     "test:jobs": "TEST_ENV=server ./scripts/run-job-tests.sh",
     "test:parallel": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand --forceExit --detectOpenHandles --silent",
@@ -114,6 +114,10 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.26.0",
     "@eslint/js": "^9.20.0",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
     "@tailwindcss/typography": "^0.5.15",
@@ -138,6 +142,7 @@
     "@typescript-eslint/parser": "^8.24.1",
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
+    "babel-jest": "^29.7.0",
     "drizzle-kit": "^0.30.5",
     "esbuild": "^0.24.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",

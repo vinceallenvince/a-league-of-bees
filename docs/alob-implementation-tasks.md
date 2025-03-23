@@ -1416,3 +1416,97 @@
 **Story Points**: 5  
 **Dependencies**: ALOB-21  
 **Status**: BACKLOG
+
+### ALOB-23: Fix Authentication ID Mismatch
+**Type**: Task  
+**Summary**: Resolve memory vs database ID mismatch in authentication system  
+**Description**:
+- Fix the issue where memory IDs don't match database IDs causing authentication failures
+- Implement a unified ID generation approach for both memory and database storage
+- Simplify the authentication flow to ensure ID consistency
+- Add database consistency checks to prevent ID mismatches
+- Remove complex nested try/catch blocks for ID synchronization
+- Implement a cleaner pattern for memory/database synchronization
+- Add thorough tests for the authentication flow
+
+**Implementation Details**:
+- Follow a test-driven development approach for fixing the authentication system:
+  1. **Analyze the current authentication flow**:
+     - Create tests that reproduce the ID mismatch issue
+     - Document current behavior with failing tests
+     - Identify all code paths that generate or use user IDs
+     - Map the authentication flow to understand synchronization points
+     - Create test fixtures for different authentication scenarios
+
+  2. **Design unified ID generation strategy**:
+     - Implement tests for a consistent ID generation approach
+     - Create test cases for ID generation during user creation
+     - Test database and memory storage with the same ID
+     - Ensure IDs remain consistent throughout the authentication flow
+     - Test ID behavior during edge cases (conflicts, database errors)
+
+  3. **Simplify authentication workflow with TDD**:
+     - Write tests for the simplified authentication process
+     - Create test cases that verify consistent ID usage
+     - Test proper session management with correct IDs
+     - Verify database queries use consistent identifiers
+     - Test authentication with various user states (new, existing)
+
+  4. **Create database consistency utilities with tests**:
+     - Implement tests for database-memory consistency checks
+     - Create test cases for synchronization utilities
+     - Test automated correction of ID mismatches
+     - Verify consistency checks don't affect performance
+     - Test recovery from inconsistent states
+
+  5. **Refactor existing code with tests as safety net**:
+     - Create tests for the refactored authentication flow
+     - Simplify complex nested try/catch blocks
+     - Verify behavior remains consistent after refactoring
+     - Test error handling in the simplified flow
+     - Ensure backward compatibility for existing sessions
+
+- Specific TDD steps for authentication fixes:
+  1. **MemStorage User Creation Fix**:
+     - Test user creation with consistent IDs
+     - Verify IDs are generated once and used consistently
+     - Test storage operations preserve ID consistency
+     - Implement UUID generation at a single point
+     - Verify memory and database operations use the same ID
+     - Test error cases with consistent error handling
+
+  2. **Authentication Flow Simplification**:
+     - Test user lookup by email first approach
+     - Implement database-first lookup pattern
+     - Test session creation with database IDs
+     - Verify memory storage synchronization with database
+     - Test complete authentication flow with various scenarios
+     - Implement simplified error handling with consistent messaging
+
+  3. **Session Management Improvement**:
+     - Test session creation with correct user IDs
+     - Verify session retrieval works with database IDs
+     - Test session data consistency across requests
+     - Implement session store improvements
+     - Verify authentication state persists correctly
+     - Test logout and session cleanup
+
+  4. **ID Synchronization Utility**:
+     - Test utility that checks ID consistency
+     - Implement automated ID synchronization
+     - Test recovery from inconsistent states
+     - Verify performance impact is minimal
+     - Create admin endpoints for manual synchronization
+     - Test background synchronization job
+
+  5. **Comprehensive Authentication Testing**:
+     - Create end-to-end tests for the complete authentication flow
+     - Test with existing users in various states
+     - Verify new user registration and authentication
+     - Test edge cases like conflicting email addresses
+     - Verify error handling and user feedback
+     - Test performance under load with many concurrent users
+
+**Story Points**: 5  
+**Dependencies**: None  
+**Status**: BACKLOG

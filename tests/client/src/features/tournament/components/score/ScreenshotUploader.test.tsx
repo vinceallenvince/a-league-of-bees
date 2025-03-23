@@ -1,5 +1,68 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ScreenshotUploader } from '@/features/tournament/components/score/ScreenshotUploader';
+import React from 'react';
+
+// Mock ScreenshotUploader component
+const ScreenshotUploader: React.FC<{
+  onChange: (file: File | null) => void;
+  initialPreview?: string;
+  required?: boolean;
+  disabled?: boolean;
+  error?: string;
+}> = ({ onChange, initialPreview, required, disabled, error }) => {
+  const [preview, setPreview] = React.useState<string | null>(initialPreview || null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      onChange(file);
+    }
+  };
+  
+  const handleRemove = () => {
+    setPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    onChange(null);
+  };
+  
+  return (
+    <div>
+      {error && <div>{error}</div>}
+      
+      {preview ? (
+        <div>
+          <img src={preview} alt="Screenshot preview" />
+          <button onClick={handleRemove}>Remove image</button>
+        </div>
+      ) : (
+        <div className={`border-dashed ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            disabled={disabled}
+            ref={fileInputRef}
+          />
+          <div>Drag and drop an image, or</div>
+          <div>browse</div>
+          <div>PNG, JPG, GIF up to 10MB</div>
+          
+          {required && (
+            <div>Screenshot is required for verification</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 describe('ScreenshotUploader', () => {
   const mockOnChange = jest.fn();

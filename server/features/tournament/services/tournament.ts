@@ -5,6 +5,7 @@ import { tournaments, tournamentParticipants, users } from '../../../../shared/s
 import { and, eq, desc, gte, lt, sql } from 'drizzle-orm';
 import logger from '../../../core/logger';
 import cacheService from '../../../core/cache';
+import { TournamentStatus } from '../types';
 
 // Cache TTL constants
 const CACHE_TTL = {
@@ -44,9 +45,9 @@ export const tournamentService = {
    * Get tournaments with pagination
    * If userId is provided, returns tournaments created by that user
    */
-  async getTournaments(page = 1, pageSize = 10, userId?: string) {
+  async getTournaments(page = 1, pageSize = 10, userId?: string, status?: TournamentStatus) {
     // Use cursor-based pagination for better performance with larger datasets
-    const cacheKey = `tournament:list:${page}:${pageSize}:${userId || 'all'}`;
+    const cacheKey = `tournament:list:${page}:${pageSize}:${userId || 'all'}:${status || 'all'}`;
     
     return cacheService.getOrSet(
       cacheKey,
@@ -64,18 +65,19 @@ export const tournamentService = {
               totalPages: Math.ceil(tournamentList.length / pageSize)
             };
           } else {
-            // Use getActiveTournaments for all tournaments
-            return await queries.getActiveTournaments(page, pageSize);
+            // Pass status parameter to getActiveTournaments if provided
+            return await queries.getActiveTournaments(page, pageSize, status);
           }
         } catch (error) {
-          logger.error('Error getting tournaments', { error, page, pageSize, userId });
+          logger.error('Error getting tournaments', { error, page, pageSize, userId, status });
           throw error;
         }
       },
       CACHE_TTL.TOURNAMENT_LIST,
       [
         CACHE_PREFIX.TOURNAMENT_LIST,
-        userId ? `${CACHE_PREFIX.USER}:${userId}` : null
+        userId ? `${CACHE_PREFIX.USER}:${userId}` : null,
+        status ? `${CACHE_PREFIX.TOURNAMENT}:status:${status}` : null
       ].filter(Boolean) as string[]
     );
   },

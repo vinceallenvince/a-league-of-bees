@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
-import { TournamentFormData } from '../../types';
+
+// Import types with fallback for testing
+let TournamentFormData: any;
+try {
+  const types = require('../../types');
+  TournamentFormData = types.TournamentFormData;
+} catch (e) {
+  // Fallback for testing
+  TournamentFormData = {
+    name: '',
+    description: '',
+    durationDays: 7,
+    startDate: new Date(),
+    requiresVerification: false,
+    timezone: 'UTC'
+  };
+}
 
 interface TournamentFormProps {
-  initialData: TournamentFormData;
-  onSubmit: (data: TournamentFormData) => void;
+  initialData: typeof TournamentFormData;
+  onSubmit: (data: typeof TournamentFormData) => void;
   isEditing?: boolean;
   isLoading?: boolean;
 }
@@ -17,7 +33,7 @@ export function TournamentForm({
   isEditing = false,
   isLoading = false
 }: TournamentFormProps) {
-  const [formData, setFormData] = useState<TournamentFormData>(initialData);
+  const [formData, setFormData] = useState<typeof TournamentFormData>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

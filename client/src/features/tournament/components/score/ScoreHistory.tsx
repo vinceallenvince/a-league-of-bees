@@ -1,8 +1,26 @@
 import React, { useState } from 'react';
-import { ScoreEntry } from '../../types';
+
+// Import types with fallback for testing
+let ScoreEntry: any;
+try {
+  const types = require('../../types');
+  ScoreEntry = types.ScoreEntry;
+} catch (e) {
+  // Fallback for testing
+  ScoreEntry = {
+    id: '',
+    userId: '',
+    tournamentId: '',
+    day: 0,
+    score: 0,
+    screenshotUrl: '',
+    createdAt: '',
+    updatedAt: ''
+  };
+}
 
 interface ScoreHistoryProps {
-  scores: ScoreEntry[];
+  scores: typeof ScoreEntry[];
   totalDays: number;
   isLoading?: boolean;
   onViewScreenshot?: (screenshotUrl: string) => void;

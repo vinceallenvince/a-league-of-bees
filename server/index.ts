@@ -8,6 +8,9 @@ import logger from "./core/logger";
 import { createServer } from "net";
 import { initializeTournamentJobs } from './features/tournament/jobs';
 import { jobScheduler } from './core/jobs/scheduler';
+import { db } from "./core/db";
+import { users } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const HMR_PORT = process.env.HMR_PORT ? Number(process.env.HMR_PORT) : 24678;
@@ -27,6 +30,42 @@ function isPortInUse(port: number): Promise<boolean> {
   });
 }
 
+// Ensure a test user exists in the database for development
+async function ensureTestUserExists() {
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      const testEmail = 'test@example.com';
+      // Check if test user exists
+      const existingUser = await db.select().from(users).where(eq(users.email, testEmail)).limit(1);
+      
+      if (existingUser.length === 0) {
+        // Create a test user with a predictable ID
+        const userId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479'; // Fixed UUID for test user
+        await db.insert(users).values({
+          id: userId,
+          email: testEmail,
+          firstName: 'Test',
+          lastName: 'User',
+          username: 'testuser',
+          bio: null,
+          avatar: null,
+          isAdmin: false,
+          lastLogin: new Date(),
+          otpAttempts: 0,
+          otpSecret: null,
+          otpExpiry: null,
+          otpLastRequest: null
+        });
+        logger.info('Created test user in database', { userId, email: testEmail });
+      } else {
+        logger.info('Test user already exists in database', { userId: existingUser[0].id, email: testEmail });
+      }
+    } catch (error) {
+      logger.error('Error ensuring test user exists', { error });
+    }
+  }
+}
+
 async function startServer() {
   const { app, server } = createApp();
 
@@ -44,6 +83,9 @@ async function startServer() {
     try {
       // In development, Vite needs to handle all non-API routes
       await setupVite(app, server);
+      
+      // Ensure test user exists in development environment
+      await ensureTestUserExists();
     } catch (error) {
       logger.error('Failed to set up Vite', { error, service: 'web-service' });
       if ((error as Error).message.includes('Port is already in use')) {

@@ -7,7 +7,7 @@
     "profile": "Profile",
     "logout": "Logout",
     "signIn": "Sign In",
-    "helloWorld": "Hello World"
+    "dashboard": "Dashboard"
   },
   "auth": {
     "login": "Login",
@@ -148,9 +148,5 @@
     "savingChanges": "Saving changes...",
     "nameInformation": "Name information",
     "profileManagementForm": "Profile management form"
-  },
-  "helloWorld": {
-    "title": "Hello World Feature",
-    "description": "This is a simple example feature to demonstrate our new feature-based architecture."
   }
 } 

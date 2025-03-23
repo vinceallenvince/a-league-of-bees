@@ -3,8 +3,11 @@ import { Express } from "express";
 import session from "express-session";
 import { storage } from "./storage";
 import { sendOtpEmail, sendMagicLinkEmail } from "./email";
-import { insertOtpSchema, insertUserSchema } from "@shared/schema";
+import { insertOtpSchema, insertUserSchema, users } from "@shared/schema";
 import logger from "./logger";
+import { eq } from "drizzle-orm";
+import { db } from "./db";
+import { ensureUserIdConsistency } from "./auth-utils";
 
 declare global {
   namespace Express {
@@ -12,6 +15,11 @@ declare global {
       id: string;
       email: string;
       isAdmin: boolean;
+    }
+    
+    interface Session {
+      userId: string;
+      email?: string;
     }
   }
 }
@@ -55,7 +63,7 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ error: "Email is required" });
       }
       
-      // Check if user exists
+      // Check for user and ensure ID consistency between memory and database
       let user = await storage.getUserByEmail(email);
       
       // Create user if they don't exist yet
@@ -67,6 +75,9 @@ export function setupAuth(app: Express) {
           otpAttempts: 0
         });
         logger.info('Created new user', { email });
+      } else {
+        // Ensure existing user has consistent ID between memory and database
+        user = await ensureUserIdConsistency(email) || user;
       }
 
       // Handle auth method
@@ -97,7 +108,7 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ error: "Email is required" });
       }
       
-      // Check if user exists
+      // Check for user and ensure ID consistency between memory and database
       let user = await storage.getUserByEmail(email);
       
       // Create user if they don't exist yet
@@ -109,6 +120,9 @@ export function setupAuth(app: Express) {
           otpAttempts: 0
         });
         logger.info('Created new user', { email });
+      } else {
+        // Ensure existing user has consistent ID between memory and database
+        user = await ensureUserIdConsistency(email) || user;
       }
 
       const otp = generateOtp();
@@ -131,6 +145,7 @@ export function setupAuth(app: Express) {
       
       const { email, otp } = result.data;
       
+      // First verify the OTP
       const verificationResult = await storage.verifyOtp(email, otp);
       if (!verificationResult.success) {
         return res.status(400).json({ 
@@ -139,18 +154,30 @@ export function setupAuth(app: Express) {
         });
       }
       
-      const user = await storage.getUserByEmail(email);
+      // Ensure user ID consistency between memory and database
+      // This is our new approach that simplifies the complex ID synchronization
+      const user = await ensureUserIdConsistency(email);
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        logger.error('User not found or ID consistency could not be ensured', { email });
+        return res.status(500).json({ error: 'Authentication failed, please try again' });
       }
       
-      // Set up session
+      // User ID should now be consistent between memory and database
+      // Set up session with the user ID
       req.session.userId = user.id;
+      (req.session as Express.Session).email = email;
+      
       await storage.updateLastLogin(user.id);
       
+      logger.info('OTP verification successful', { 
+        userId: user.id, 
+        email 
+      });
+      
+      // Return the user information
       res.status(200).json(user);
     } catch (error) {
-      logger.error('OTP verification error', { error });
+      logger.error('Error in OTP verification', { error });
       res.status(500).json({ error: "Failed to verify OTP" });
     }
   });
@@ -169,8 +196,10 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ error: "Invalid or expired magic link" });
       }
       
-      const user = await storage.getUserByEmail(email);
+      // Ensure user ID consistency between memory and database
+      const user = await ensureUserIdConsistency(email);
       if (!user) {
+        logger.error('User not found or ID consistency could not be ensured', { email });
         return res.status(404).json({ error: "User not found" });
       }
       
@@ -194,6 +223,17 @@ export function setupAuth(app: Express) {
     try {
       const user = await storage.getUser(req.session.userId);
       if (!user) {
+        // If the user isn't found in memory, try to synchronize with database
+        if ((req.session as Express.Session).email) {
+          const syncedUser = await ensureUserIdConsistency((req.session as Express.Session).email!);
+          if (syncedUser) {
+            // Now that we've synced, update the session with the correct ID if needed
+            if (syncedUser.id !== req.session.userId) {
+              req.session.userId = syncedUser.id;
+            }
+            return res.status(200).json(syncedUser);
+          }
+        }
         return res.status(404).json({ error: "User not found" });
       }
       res.status(200).json(user);

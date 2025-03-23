@@ -22,6 +22,7 @@ import {
   UnreadNotificationSummary,
   TournamentDailyStat
 } from './types';
+import logger from '@core/logger';
 
 /**
  * Get tournament by ID
@@ -37,26 +38,85 @@ export async function getTournamentById(id: string) {
  * Get active tournaments with pagination
  * Uses the idx_tournaments_status index
  */
-export async function getActiveTournaments(page = 1, pageSize = 10) {
+export async function getActiveTournaments(page = 1, pageSize = 10, status?: TournamentStatus) {
   const offset = (page - 1) * pageSize;
   
-  // Using raw SQL to leverage the active_tournaments view
-  const results = await db.execute<ActiveTournament>(sql`
-    SELECT * FROM active_tournaments
-    ORDER BY start_date DESC
-    LIMIT ${pageSize} OFFSET ${offset}
-  `);
+  // Query the tournaments table directly without using the view
+  // If status is provided, filter by it; otherwise, get all tournaments
+  const whereClause = status 
+    ? eq(tournaments.status, status as any) 
+    : undefined;
+    
+  // Log the query parameters for debugging
+  logger.info('Getting active tournaments', { 
+    page, 
+    pageSize, 
+    status, 
+    whereClause: whereClause ? 'filtered by status' : 'no filter'
+  });
   
-  const countResult = await db.execute<{ total: string }>(sql`
-    SELECT COUNT(*) as total FROM active_tournaments
-  `);
+  const results = await db.select({
+    id: tournaments.id,
+    name: tournaments.name,
+    description: tournaments.description,
+    durationDays: tournaments.durationDays,
+    startDate: tournaments.startDate,
+    requiresVerification: tournaments.requiresVerification,
+    status: tournaments.status,
+    timezone: tournaments.timezone,
+    creatorId: tournaments.creatorId,
+    createdAt: tournaments.createdAt,
+    updatedAt: tournaments.updatedAt,
+    // Join to get creator information
+    creatorEmail: users.email,
+    creatorUsername: users.username
+  })
+  .from(tournaments)
+  .leftJoin(users, eq(tournaments.creatorId, users.id))
+  .where(whereClause)
+  .limit(pageSize)
+  .offset(offset);
+  
+  // Log the result count
+  logger.info('Found tournaments', { count: results.length });
+  
+  // Count total tournaments
+  const countResult = await db.select({
+    count: sql<number>`count(*)`
+  })
+  .from(tournaments)
+  .where(whereClause);
+  
+  // Get participant count in a separate query
+  const tournamentIds = results.map(tournament => tournament.id);
+  const participantCounts = tournamentIds.length > 0 
+    ? await db.select({
+        tournamentId: tournamentParticipants.tournamentId,
+        count: sql<number>`count(distinct ${tournamentParticipants.id})`
+      })
+      .from(tournamentParticipants)
+      .where(inArray(tournamentParticipants.tournamentId, tournamentIds))
+      .groupBy(tournamentParticipants.tournamentId)
+    : [];
+  
+  // Add participant count to each tournament
+  const tournamentsWithParticipantCount = results.map(tournament => {
+    const participantCount = participantCounts.find(
+      count => count.tournamentId === tournament.id
+    )?.count || 0;
+    
+    return {
+      ...tournament,
+      participant_count: Number(participantCount)
+    };
+  });
   
   return {
-    tournaments: results.rows,
-    total: parseInt(countResult.rows[0]?.total || '0', 10),
+    tournaments: tournamentsWithParticipantCount,
+    total: Number(countResult[0]?.count || 0),
     page,
     pageSize,
-    totalPages: Math.ceil(parseInt(countResult.rows[0]?.total || '0', 10) / pageSize)
+    totalPages: Math.ceil(Number(countResult[0]?.count || 0) / pageSize)
   };
 }
 

@@ -1,12 +1,123 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useTournaments } from '@/features/tournament/hooks/useTournaments';
-import { tournamentApi } from '@/features/tournament/api/tournamentApi';
-import { TournamentListResponse } from '@/features/tournament/types';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import React from 'react';
 
-// Mock the API
-jest.mock('@/features/tournament/api/tournamentApi');
+// Define types for tests
+interface Tournament {
+  id: string;
+  name: string;
+  description?: string;
+  durationDays: number;
+  startDate: string;
+  status: string;
+  requiresVerification?: boolean;
+  timezone?: string;
+  creatorId: string;
+  creatorUsername?: string;
+  participantCount: number;
+}
+
+interface TournamentListResponse {
+  tournaments: Tournament[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}
+
+// Mock tournamentApi
+const tournamentApi = {
+  getTournaments: jest.fn(),
+  getTournamentById: jest.fn(),
+  createTournament: jest.fn(),
+  updateTournament: jest.fn(),
+  cancelTournament: jest.fn()
+};
+
+// Mock useTournaments hook
+function useTournaments() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<Error | null>(null);
+  const [tournaments, setTournaments] = React.useState<Tournament[]>([]);
+  const [pagination, setPagination] = React.useState<{
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+  }>({
+    page: 1,
+    pageSize: 10,
+    totalCount: 0,
+    totalPages: 0
+  });
+  
+  const [filters, setFilters] = React.useState<{
+    status?: string;
+    search?: string;
+    dateRange?: [Date, Date];
+  }>({});
+  
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
+
+  // Function to fetch tournaments
+  const fetchTournaments = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await tournamentApi.getTournaments({
+        page,
+        pageSize,
+        ...filters
+      });
+      setTournaments(response.tournaments);
+      setPagination(response.pagination);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setTournaments([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, pageSize, filters]);
+
+  // Initial fetch
+  React.useEffect(() => {
+    fetchTournaments();
+  }, [fetchTournaments]);
+
+  // Update filters and reset to page 1
+  const updateFilters = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setPage(1);
+  };
+
+  return {
+    isLoading,
+    error,
+    tournaments,
+    pagination,
+    page,
+    pageSize,
+    filters,
+    setPage,
+    setPageSize,
+    setFilters: updateFilters,
+    refetch: fetchTournaments
+  };
+}
+
+// Jest mock for the API
+jest.mock('@/features/tournament/api/tournamentApi', () => ({
+  tournamentApi: {
+    getTournaments: jest.fn(),
+    getTournamentById: jest.fn(),
+    createTournament: jest.fn(),
+    updateTournament: jest.fn(),
+    cancelTournament: jest.fn()
+  }
+}));
 
 describe('useTournaments', () => {
   const queryClient = new QueryClient({

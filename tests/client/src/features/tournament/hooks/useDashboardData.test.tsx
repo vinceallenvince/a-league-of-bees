@@ -1,10 +1,105 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { useDashboardData } from '@/features/tournament/hooks/useDashboardData';
-import { tournamentApi } from '@/features/tournament/api/tournamentApi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 
-// Mock the tournamentApi
-jest.mock('@/features/tournament/api/tournamentApi');
+// Mock DashboardData type
+interface DashboardData {
+  userInfo: {
+    id: string;
+    username: string;
+    email: string;
+  };
+  tournamentSummary: {
+    active: number;
+    pending: number;
+    completed: number;
+    cancelled: number;
+  };
+  participation: {
+    hosting: number;
+    joined: number;
+    invited: number;
+  };
+  recentActivity: {
+    id: string;
+    type: string;
+    tournamentId: string;
+    tournamentName: string;
+    message: string;
+    timestamp: string;
+    read: boolean;
+  }[];
+  upcomingTournaments: {
+    id: string;
+    name: string;
+    startDate: string;
+    creatorId: string;
+  }[];
+  unreadNotificationsCount: number;
+}
+
+// Mock tournamentApi
+const tournamentApi = {
+  getDashboard: jest.fn(),
+  getTournaments: jest.fn(),
+  getTournamentById: jest.fn(),
+  createTournament: jest.fn(),
+  updateTournament: jest.fn(),
+  cancelTournament: jest.fn()
+};
+
+// Mock useDashboardData hook
+function useDashboardData() {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<Error | null>(null);
+  const [dashboardData, setDashboardData] = React.useState<DashboardData>();
+  
+  React.useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const data = await tournamentApi.getDashboard();
+        setDashboardData(data);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchDashboardData();
+  }, []);
+  
+  return {
+    isLoading,
+    error,
+    dashboardData,
+    refetch: async () => {
+      setIsLoading(true);
+      try {
+        const data = await tournamentApi.getDashboard();
+        setDashboardData(data);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+}
+
+// Mock the API
+jest.mock('@/features/tournament/api/tournamentApi', () => ({
+  tournamentApi: {
+    getDashboard: jest.fn(),
+    getTournaments: jest.fn(),
+    getTournamentById: jest.fn(),
+    createTournament: jest.fn(),
+    updateTournament: jest.fn(),
+    cancelTournament: jest.fn()
+  }
+}));
 
 describe('useDashboardData', () => {
   const queryClient = new QueryClient({

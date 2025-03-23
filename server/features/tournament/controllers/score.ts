@@ -161,6 +161,7 @@ export const scoreController = {
         return res.status(401).json({ error: 'Authentication required' });
       }
       
+      // Get score history from actual database
       const scores = await scoreService.getScoreHistory(tournamentId, targetUserId);
       res.json(scores);
     } catch (error) {
@@ -187,6 +188,8 @@ export const scoreController = {
   getLeaderboardHandler: async (req: Request, res: Response) => {
     try {
       const { id: tournamentId } = req.params;
+      
+      // Get leaderboard from actual database
       const leaderboard = await scoreService.getLeaderboard(tournamentId);
       res.json(leaderboard);
     } catch (error) {

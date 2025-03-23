@@ -1,6 +1,14 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+// Use a dynamic import with a fallback for testing
+let cn: (...inputs: any[]) => string;
+try {
+  const utils = require("@/lib/utils");
+  cn = utils.cn;
+} catch (e) {
+  // Fallback implementation for tests
+  cn = (...inputs: any[]) => inputs.filter(Boolean).join(' ');
+}
 
 const Card = React.forwardRef<
   HTMLDivElement,
