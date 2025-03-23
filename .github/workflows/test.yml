@@ -44,9 +44,13 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           
-      # Run tests with increased timeouts and sequential execution (--runInBand)
-      - name: Run tests with coverage
-        run: npm run test:coverage -- --runInBand --testTimeout=60000 --detectOpenHandles
+      # Run client tests with coverage
+      - name: Run client tests with coverage
+        run: npm run test:client:coverage -- --runInBand --testTimeout=60000 --detectOpenHandles
+        
+      # Run server tests with coverage
+      - name: Run server tests with coverage
+        run: npm run test:server:coverage -- --runInBand --testTimeout=60000 --detectOpenHandles
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           # Add more time for tests in CI environment
