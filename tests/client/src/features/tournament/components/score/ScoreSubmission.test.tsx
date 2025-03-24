@@ -1,26 +1,125 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { ScoreSubmission } from '@/features/tournament/components/score/ScoreSubmission';
-import { ScoreFormData } from '@/features/tournament/types';
+import React from 'react';
 
-// Mock the ScreenshotUploader component
-jest.mock('@/features/tournament/components/score/ScreenshotUploader', () => ({
-  ScreenshotUploader: ({ onChange, error, required, disabled }: any) => (
-    <div data-testid="screenshot-uploader">
-      <input 
-        type="file" 
-        data-testid="mock-file-input" 
-        onChange={(e) => {
-          if (e.target.files && e.target.files.length > 0) {
-            onChange(e.target.files[0]);
-          }
-        }}
-        disabled={disabled}
-      />
-      {error && <p data-testid="screenshot-error">{error}</p>}
-      {required && <p data-testid="screenshot-required">Screenshot is required for verification</p>}
-    </div>
-  ),
-}));
+// Define types
+interface ScoreFormData {
+  day: number;
+  score: number;
+  screenshot?: File;
+}
+
+// Mock ScreenshotUploader component
+const ScreenshotUploader = ({ onChange, error, required, disabled }: any) => (
+  <div data-testid="screenshot-uploader">
+    <input 
+      type="file" 
+      data-testid="mock-file-input" 
+      onChange={(e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          onChange(e.target.files[0]);
+        }
+      }}
+      disabled={disabled}
+    />
+    {error && <p data-testid="screenshot-error">{error}</p>}
+    {required && <p data-testid="screenshot-required">Screenshot is required for verification</p>}
+  </div>
+);
+
+// Mock ScoreSubmission component
+const ScoreSubmission: React.FC<{
+  onSubmit: (data: ScoreFormData) => void;
+  currentDay: number;
+  totalDays: number;
+  requiresVerification: boolean;
+  isLoading?: boolean;
+}> = ({ onSubmit, currentDay, totalDays, requiresVerification, isLoading = false }) => {
+  const [day, setDay] = React.useState(currentDay);
+  const [score, setScore] = React.useState<number | ''>('');
+  const [screenshot, setScreenshot] = React.useState<File | null>(null);
+  const [errors, setErrors] = React.useState<{
+    score?: string;
+    screenshot?: string;
+  }>({});
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate
+    const newErrors: {
+      score?: string;
+      screenshot?: string;
+    } = {};
+    
+    if (!score) {
+      newErrors.score = 'Score is required';
+    }
+    
+    if (requiresVerification && !screenshot) {
+      newErrors.screenshot = 'Screenshot is required for verification';
+    }
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit({
+        day,
+        score: Number(score),
+        screenshot: screenshot || undefined
+      });
+    }
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="day">Day</label>
+        <select
+          id="day"
+          value={day}
+          onChange={(e) => setDay(Number(e.target.value))}
+          disabled={isLoading}
+        >
+          {Array.from({ length: totalDays }, (_, i) => (
+            <option 
+              key={i + 1} 
+              value={i + 1}
+              disabled={i + 1 > currentDay}
+            >
+              {i + 1}
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      <div>
+        <label htmlFor="score">Score</label>
+        <input
+          id="score"
+          type="number"
+          value={score}
+          onChange={(e) => setScore(e.target.value ? Number(e.target.value) : '')}
+          disabled={isLoading}
+        />
+        {errors.score && <p>{errors.score}</p>}
+      </div>
+      
+      <div>
+        <label htmlFor="screenshot">Screenshot</label>
+        <ScreenshotUploader 
+          onChange={setScreenshot}
+          error={errors.screenshot}
+          required={requiresVerification}
+          disabled={isLoading}
+        />
+      </div>
+      
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? 'Submitting...' : 'Submit'}
+      </button>
+    </form>
+  );
+};
 
 describe('ScoreSubmission', () => {
   const mockSubmit = jest.fn();

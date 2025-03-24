@@ -20,9 +20,6 @@ const AdminPage = lazy(() => import("@/features/admin/pages/admin-page"));
 const AboutPage = lazy(() => import("@/features/info/pages/about-page"));
 const ContactPage = lazy(() => import("@/features/info/pages/contact-page"));
 
-// Hello World feature
-const HelloWorldPage = lazy(() => import("@/features/hello-world/pages/hello-world-page"));
-
 // Tournament feature
 const DashboardPage = lazy(() => import("@/features/tournament/pages/DashboardPage"));
 const TournamentListPage = lazy(() => import("@/features/tournament/pages/TournamentListPage"));
@@ -52,9 +49,6 @@ export const featureRoutes = {
     <Route key="about" path="/about" component={AboutPage} />,
     <Route key="contact" path="/contact" component={ContactPage} />,
   ],
-  helloWorld: [
-    <ProtectedRoute key="hello-world" path="/hello-world" component={HelloWorldPage} requireAuth={true} />,
-  ],
   tournament: [
     <ProtectedRoute key="dashboard" path="/dashboard" component={DashboardPage} requireAuth={true} />,
     <ProtectedRoute key="tournaments" path="/tournaments" component={TournamentListPage} requireAuth={true} />,
@@ -77,7 +71,6 @@ export const getAllRoutes = () => [
   ...featureRoutes.profile,
   ...featureRoutes.admin,
   ...featureRoutes.info,
-  ...featureRoutes.helloWorld,
   ...featureRoutes.tournament,
   ...mainRoutes,
   notFoundRoute,

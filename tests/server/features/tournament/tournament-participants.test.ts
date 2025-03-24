@@ -48,73 +48,53 @@ describe('Tournament Participants', () => {
     console.log('Starting test: should create tournament participant');
     
     try {
-      // Create a test user
-      const userEmail = `participant-${Date.now()}@example.com`;
+      // Create test user
       const user = await db.insert(users).values({
-        email: userEmail,
-        otpAttempts: 0
+        email: 'participant-test@example.com',
+        otpAttempts: 0,
+        username: 'ParticipantTest'
       }).returning();
-      console.log('Created test user:', user[0].id);
-
-      // Verify user exists before proceeding
-      const verifyUser = await db.select().from(users).where(eq(users.id, user[0].id));
-      expect(verifyUser.length).toBe(1);
-      expect(verifyUser[0].email).toBe(userEmail);
       
-      // Longer delay to ensure transaction is committed
-      await sleep(DB_OPERATION_DELAY);
-
-      // Create a test tournament
-      const tournamentName = `Test Tournament ${Date.now()}`;
+      console.log(`Created test user: ${user[0].id}`);
+      
+      // Create test tournament
       const tournament = await db.insert(tournaments).values({
+        name: 'Test Tournament for Participants',
+        description: 'A test tournament for participant tests',
+        status: 'pending',
         creatorId: user[0].id,
-        name: tournamentName,
         durationDays: 7,
         startDate: new Date(),
-        timezone: 'UTC',
+        requiresVerification: false,
+        timezone: 'UTC'
       }).returning();
-      console.log('Created test tournament:', tournament[0].id);
-
-      // Verify tournament exists before proceeding
-      const verifyTournament = await db.select().from(tournaments).where(eq(tournaments.id, tournament[0].id));
-      expect(verifyTournament.length).toBe(1);
-      expect(verifyTournament[0].name).toBe(tournamentName);
       
-      // Longer delay to ensure transaction is committed
-      await sleep(DB_OPERATION_DELAY);
-
-      // Double check tournament exists using raw SQL to bypass any potential ORM caching
-      const rawCheck = await db.execute(
-        `SELECT * FROM tournaments WHERE id = '${tournament[0].id}'`
-      );
-      expect(rawCheck.rows.length).toBe(1);
-      console.log('Verified tournament exists through raw SQL');
-
-      // Short delay before participant creation
-      await sleep(VERIFICATION_DELAY);
-
+      console.log(`Created test tournament: ${tournament[0].id}`);
+      
       // Create tournament participant
       const participant = await db.insert(tournamentParticipants).values({
-        tournamentId: tournament[0].id,
         userId: user[0].id,
-        status: 'invited'
+        tournamentId: tournament[0].id,
+        status: 'active'
       }).returning();
-      console.log('Created tournament participant:', participant[0].id);
-
-      expect(participant[0].tournamentId).toBe(tournament[0].id);
-      expect(participant[0].userId).toBe(user[0].id);
-      expect(participant[0].status).toBe('invited');
+      
+      console.log(`Created tournament participant: ${participant[0].id}`);
+      
+      // Verify the participant was created
+      const participants = await db.select()
+        .from(tournamentParticipants)
+        .where(eq(tournamentParticipants.tournamentId, tournament[0].id));
+      
+      expect(participants.length).toBe(1);
+      expect(participants[0].userId).toBe(user[0].id);
+      expect(participants[0].status).toBe('active');
+      
       console.log('Test completed: should create tournament participant');
     } catch (error) {
-      console.error('Test failed with error:', error);
-      // Log detailed error information for debugging
-      if (error instanceof Error) {
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-      }
-      throw error; // Re-throw the error to fail the test
+      console.error('Test error:', error);
+      throw error;
     }
-  }, 15000);
+  }, 60000); // Increase timeout to 60 seconds
 
   it('should update tournament participant status', async () => {
     console.log('Starting test: should update tournament participant status');

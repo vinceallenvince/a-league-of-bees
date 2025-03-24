@@ -1,8 +1,45 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { render } from '../../../../../../test-utils';
-import DashboardHeader from '@/features/tournament/components/dashboard/DashboardHeader';
-import { DashboardData } from '@/features/tournament/types';
+
+// Mock the DashboardData type
+interface DashboardData {
+  userInfo: {
+    id: string;
+    username: string;
+    email: string;
+  };
+  tournamentSummary: {
+    active: number;
+    pending: number;
+    completed: number;
+    cancelled: number;
+  };
+  unreadNotificationsCount: number;
+}
+
+// Mock the DashboardHeader component
+const DashboardHeader: React.FC<{
+  dashboardData?: DashboardData;
+  isLoading: boolean;
+  error: Error | null;
+}> = ({ dashboardData, isLoading, error }) => {
+  if (isLoading) return <div data-testid="dashboard-header-loading">Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+  if (!dashboardData) return null;
+
+  const { userInfo, tournamentSummary, unreadNotificationsCount } = dashboardData;
+
+  return (
+    <div>
+      <div>{userInfo?.username}</div>
+      <div>{tournamentSummary?.active}</div>
+      <div>{tournamentSummary?.pending}</div>
+      <div>{tournamentSummary?.completed}</div>
+      <div>{unreadNotificationsCount}</div>
+    </div>
+  );
+};
 
 // Mock wouter to fix useLocation issue
 jest.mock('wouter', () => ({

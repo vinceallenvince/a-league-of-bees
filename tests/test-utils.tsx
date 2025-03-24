@@ -1,8 +1,50 @@
 import { render as rtlRender } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/core/providers/auth-provider';
-// Remove the Toaster import since we're mocking it
-// import { Toaster } from '@/core/ui/toaster';
+// Create a mock AuthProvider
+import React from 'react';
+
+// Mock Auth Context and Provider
+interface AuthContextValue {
+  user: {
+    id: string;
+    email: string;
+    username: string;
+  } | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (email: string, username: string, password: string) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+}
+
+const MockAuthContext = React.createContext<AuthContextValue>({
+  user: { id: '1', email: 'test@example.com', username: 'testuser' },
+  isAuthenticated: true,
+  isLoading: false,
+  login: async () => {},
+  logout: async () => {},
+  register: async () => {},
+  verifyOtp: async () => {},
+});
+
+const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <MockAuthContext.Provider 
+      value={{
+        user: { id: '1', email: 'test@example.com', username: 'testuser' },
+        isAuthenticated: true,
+        isLoading: false,
+        login: async () => {},
+        logout: async () => {},
+        register: async () => {},
+        verifyOtp: async () => {},
+      }}
+    >
+      {children}
+    </MockAuthContext.Provider>
+  );
+};
 
 /**
  * Custom render function that includes global providers

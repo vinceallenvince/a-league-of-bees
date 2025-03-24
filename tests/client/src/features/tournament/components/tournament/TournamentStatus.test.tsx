@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { TournamentStatus } from '@/features/tournament/components/tournament/TournamentStatus';
+import { TournamentStatus } from '../../../../../../../client/src/features/tournament/components/tournament/TournamentStatus';
 
 describe('TournamentStatus', () => {
   it('renders pending status correctly', () => {

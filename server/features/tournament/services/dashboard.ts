@@ -1,7 +1,7 @@
 import { db } from '../db';
 import * as queries from '../queries';
 import { and, count, eq, gte, sql } from 'drizzle-orm';
-import { tournaments, tournamentParticipants, notifications } from '../../../../shared/schema';
+import { tournaments, tournamentParticipants, notifications, users } from '../../../../shared/schema';
 import logger from '../../../core/logger';
 import { storage } from '../../../core/storage';
 import cacheService from '../../../core/cache';
@@ -40,16 +40,29 @@ export const dashboardService = {
           const user = await this.getUserInfo(userId);
           
           // Execute all dashboard queries in parallel for better performance
+          // Wrap each query in try/catch to handle individual failures gracefully
           const [
             tournamentStatusCounts,
             participation,
             recentActivity,
             upcomingTournaments
           ] = await Promise.all([
-            this.getTournamentSummary(userId),
-            this.getParticipationMetrics(userId),
-            this.getRecentActivity(userId),
-            this.getUpcomingTournaments(userId)
+            this.getTournamentSummary(userId).catch(error => {
+              logger.error('Error getting tournament summary', { error, userId });
+              return { active: 0, pending: 0, completed: 0, cancelled: 0 };
+            }),
+            this.getParticipationMetrics(userId).catch(error => {
+              logger.error('Error getting participation metrics', { error, userId });
+              return { hosting: 0, joined: 0, invited: 0 };
+            }),
+            this.getRecentActivity(userId).catch(error => {
+              logger.error('Error getting recent activity', { error, userId });
+              return [];
+            }),
+            this.getUpcomingTournaments(userId).catch(error => {
+              logger.error('Error getting upcoming tournaments', { error, userId });
+              return [];
+            })
           ]);
           
           // Return aggregated dashboard data
@@ -63,7 +76,7 @@ export const dashboardService = {
             participation,
             recentActivity,
             upcomingTournaments,
-            unreadNotificationsCount: recentActivity.filter(a => !a.read).length
+            unreadNotificationsCount: recentActivity.filter((a: any) => !a.read).length
           };
         } catch (error) {
           logger.error('Error getting dashboard data', { error, userId });
@@ -89,11 +102,91 @@ export const dashboardService = {
     return cacheService.getOrSet(
       cacheKey,
       async () => {
-        const user = await storage.getUserById(userId);
-        if (!user) {
-          throw new Error(`User not found: ${userId}`);
+        try {
+          // First try to get the user directly from the database by ID
+          const dbUserById = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+          
+          if (dbUserById.length > 0) {
+            // User exists in database by ID, return it
+            logger.info('User found in database by ID', { userId });
+            return dbUserById[0];
+          }
+          
+          // User not in database by ID, try to get from memory storage
+          const memUser = await storage.getUserById(userId);
+          if (!memUser) {
+            throw new Error(`User not found: ${userId}`);
+          }
+          
+          // Check if user exists in database by email
+          const usersByEmail = await db.select().from(users).where(eq(users.email, memUser.email)).limit(1);
+          
+          if (usersByEmail.length > 0) {
+            // User exists in database with same email but different ID
+            logger.info('User found in database by email instead of ID', { 
+              memoryId: userId, 
+              dbId: usersByEmail[0].id, 
+              email: memUser.email 
+            });
+            
+            return usersByEmail[0];
+          }
+          
+          // User doesn't exist in database at all, create new record
+          logger.info('Creating new user in database', { userId, email: memUser.email });
+          
+          const insertedUser = await db.insert(users).values({
+            id: userId,
+            email: memUser.email,
+            firstName: memUser.firstName,
+            lastName: memUser.lastName,
+            username: memUser.username || memUser.email.split('@')[0],
+            bio: memUser.bio,
+            avatar: memUser.avatar,
+            isAdmin: memUser.isAdmin,
+            lastLogin: memUser.lastLogin,
+            otpAttempts: 0,
+            otpSecret: null,
+            otpExpiry: null,
+            otpLastRequest: null
+          }).returning();
+          
+          if (insertedUser.length > 0) {
+            logger.info('User created in database successfully', { userId });
+            return insertedUser[0];
+          }
+          
+          // If we reach here, something went wrong with the insert but didn't throw
+          // Fall back to memory user
+          return memUser;
+        } catch (error: any) {
+          // Special handling for unique constraint violations
+          if (error.code === '23505' && error.constraint === 'users_email_unique') {
+            // Email uniqueness violation - retry getting user by email
+            try {
+              const memUser = await storage.getUserById(userId);
+              if (!memUser) {
+                throw new Error(`User not found: ${userId}`);
+              }
+              
+              // Get user by email from database
+              const usersByEmail = await db.select().from(users).where(eq(users.email, memUser.email)).limit(1);
+              if (usersByEmail.length > 0) {
+                logger.info('Using existing user with same email after constraint error', {
+                  memoryId: userId,
+                  dbId: usersByEmail[0].id,
+                  email: memUser.email
+                });
+                return usersByEmail[0];
+              }
+            } catch (retryError) {
+              logger.error('Error in constraint handling fallback', { error: retryError });
+            }
+          }
+          
+          logger.error('Error fetching user info', { error, userId });
+          throw error;
         }
-        return user;
       },
       CACHE_TTL.USER_INFO,
       [`${CACHE_PREFIX.USER}:${userId}`]

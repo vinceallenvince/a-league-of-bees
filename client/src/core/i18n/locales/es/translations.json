@@ -8,7 +8,8 @@
     "admin": "Administrador",
     "profile": "Perfil",
     "logout": "Cerrar Sesión",
-    "signIn": "Iniciar Sesión"
+    "signIn": "Iniciar Sesión",
+    "dashboard": "Panel de Control"
   },
   "auth": {
     "login": "Iniciar Sesión",

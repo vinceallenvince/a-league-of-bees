@@ -24,30 +24,28 @@ export default function Navbar() {
         <div className="flex items-center space-x-6">
           <Link 
             href="/" 
-            className={location.pathname === "/" ? "text-foreground font-bold" : "text-muted-foreground font-normal"}
-            aria-current={location.pathname === "/" ? "page" : undefined}
+            className={location === "/" ? "text-foreground font-bold" : "text-muted-foreground font-normal"}
+            aria-current={location === "/" ? "page" : undefined}
           >
             {t('navigation.home')}
           </Link>
-          
-          {/* Hello World link moved to authenticated user section */}
           
           {user && (
             // Authenticated user links
             <>
               <Link 
-                href="/hello-world" 
-                className={location.pathname === "/hello-world" ? "text-foreground font-bold" : "text-muted-foreground font-normal"}
-                aria-current={location.pathname === "/hello-world" ? "page" : undefined}
+                href="/dashboard" 
+                className={location === "/dashboard" ? "text-foreground font-bold" : "text-muted-foreground font-normal"}
+                aria-current={location === "/dashboard" ? "page" : undefined}
               >
-                {t('navigation.helloWorld', 'Hello World')}
+                {t('navigation.dashboard')}
               </Link>
               
               {user.isAdmin && (
                 <Link 
                   href="/admin" 
-                  className={location.pathname === "/admin" ? "text-foreground font-bold" : "text-muted-foreground font-normal"}
-                  aria-current={location.pathname === "/admin" ? "page" : undefined}
+                  className={location === "/admin" ? "text-foreground font-bold" : "text-muted-foreground font-normal"}
+                  aria-current={location === "/admin" ? "page" : undefined}
                 >
                   {t('navigation.admin')}
                 </Link>
@@ -95,7 +93,7 @@ export default function Navbar() {
               <Link 
                 href="/auth" 
                 className="text-primary-foreground"
-                aria-current={location.pathname === "/auth" ? "page" : undefined}
+                aria-current={location === "/auth" ? "page" : undefined}
               >
                 {t('navigation.signIn')}
               </Link>

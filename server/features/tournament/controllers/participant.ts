@@ -13,7 +13,10 @@ export const participantController = {
   getTournamentParticipantsHandler: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
+      
+      // Get participants from actual database
       const participants = await participantService.getTournamentParticipants(id);
+      
       res.json(participants);
     } catch (error) {
       logger.error('Error getting tournament participants', { error, tournamentId: req.params.id });

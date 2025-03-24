@@ -3,6 +3,9 @@ import { registerRoutes } from './core/routes';
 import bodyParser from 'body-parser';
 // Use require instead of import to avoid TypeScript error
 const cors = require('cors');
+import { setupAuth } from "./auth";
+import { checkAllUsersConsistency } from "./core/auth-utils";
+import logger from "./core/logger";
 
 // Create Express app instance for tests
 const app = express();
@@ -67,6 +70,17 @@ router.post('/api/tournaments/:id/scores', (req, res) => {
 });
 
 app.use('/', router);
+
+// Setup authentication routes and middleware
+setupAuth(app);
+
+// Run user ID consistency check at startup
+if (process.env.NODE_ENV !== 'test') {
+  logger.info('Running user ID consistency check at startup');
+  checkAllUsersConsistency()
+    .then(() => logger.info('User ID consistency check completed'))
+    .catch(error => logger.error('Error during user ID consistency check', { error }));
+}
 
 // Export the app for testing
 export { app }; 
