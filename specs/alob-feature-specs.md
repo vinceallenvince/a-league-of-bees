@@ -26,6 +26,7 @@ Existing users of the web app who regularly play the New York Times Spelling Bee
     - Users can add a brief description or theme (optional).
     - Users can set a tournament length in days.
     - Users can pick a tournament start date from a calendar picker.
+      - Valid start dates are in the future inclusive of the present date
     - Users can determine, true or false, if the tournament requires score verification via screenshot upload.
 
 - **User Story:** As a user, I want to invite my friends to participate in my Spelling Bee tournament.

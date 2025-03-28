@@ -66,9 +66,12 @@ export function TournamentForm({
   };
   
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = new Date(e.target.value);
+    selectedDate.setHours(0, 0, 0, 0);
+    
     setFormData({
       ...formData,
-      startDate: new Date(e.target.value)
+      startDate: selectedDate
     });
     
     // Clear error when field is changed
