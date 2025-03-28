@@ -66,8 +66,15 @@ export function TournamentForm({
   };
   
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = new Date(e.target.value);
-    selectedDate.setHours(0, 0, 0, 0);
+    // Parse the date value from input, ensuring it's interpreted as local time
+    const dateValue = e.target.value; // format: YYYY-MM-DD
+    
+    // Create a date object using local timezone by constructing with year, month, day
+    const [year, month, day] = dateValue.split('-').map(num => parseInt(num, 10));
+    const selectedDate = new Date(year, month - 1, day); // month is 0-indexed in JavaScript
+    
+    // Set time to noon to avoid timezone issues when converting between timezones
+    selectedDate.setHours(12, 0, 0, 0);
     
     setFormData({
       ...formData,
@@ -119,11 +126,21 @@ export function TournamentForm({
     }
   };
   
-  // Format date for input
+  // Format date for input ensuring we use local time zone values
   const formatDateForInput = (date: Date): string => {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    // getMonth() is 0-indexed, so add 1 and pad with leading zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    // getDate() returns the day of month, pad with leading zero if needed
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   };
   
+  // Get today's date for min attribute
+  const today = new Date();
+  const minDate = formatDateForInput(today);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -191,6 +208,7 @@ export function TournamentForm({
           name="startDate"
           value={formatDateForInput(formData.startDate)}
           onChange={handleDateChange}
+          min={minDate}
           className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
             errors.startDate ? 'border-red-500' : ''
           }`}
